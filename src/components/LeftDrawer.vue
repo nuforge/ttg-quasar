@@ -19,61 +19,61 @@ const leftDrawerOpen = ref(true);
           </q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple to="/events">
           <q-item-section avatar>
             <q-icon name="mdi-calendar-month" />
           </q-item-section>
 
           <q-item-section>
-            Star
+            {{ $t('event', 2) }}
           </q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple to="/games">
           <q-item-section avatar>
             <q-icon name="mdi-book-multiple" />
           </q-item-section>
 
           <q-item-section>
-            Send
+            {{ $t('game', 2) }}
           </q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple to="/players">
           <q-item-section avatar>
             <q-icon name="mdi-account-eye" />
           </q-item-section>
 
           <q-item-section>
-            Drafts
+            {{ $t('player', 2) }}
           </q-item-section>
         </q-item>
       </q-list>
 
       <q-space />
       <q-list>
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple to="/account">
           <q-item-section avatar>
             <q-icon name="mdi-account-circle-outline" />
           </q-item-section>
           <q-item-section>
-            Account
+            {{ $t('account') }}
           </q-item-section>
         </q-item>
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple to="/messages">
           <q-item-section avatar>
             <q-icon name="mdi-forum" />
           </q-item-section>
           <q-item-section>
-            Messages
+            {{ $t('message', 2) }}
           </q-item-section>
         </q-item>
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple to="/settings">
           <q-item-section avatar>
             <q-icon name="mdi-cog-outline" />
           </q-item-section>
           <q-item-section>
-            Settings
+            {{ $t('setting') }}
           </q-item-section>
         </q-item>
         <q-item clickable v-ripple>

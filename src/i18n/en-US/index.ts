@@ -6,7 +6,10 @@
 
 export default {
   greet: 'Hello',
-  failed: 'Action failed',
-  success: 'Action was successful',
-  game: 'no games | {n} game | {n} games',
+  game: 'no games | {n} game | games',
+  event: 'no events | event | events',
+  player: 'no players | player | players',
+  account: 'no accounts | account | accounts',
+  message: 'no messages | message | messages',
+  setting: 'no settings | setting | settings',
 };
