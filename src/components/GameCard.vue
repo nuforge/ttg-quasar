@@ -60,7 +60,7 @@ onMounted(() => {
         {{ game.title }}
       </router-link>
 
-      <div class="row">
+      <div class=" q-gutter-sm q-mt-sm">
         <div>
           <q-img :src="`${imageSrc}${game.image}`"
             style="min-width: 100px; max-width: 120px; max-height: 150px; min-height: 100px; width: 100%;" no-spinner

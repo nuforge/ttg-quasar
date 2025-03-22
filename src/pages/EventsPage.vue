@@ -104,7 +104,7 @@ const clearFilters = () => {
 </script>
 
 <template>
-  <q-page padding>
+  <q-page>
     <div class="text-h6 text-uppercase q-mb-md">
       <q-icon name="mdi-calendar-month" /> {{ $t('event', 2) }}
     </div>
