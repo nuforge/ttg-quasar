@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import QRDialog from './QRDialog.vue';
 
 const leftDrawerOpen = ref(true);
+const qrdialog = ref(false);
 </script>
 
 <template>
   <q-drawer v-model="leftDrawerOpen" side="left" mini>
+    <QRDialog v-model="qrdialog" />
     <div class="justify-between full-height">
       <q-list padding>
         <q-item clickable v-ripple to="/">
@@ -76,15 +79,14 @@ const leftDrawerOpen = ref(true);
             {{ $t('setting') }}
           </q-item-section>
         </q-item>
-        <q-item clickable v-ripple>
+        <q-item clickable v-ripple @click="qrdialog = true">
           <q-item-section avatar>
             <q-icon name="mdi-qrcode-scan" />
           </q-item-section>
           <q-item-section>
-            Account
+            {{ $t('scan') }}
           </q-item-section>
         </q-item>
-
       </q-list>
     </div>
   </q-drawer>

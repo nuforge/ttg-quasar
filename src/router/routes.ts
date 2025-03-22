@@ -17,6 +17,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/GamesPage.vue') }],
   },
   {
+    path: '/games/:id(.*)*',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/GamePage.vue') }],
+  },
+  {
     path: '/players/',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/PlayersPage.vue') }],

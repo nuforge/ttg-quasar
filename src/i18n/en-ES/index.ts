@@ -6,4 +6,10 @@ export default {
   account: 'no cuentas | cuenta | cuentas',
   message: 'no mensajes | mensaje | mensajes',
   setting: 'no ajustes | ajuste | ajustes',
+  language: 'idioma',
+  genre: 'género',
+  age: 'edad',
+  time: 'tiempo',
+  playTime: 'tiempo de juego',
+  scan: 'escanear',
 };
