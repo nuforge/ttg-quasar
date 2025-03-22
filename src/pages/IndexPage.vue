@@ -91,14 +91,14 @@ const steps = [
   <div class="landing-page">
     <!-- Hero Section -->
     <section class="hero-section q-pa-md q-mb-lg">
-      <q-parallax :height="300" src="/images/tabletop-hero.jpg">
+      <q-parallax :height="300" src="/images/tabletop-hero.png">
         <div class="absolute-center text-center">
-          <div class="text-h2 text-weight-bold text-primary hero-title">Looking For Group</div>
+          <div class="text-h4 text-weight-bold text-primary hero-title">Looking For Group</div>
           <div class="text-h5 q-mt-md text-white text-weight-medium">Find tabletop gaming sessions and players near you
           </div>
-          <div class="q-mt-xl">
-            <q-btn size="lg" color="primary" label="Explore Games" class="q-mr-sm" @click="navigateTo('/games')" />
-            <q-btn size="lg" outline color="white" label="Browse Events" @click="navigateTo('/events')" />
+          <div class="q-mt-lg q-gutter-sm ">
+            <q-btn size="md" color="primary" text-color="black" label="Explore Games" @click="navigateTo('/games')" />
+            <q-btn size="md" outline color="white" label="Browse Events" @click="navigateTo('/events')" />
           </div>
         </div>
       </q-parallax>
@@ -106,7 +106,7 @@ const steps = [
 
     <!-- Features Section -->
     <section class="features-section q-pa-md q-mb-lg">
-      <div class="text-h4 text-center q-mb-lg">What We Offer</div>
+      <div class="text-h1 text-center q-mb-lg">What We Offer</div>
       <div class="row q-col-gutter-md justify-center">
         <div v-for="feature in features" :key="feature.title" class="col-xs-12 col-sm-6 col-md-3">
           <q-card class="feature-card" flat bordered>
@@ -167,12 +167,12 @@ const steps = [
     </section>
 
     <!-- Call To Action -->
-    <section class="cta-section q-pa-xl q-mb-md text-center">
-      <q-card class="bg-primary text-white">
+    <section class="cta-section q-pa-xl q-mb-md text-center ">
+      <q-card class="bg-surface " flat>
         <q-card-section>
           <div class="text-h4 q-mb-md">Ready to Find Your Next Game?</div>
           <div class="text-h6 q-mb-lg">Join our community of tabletop gamers today!</div>
-          <q-btn color="white" text-color="primary" push label="Get Started" size="lg" @click="navigateTo('/games')" />
+          <q-btn color="primary" text-color="black" push label="Get Started" size="lg" @click="navigateTo('/games')" />
         </q-card-section>
       </q-card>
     </section>

@@ -54,17 +54,19 @@ onMounted(() => {
 </script>
 
 <template>
-  <q-card flat class="game-card" style="max-width:400px;">
+  <q-card flat class="game-card">
     <q-card-section>
       <router-link :to="`/games/${game.id}`" class="text-h6 text-uppercase no-underline">
         {{ game.title }}
       </router-link>
+
       <div class="row">
-        <div class="col-md-5 col-sm-12">
+        <div>
           <q-img :src="`${imageSrc}${game.image}`"
-            style="min-width: 100px; max-height: 160px; min-height: 100px; width:auto;" no-spinner fit="contain" />
+            style="min-width: 100px; max-width: 120px; max-height: 150px; min-height: 100px; width: 100%;" no-spinner
+            fit="contain" />
         </div>
-        <div class="col-md-7 col-sm-12 q-pt-md">
+        <div>
           <div class="text-subtitle2 q-mb-xs"><strong>{{ $t('genre') }}:</strong> {{ game.genre }}</div>
           <div class="text-caption q-mb-xs"><strong>{{ $t('player', 2) }}:</strong> {{ game.numberOfPlayers }}</div>
           <div class="text-caption q-mb-xs"><strong>{{ $t('age') }}:</strong> {{ game.recommendedAge }}</div>

@@ -10,7 +10,7 @@ import RightDrawer from "src/components/RightDrawer.vue";
   <q-layout view="lHr Lpr lFf">
     <q-header class="bg-dark">
       <q-toolbar>
-        <q-toolbar-title class="text-uppercase text-primary">
+        <q-toolbar-title class="text-uppercase text-primary font-aldrich">
           Looking For Group
         </q-toolbar-title>
       </q-toolbar>

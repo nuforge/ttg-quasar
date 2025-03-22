@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import games from 'src/assets/data/games.json';
-import { Event } from 'src/models/Event';
+import type { Event } from 'src/models/Event';
 
 defineOptions({
   name: 'EventCard',

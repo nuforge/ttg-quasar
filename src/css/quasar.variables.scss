@@ -17,11 +17,32 @@ $secondary: #e2a952;
 $tertiary: #3e9cda;
 $accent: #ad82ea;
 
-$dark: #1d1d1d;
-$dark-page: #121212;
-
 $positive: #21ba45;
 $negative: #c10015;
 $info: #31ccec;
 $warning: #f2c037;
-$text: #f5f5f5;
+
+$text: #d3d3d3;
+
+$dark: #1d1d1d;
+$dark-page: #121212;
+
+$light-text: #646464;
+
+$theme-colors: (
+  primary: $primary,
+  secondary: $secondary,
+  tertiary: $tertiary,
+  accent: $accent,
+  positive: $positive,
+  negative: $negative,
+  info: $info,
+  warning: $warning,
+  text: $text,
+  dark: $dark,
+  'dark-page': $dark-page,
+  'light-text': $light-text,
+);
+
+$generic-border-radius: 6px;
+$button-border-radius: 6px;
