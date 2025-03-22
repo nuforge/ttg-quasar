@@ -95,5 +95,17 @@
     "description": "A tile-placement game where players build a medieval landscape and score points by claiming features like cities and roads.",
     "image": "carcassonne.webp",
     "link": "https://boardgamegeek.com/boardgame/822/carcassonne"
+  },
+  {
+    "id": 8,
+    "title": "Magic: The Gathering",
+    "genre": "Collectible Card Game",
+    "numberOfPlayers": "2+",
+    "recommendedAge": "13+",
+    "playTime": "20-40 minutes",
+    "components": ["Decks of Cards", "Life Counter", "Game Mat", "Tokens"],
+    "description": "A collectible card game where players assume the role of planeswalkers who cast spells, use artifacts, and summon creatures to defeat their opponents.",
+    "image": "magic_the_gathering.webp",
+    "link": "https://magic.wizards.com/"
   }
 ]

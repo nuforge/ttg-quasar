@@ -106,7 +106,7 @@ const steps = [
 
     <!-- Features Section -->
     <section class="features-section q-pa-md q-mb-lg">
-      <div class="text-h1 text-center q-mb-lg">What We Offer</div>
+      <div class="text-h2 text-center q-mb-lg">What We Offer</div>
       <div class="row q-col-gutter-md justify-center">
         <div v-for="feature in features" :key="feature.title" class="col-xs-12 col-sm-6 col-md-3">
           <q-card class="feature-card" flat bordered>
