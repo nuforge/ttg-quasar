@@ -65,7 +65,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <q-card class="game-card" flat dark>
+  <q-card class="game-card bg-transparent" flat dark>
     <q-card-section>
       <router-link :to="`/games/${game.id}`" class="text-h6 text-uppercase no-underline">
         {{ game.title }}
@@ -127,7 +127,8 @@ onMounted(() => {
 <style scoped>
 .game-card {
   align-self: start;
-  border-top: 2px solid grey;
+  border-top: 2px solid var(--q-dark);
+  border-bottom: 2px solid var(--q-dark);
 }
 
 .game-card-description {
