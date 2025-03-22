@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import QRDialog from './QRDialog.vue';
+import QRDialog from 'src/components/qrcode/QRDialog.vue';
 
 const leftDrawerOpen = ref(true);
 const qrdialog = ref(false);
 </script>
 
 <template>
-  <q-drawer v-model="leftDrawerOpen" side="left" mini>
+  <q-drawer v-model="leftDrawerOpen" side="left" mini persistent show-if-above>
     <QRDialog v-model="qrdialog" />
     <div class="justify-between full-height">
       <q-list padding>

@@ -1,7 +1,17 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import type { Game } from 'src/models/Game';
+import QRCode from './qrcode/QRCode.vue';
 
 const imageSrc = '/images/games/';
+const showQRCode = ref(false);
+
+
+const toggleQR = () => {
+  console.log('toggleQR');
+  showQRCode.value = !showQRCode.value;
+};
+
 
 defineProps<{
   game: Game;
@@ -26,10 +36,17 @@ defineProps<{
         </div>
       </div>
       <q-separator class="q-my-sm" />
+
       <div class="text-caption description">
         {{ game.description }}
       </div>
+      <QRCode :game="game" v-model:showQR="showQRCode" />
+
     </q-card-section>
+    <q-card-actions>
+      <q-btn flat icon="mdi-qrcode" @click="toggleQR()" />
+    </q-card-actions>
+
   </q-card>
 </template>
 
