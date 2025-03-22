@@ -4,7 +4,5 @@
 
 <template>
   <q-page>
-    <q-page-container>
-    </q-page-container>
   </q-page>
 </template>

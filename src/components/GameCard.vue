@@ -45,6 +45,8 @@ defineProps<{
     </q-card-section>
     <q-card-actions>
       <q-btn flat icon="mdi-qrcode" @click="toggleQR()" />
+      <q-btn flat icon="mdi-pencil" @click="() => $router.push(`/games/${game.id}/edit`)" />
+      <q-btn flat icon="mdi-delete" @click="() => $emit('delete', game.id)" />
     </q-card-actions>
 
   </q-card>

@@ -5,8 +5,6 @@
 
 <template>
   <q-page>
-    <q-page-container>
-      <div class="text-h6 text-uppercase">GAME</div>
-    </q-page-container>
+    <div class="text-h6 text-uppercase">GAME</div>
   </q-page>
 </template>
