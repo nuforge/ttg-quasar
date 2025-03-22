@@ -151,10 +151,11 @@ const clearFilters = () => {
 
         <!-- Sort direction -->
         <div class="col-12 col-md-4">
-          <q-btn-toggle v-model="sortDirection" :options="[
-            { label: 'Ascending', value: 'asc' },
-            { label: 'Descending', value: 'desc' }
-          ]" spread no-caps unelevated />
+          <q-btn-toggle v-model="sortDirection" toggle-color="primary" text-color="primary" color="black"
+            toggle-text-color="black" :options="[
+              { label: 'Ascending', value: 'asc' },
+              { label: 'Descending', value: 'desc' }
+            ]" spread no-caps unelevated />
         </div>
       </div>
 

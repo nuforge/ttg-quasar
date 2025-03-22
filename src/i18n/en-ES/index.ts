@@ -3,6 +3,7 @@ export default {
   game: 'no juegos | juego | juegos',
   event: 'no eventos | evento | eventos',
   player: 'no jugadores | jugador | jugadores',
+  group: 'no grupos | grupo | grupos',
   account: 'no cuentas | cuenta | cuentas',
   message: 'no mensajes | mensaje | mensajes',
   setting: 'no ajustes | ajuste | ajustes',

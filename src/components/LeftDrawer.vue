@@ -44,7 +44,7 @@ const qrdialog = ref(false);
 
         <q-item clickable v-ripple to="/players">
           <q-item-section avatar>
-            <q-icon name="mdi-account-eye" />
+            <q-icon name="mdi-account-group" />
           </q-item-section>
 
           <q-item-section>

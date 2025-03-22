@@ -9,6 +9,7 @@ export default {
   game: 'no games | {n} game | games',
   event: 'no events | event | events',
   player: 'no players | player | players',
+  group: 'no groups | group | groups',
   account: 'no accounts | account | accounts',
   message: 'no messages | message | messages',
   setting: 'no settings | setting | settings',
