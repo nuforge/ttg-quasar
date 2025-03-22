@@ -56,7 +56,9 @@ onMounted(() => {
 <template>
   <q-card flat class="game-card" style="max-width:400px;">
     <q-card-section>
-      <div class="text-h6 text-uppercase">{{ game.title }}</div>
+      <router-link :to="`/games/${game.id}`" class="text-h6 text-uppercase no-underline">
+        {{ game.title }}
+      </router-link>
       <div class="row">
         <div class="col-md-5 col-sm-12">
           <q-img :src="`${imageSrc}${game.image}`"

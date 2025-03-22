@@ -6,7 +6,7 @@
 
 export default {
   greet: 'Hello',
-  game: 'no games | {n} game | games',
+  game: 'no games | game | games',
   event: 'no events | event | events',
   player: 'no players | player | players',
   group: 'no groups | group | groups',
