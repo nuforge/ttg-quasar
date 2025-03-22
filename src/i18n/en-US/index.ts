@@ -18,4 +18,8 @@ export default {
   time: 'time',
   playTime: 'play time',
   scan: 'scan',
+  upcoming: 'upcoming',
+  previous: 'previous',
+  next: 'next',
+  search: 'search',
 };

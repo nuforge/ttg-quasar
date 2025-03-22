@@ -12,4 +12,8 @@ export default {
   time: 'tiempo',
   playTime: 'tiempo de juego',
   scan: 'escanear',
+  upcoming: 'próximos',
+  previous: 'anteriores',
+  next: 'siguientes',
+  search: 'buscar',
 };

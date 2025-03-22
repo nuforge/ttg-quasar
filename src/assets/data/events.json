@@ -1,0 +1,327 @@
+[
+  {
+    "id": 1,
+    "gameId": 3,
+    "title": "Weekly D&D Campaign",
+    "date": "2025-03-15",
+    "time": "18:00",
+    "location": "Game Haven, 123 Main Street",
+    "status": "upcoming",
+    "minPlayers": 3,
+    "maxPlayers": 6,
+    "currentPlayers": 4,
+    "rsvps": [
+      {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Jane Smith",
+        "email": "jane@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Mike Johnson",
+        "email": "mike@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Sarah Williams",
+        "email": "sarah@example.com",
+        "status": "confirmed"
+      }
+    ],
+    "host": {
+      "name": "DM Chris",
+      "email": "chris@example.com",
+      "phone": "555-123-4567"
+    },
+    "description": "Join our ongoing Dungeons & Dragons campaign set in the Forgotten Realms. New players welcome!",
+    "notes": "Please bring your own dice and character sheets if possible."
+  },
+  {
+    "id": 2,
+    "gameId": 2,
+    "title": "Pandemic Tournament",
+    "date": "2025-03-20",
+    "time": "14:00",
+    "location": "Board Game Cafe, 456 Oak Avenue",
+    "status": "upcoming",
+    "minPlayers": 2,
+    "maxPlayers": 4,
+    "currentPlayers": 2,
+    "rsvps": [
+      {
+        "name": "Robert Chen",
+        "email": "robert@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Emily Clark",
+        "email": "emily@example.com",
+        "status": "confirmed"
+      }
+    ],
+    "host": {
+      "name": "Board Game Cafe Staff",
+      "email": "contact@boardgamecafe.com",
+      "phone": "555-987-6543"
+    },
+    "description": "Test your cooperative skills in our Pandemic tournament. Prizes for the teams with the most efficient disease control!",
+    "notes": "Entry fee: $5 per person"
+  },
+  {
+    "id": 3,
+    "gameId": 1,
+    "title": "Chess Championship",
+    "date": "2025-08-05",
+    "time": "10:00",
+    "location": "Community Center, 789 Maple Road",
+    "status": "upcoming",
+    "minPlayers": 8,
+    "maxPlayers": 32,
+    "currentPlayers": 12,
+    "rsvps": [
+      {
+        "name": "David Kim",
+        "email": "david@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Lisa Wong",
+        "email": "lisa@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "James Miller",
+        "email": "james@example.com",
+        "status": "waiting"
+      }
+    ],
+    "host": {
+      "name": "Local Chess Club",
+      "email": "chess@example.com",
+      "phone": "555-456-7890"
+    },
+    "description": "Annual chess championship with divisions for beginners, intermediate, and advanced players.",
+    "notes": "Registration fee: $10. Please bring your own chess clock if possible."
+  },
+  {
+    "id": 4,
+    "gameId": 4,
+    "title": "Catan Night",
+    "date": "2025-03-18",
+    "time": "19:30",
+    "location": "The Gaming Table, 321 Pine Street",
+    "status": "upcoming",
+    "minPlayers": 3,
+    "maxPlayers": 4,
+    "currentPlayers": 3,
+    "rsvps": [
+      {
+        "name": "Alex Johnson",
+        "email": "alex@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Maria Garcia",
+        "email": "maria@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Sam Taylor",
+        "email": "sam@example.com",
+        "status": "confirmed"
+      }
+    ],
+    "host": {
+      "name": "The Gaming Table Staff",
+      "email": "events@gamingtable.com",
+      "phone": "555-789-0123"
+    },
+    "description": "Weekly Catan game night. Casual play with rotating tables.",
+    "notes": "Food and drinks available for purchase."
+  },
+  {
+    "id": 5,
+    "gameId": 7,
+    "title": "Star Trek Adventures Campaign Launch",
+    "date": "2025-03-25",
+    "time": "18:30",
+    "location": "Sci-Fi Gaming Club, 555 Galaxy Road",
+    "status": "upcoming",
+    "minPlayers": 3,
+    "maxPlayers": 6,
+    "currentPlayers": 0,
+    "rsvps": [],
+    "host": {
+      "name": "Captain Mark",
+      "email": "mark@example.com",
+      "phone": "555-321-6789"
+    },
+    "description": "Starting a new Star Trek Adventures campaign. Create your Starfleet officer and join the crew of the USS Horizon.",
+    "notes": "Character creation will be part of the first session. Core rulebook provided."
+  },
+  {
+    "id": 6,
+    "gameId": 5,
+    "title": "Ticket to Ride Family Tournament",
+    "date": "2025-08-12",
+    "time": "13:00",
+    "location": "Family Game Center, 777 Station Street",
+    "status": "upcoming",
+    "minPlayers": 8,
+    "maxPlayers": 20,
+    "currentPlayers": 5,
+    "rsvps": [
+      {
+        "name": "The Johnson Family",
+        "email": "johnson@example.com",
+        "status": "confirmed",
+        "participants": 3
+      },
+      {
+        "name": "The Miller Family",
+        "email": "miller@example.com",
+        "status": "confirmed",
+        "participants": 2
+      }
+    ],
+    "host": {
+      "name": "Family Game Center",
+      "email": "events@familygamecenter.com",
+      "phone": "555-234-5678"
+    },
+    "description": "Family-friendly Ticket to Ride tournament with prizes for different age categories.",
+    "notes": "Entry fee: $15 per family. All editions of Ticket to Ride will be available."
+  },
+  {
+    "id": 7,
+    "gameId": 6,
+    "title": "Carcassonne Learning Session",
+    "date": "2025-03-30",
+    "time": "15:00",
+    "location": "Board Game Library, 888 Castle Avenue",
+    "status": "upcoming",
+    "minPlayers": 2,
+    "maxPlayers": 5,
+    "currentPlayers": 3,
+    "rsvps": [
+      {
+        "name": "Nicole Adams",
+        "email": "nicole@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Brian White",
+        "email": "brian@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Jessica Thompson",
+        "email": "jessica@example.com",
+        "status": "confirmed"
+      }
+    ],
+    "host": {
+      "name": "Teacher Tim",
+      "email": "tim@example.com",
+      "phone": "555-876-5432"
+    },
+    "description": "Learn to play Carcassonne! This session is perfect for beginners who want to understand the rules and basic strategies.",
+    "notes": "All materials provided. No experience necessary."
+  },
+  {
+    "id": 8,
+    "gameId": 3,
+    "title": "D&D One-Shot Adventure",
+    "date": "2025-08-19",
+    "time": "17:00",
+    "location": "Dragon's Lair, 999 Fantasy Lane",
+    "status": "upcoming",
+    "minPlayers": 3,
+    "maxPlayers": 6,
+    "currentPlayers": 4,
+    "rsvps": [
+      {
+        "name": "Kevin Moore",
+        "email": "kevin@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Rachel Green",
+        "email": "rachel@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Peter Jackson",
+        "email": "peter@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Amanda Lee",
+        "email": "amanda@example.com",
+        "status": "confirmed"
+      }
+    ],
+    "host": {
+      "name": "Dungeon Master Steve",
+      "email": "dmsteve@example.com",
+      "phone": "555-345-6789"
+    },
+    "description": "A one-shot D&D adventure suitable for both beginners and experienced players. Pre-generated characters will be available.",
+    "notes": "4-6 hour session. Snacks provided."
+  },
+  {
+    "id": 9,
+    "gameId": 2,
+    "title": "Pandemic Legacy Season 1",
+    "date": "2025-09-05",
+    "time": "19:00",
+    "location": "Legacy Games, 111 Virus Street",
+    "status": "upcoming",
+    "minPlayers": 4,
+    "maxPlayers": 4,
+    "currentPlayers": 2,
+    "rsvps": [
+      {
+        "name": "Michelle Davis",
+        "email": "michelle@example.com",
+        "status": "confirmed"
+      },
+      {
+        "name": "Ryan Phillips",
+        "email": "ryan@example.com",
+        "status": "confirmed"
+      }
+    ],
+    "host": {
+      "name": "Campaign Coordinator Laura",
+      "email": "laura@example.com",
+      "phone": "555-987-1234"
+    },
+    "description": "Starting a new Pandemic Legacy Season 1 campaign. Looking for committed players who can attend regularly for about 12-15 sessions.",
+    "notes": "Please be prepared to attend at least 80% of the sessions. Cost: $20 per person to cover the game."
+  },
+  {
+    "id": 10,
+    "gameId": 1,
+    "title": "Chess Club Meeting",
+    "date": "2025-03-12",
+    "time": "17:00",
+    "location": "Community Center, 789 Maple Road",
+    "status": "completed",
+    "minPlayers": 2,
+    "maxPlayers": 30,
+    "currentPlayers": 15,
+    "rsvps": [],
+    "host": {
+      "name": "Chess Club President",
+      "email": "president@chessclubemail.com",
+      "phone": "555-123-7890"
+    },
+    "description": "Weekly chess club meeting. All skill levels welcome.",
+    "notes": "Bring your own board if possible, but we have extras."
+  }
+]

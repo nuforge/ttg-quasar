@@ -3,7 +3,5 @@
 </script>
 
 <template>
-  <q-page>
-    <div class="text-h6 text-uppercase"><q-icon name="mdi-account-circle-outline" /> {{ $t('account') }}</div>
-  </q-page>
+  <div class="text-h6 text-uppercase"><q-icon name="mdi-account-circle-outline" /> {{ $t('account') }}</div>
 </template>

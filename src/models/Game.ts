@@ -9,6 +9,7 @@ export class Game {
   description: string;
   releaseYear?: number;
   image?: string | undefined;
+  link?: string | undefined; // Added link property
 
   constructor(
     id: number,
@@ -21,6 +22,7 @@ export class Game {
     description: string,
     releaseYear?: number,
     image?: string,
+    link?: string, // Added link parameter
   ) {
     this.id = id;
     this.title = title;
@@ -32,6 +34,14 @@ export class Game {
     this.description = description;
     this.releaseYear = releaseYear ?? 0; // Default to 0 if undefined
     this.image = image;
+    this.link = link;
+  }
+
+  get url(): string {
+    const urlFriendlyTitle = this.title;
+
+    console.log(`/${this.id}/${urlFriendlyTitle}`);
+    return `/${this.id}/${urlFriendlyTitle}`;
   }
 
   static fromJSON(json: {
@@ -45,6 +55,7 @@ export class Game {
     description: string;
     releaseYear?: number;
     image?: string;
+    link?: string; // Added link to JSON interface
   }): Game {
     return new Game(
       json.id || Date.now(), // Generate ID if not provided
@@ -57,6 +68,7 @@ export class Game {
       json.description,
       json.releaseYear,
       json.image,
+      json.link, // Pass the link to the constructor
     );
   }
 }

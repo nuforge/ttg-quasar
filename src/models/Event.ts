@@ -1,0 +1,75 @@
+export interface RSVP {
+  name: string;
+  email: string;
+  status: 'confirmed' | 'waiting' | 'cancelled';
+  participants?: number;
+}
+
+export interface Host {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export type EventStatus = 'upcoming' | 'completed' | 'cancelled';
+
+export class Event {
+  id: number;
+  gameId: number;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  status: EventStatus;
+  minPlayers: number;
+  maxPlayers: number;
+  currentPlayers: number;
+  rsvps: RSVP[];
+  host: Host;
+  description: string;
+  notes: string;
+
+  constructor(eventData: Partial<Event>) {
+    this.id = eventData.id || 0;
+    this.gameId = eventData.gameId || 0;
+    this.title = eventData.title || '';
+    this.date = eventData.date || '';
+    this.time = eventData.time || '';
+    this.location = eventData.location || '';
+    this.status = eventData.status || 'upcoming';
+    this.minPlayers = eventData.minPlayers || 1;
+    this.maxPlayers = eventData.maxPlayers || 1;
+    this.currentPlayers = eventData.currentPlayers || 0;
+    this.rsvps = eventData.rsvps || [];
+    this.host = eventData.host || { name: '', email: '', phone: '' };
+    this.description = eventData.description || '';
+    this.notes = eventData.notes || '';
+  }
+
+  // Helper methods
+  getFormattedDate(): string {
+    // Parse the date components to avoid timezone issues
+    const [year, month, day] = this.date.split('-').map(Number) as [number, number, number];
+    // Create date using local timezone (month is 0-indexed in JS Date)
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString();
+  }
+
+  getDateObject(): Date {
+    const [year, month, day] = this.date.split('-').map(Number) as [number, number, number];
+    return new Date(year, month - 1, day);
+  }
+
+  isFull(): boolean {
+    return this.currentPlayers >= this.maxPlayers;
+  }
+
+  isUpcoming(): boolean {
+    return this.status === 'upcoming' && this.getDateObject() >= new Date();
+  }
+
+  // Class method to convert raw JSON data to Event objects
+  static fromJSON(eventsData: Partial<Event>[]): Event[] {
+    return eventsData.map((eventData) => new Event(eventData));
+  }
+}

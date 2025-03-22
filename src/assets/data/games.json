@@ -8,7 +8,8 @@
     "playTime": "30-60 minutes",
     "components": ["Chessboard", "16 White Pieces", "16 Black Pieces"],
     "description": "A classic two-player strategy game where players compete to checkmate the opponent's king.",
-    "image": "chess.webp"
+    "image": "chess.webp",
+    "link": "https://boardgamegeek.com/boardgame/171/chess"
   },
   {
     "id": 2,
@@ -25,7 +26,8 @@
       "Player Pawns"
     ],
     "description": "A cooperative game where players work together to stop the spread of diseases and save the world.",
-    "image": "pandemic.webp"
+    "image": "pandemic.webp",
+    "link": "https://boardgamegeek.com/boardgame/30549/pandemic"
   },
   {
     "id": 7,
@@ -36,7 +38,8 @@
     "playTime": "2-4 hours",
     "components": ["Core Rulebook", "Character Sheets", "Dice Set", "Maps", "Miniatures"],
     "description": "A role-playing game set in the Star Trek universe where players take on the roles of Starfleet officers exploring the galaxy in the era of the Federation.",
-    "image": "star_trek_adventures.jpg"
+    "image": "star_trek_adventures.jpg",
+    "link": "https://www.modiphius.net/collections/star-trek-adventures"
   },
   {
     "id": 3,
@@ -47,7 +50,8 @@
     "playTime": "Varies",
     "components": ["Rulebooks", "Character Sheets", "Dice Set", "Miniatures", "Maps"],
     "description": "A fantasy role-playing game where players create characters and embark on epic adventures guided by a Dungeon Master.",
-    "image": "dungeons_dragons.jpg"
+    "image": "dungeons_dragons.jpg",
+    "link": "https://dnd.wizards.com/"
   },
   {
     "id": 4,
@@ -65,7 +69,8 @@
       "Roads"
     ],
     "description": "A resource management game where players build settlements, trade resources, and compete for victory points.",
-    "image": "catan.webp"
+    "image": "catan.webp",
+    "link": "https://boardgamegeek.com/boardgame/13/catan"
   },
   {
     "id": 5,
@@ -76,7 +81,8 @@
     "playTime": "30-60 minutes",
     "components": ["Game Board", "Train Cards", "Destination Tickets", "Train Pieces"],
     "description": "A railway-themed board game where players collect cards to claim train routes and complete destination tickets.",
-    "image": "ticket_to_ride.webp"
+    "image": "ticket_to_ride.webp",
+    "link": "https://boardgamegeek.com/boardgame/9209/ticket-ride"
   },
   {
     "id": 6,
@@ -87,6 +93,7 @@
     "playTime": "30-45 minutes",
     "components": ["Land Tiles", "Meeples", "Scoreboard"],
     "description": "A tile-placement game where players build a medieval landscape and score points by claiming features like cities and roads.",
-    "image": "carcassonne.webp"
+    "image": "carcassonne.webp",
+    "link": "https://boardgamegeek.com/boardgame/822/carcassonne"
   }
 ]

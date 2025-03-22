@@ -1,22 +1,56 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { Game } from 'src/models/Game';
 import QRCode from './qrcode/QRCode.vue';
 
 const imageSrc = '/images/games/';
 const showQRCode = ref(false);
 
+const reserved = ref(false);
+const favorite = ref(false);
+const bookmark = ref(false);
+
+const isWebShareSupported = ref(false);
+const shareData = ref({
+  title: 'My Awesome Game',
+  text: 'Check out this cool game!',
+  url: window.location.href,
+});
 
 const toggleQR = () => {
-  console.log('toggleQR');
   showQRCode.value = !showQRCode.value;
 };
 
+const toggleFavorite = () => {
+  favorite.value = !favorite.value;
+};
+
+const toggleBookmark = () => {
+  bookmark.value = !bookmark.value;
+};
+
+const toggleReserved = () => {
+  reserved.value = !reserved.value;
+};
+
+const nativeShare = async (game: Game) => {
+  shareData.value.title = game.title;
+  console.log(shareData.value);
+  try {
+    await navigator.share(shareData.value);
+    //trackShare('native'); // Analytics
+  } catch (err) {
+    console.log('Share canceled', err);
+  }
+};
 
 defineProps<{
   game: Game;
 }>();
 
+onMounted(() => {
+  isWebShareSupported.value = !!navigator.share;
+});
 </script>
 
 <template>
@@ -43,10 +77,21 @@ defineProps<{
       <QRCode :game="game" v-model:showQR="showQRCode" />
 
     </q-card-section>
-    <q-card-actions>
-      <q-btn flat icon="mdi-qrcode" @click="toggleQR()" />
-      <q-btn flat icon="mdi-pencil" @click="() => $router.push(`/games/${game.id}/edit`)" />
-      <q-btn flat icon="mdi-delete" @click="() => $emit('delete', game.id)" />
+    <q-card-actions align="between">
+      <div>
+        <q-btn flat icon="mdi-qrcode" @click="toggleQR()" />
+        <q-btn flat icon="mdi-share" @click="nativeShare(game)" />
+        <q-btn v-if="game.link" flat icon="mdi-open-in-new" :href="game.link" target="_blank" />
+      </div>
+
+      <div>
+        <q-btn flat :icon="`mdi-calendar-clock${reserved ? '' : '-outline'}`" @click="toggleReserved()"
+          :color="reserved ? 'primary' : 'grey'" />
+        <q-btn flat :icon="`mdi-bookmark${bookmark ? '' : '-outline'}`" @click="toggleBookmark()"
+          :color="bookmark ? 'accent' : 'grey'" />
+        <q-btn flat :icon="`mdi-star${favorite ? '' : '-outline'}`" @click="toggleFavorite()"
+          :color="favorite ? 'secondary' : 'grey'" />
+      </div>
     </q-card-actions>
 
   </q-card>

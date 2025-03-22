@@ -19,7 +19,7 @@ const props = defineProps({
   },
   size: {
     type: Number,
-    default: 100,
+    default: 200,
   },
   showQR: {
     type: Boolean,
@@ -46,8 +46,16 @@ watch(() => dialogVisible.value, (newVal) => {
 </script>
 
 <template>
-  <q-dialog v-model="dialogVisible">
-    <qrcode-vue :value="`/games/${game.id}/${game.title}`" :size="size" level="H" class="qrcode-image" :margin="2"
-      :background="qrback" :foreground="primaryColor" />
+  <q-dialog v-model="dialogVisible" backdrop-filter="blur(4px) saturate(150%)">
+    <q-card flat>
+      <q-card-section align="center">
+        <div class="text-h6">{{ game.title }}</div>
+        <qrcode-vue :value="`/games/${game.id}/${game.title}`" :size="size" level="H" class="qrcode-image" :margin="2"
+          :background="qrback" :foreground="primaryColor" />
+      </q-card-section>
+      <q-card-actions align="center">
+        <q-btn class="full-width" label="Close" @click="dialogVisible = false" flat />
+      </q-card-actions>
+    </q-card>
   </q-dialog>
 </template>

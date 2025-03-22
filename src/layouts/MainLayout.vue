@@ -18,9 +18,11 @@ import RightDrawer from "src/components/RightDrawer.vue";
 
     <LeftDrawer />
     <RightDrawer />
-    <q-page-container>
 
-      <router-view />
+    <q-page-container>
+      <q-page class="q-pa-md full-height">
+        <router-view />
+      </q-page>
     </q-page-container>
   </q-layout>
 </template>
