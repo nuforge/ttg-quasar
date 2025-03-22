@@ -7,8 +7,8 @@ import type { Game } from 'src/models/Game';
 </script>
 
 <template>
-  <div class="text-h6 text-uppercase"><q-icon name="mdi-book multiple" /> {{ $t('game', 2) }}</div>
-  <div class="games-grid q-mt-sm">
+  <div class="text-h6 text-uppercase"><q-icon name="mdi-book-multiple" /> {{ $t('game', 2) }}</div>
+  <div class="games-grid q-mt-sm q-gutter-sm">
     <game-card v-for="game in games" :key="game.title" :game="(game as Game)" />
   </div>
 </template>
@@ -16,7 +16,7 @@ import type { Game } from 'src/models/Game';
 <style scoped>
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1rem;
 
 }

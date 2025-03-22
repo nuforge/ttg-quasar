@@ -6,7 +6,7 @@
     "numberOfPlayers": "2",
     "recommendedAge": "6+",
     "playTime": "30-60 minutes",
-    "components": ["Chessboard", "16 White Pieces", "16 Black Pieces"],
+    "components": ["Board", "Pieces"],
     "description": "A classic two-player strategy game where players compete to checkmate the opponent's king.",
     "image": "chess.webp",
     "link": "https://boardgamegeek.com/boardgame/171/chess"
@@ -18,13 +18,7 @@
     "numberOfPlayers": "2-4",
     "recommendedAge": "8+",
     "playTime": "45-60 minutes",
-    "components": [
-      "Game Board",
-      "Player Cards",
-      "Infection Cards",
-      "Disease Cubes",
-      "Player Pawns"
-    ],
+    "components": ["Board", "Cards", "Pieces"],
     "description": "A cooperative game where players work together to stop the spread of diseases and save the world.",
     "image": "pandemic.webp",
     "link": "https://boardgamegeek.com/boardgame/30549/pandemic"
@@ -36,7 +30,7 @@
     "numberOfPlayers": "2+",
     "recommendedAge": "12+",
     "playTime": "2-4 hours",
-    "components": ["Core Rulebook", "Character Sheets", "Dice Set", "Maps", "Miniatures"],
+    "components": ["Books", "Dice"],
     "description": "A role-playing game set in the Star Trek universe where players take on the roles of Starfleet officers exploring the galaxy in the era of the Federation.",
     "image": "star_trek_adventures.jpg",
     "link": "https://www.modiphius.net/collections/star-trek-adventures"
@@ -48,7 +42,7 @@
     "numberOfPlayers": "3+",
     "recommendedAge": "12+",
     "playTime": "Varies",
-    "components": ["Rulebooks", "Character Sheets", "Dice Set", "Miniatures", "Maps"],
+    "components": ["Books", "Dice"],
     "description": "A fantasy role-playing game where players create characters and embark on epic adventures guided by a Dungeon Master.",
     "image": "dungeons_dragons.jpg",
     "link": "https://dnd.wizards.com/"
@@ -60,14 +54,7 @@
     "numberOfPlayers": "3-4",
     "recommendedAge": "10+",
     "playTime": "60-120 minutes",
-    "components": [
-      "Game Board",
-      "Resource Cards",
-      "Development Cards",
-      "Settlements",
-      "Cities",
-      "Roads"
-    ],
+    "components": ["Board", "Cards", "Pieces"],
     "description": "A resource management game where players build settlements, trade resources, and compete for victory points.",
     "image": "catan.webp",
     "link": "https://boardgamegeek.com/boardgame/13/catan"
@@ -79,7 +66,7 @@
     "numberOfPlayers": "2-5",
     "recommendedAge": "8+",
     "playTime": "30-60 minutes",
-    "components": ["Game Board", "Train Cards", "Destination Tickets", "Train Pieces"],
+    "components": ["Board", "Cards", "Pieces"],
     "description": "A railway-themed board game where players collect cards to claim train routes and complete destination tickets.",
     "image": "ticket_to_ride.webp",
     "link": "https://boardgamegeek.com/boardgame/9209/ticket-ride"
@@ -89,9 +76,9 @@
     "title": "Carcassonne",
     "genre": "Tile Placement",
     "numberOfPlayers": "2-5",
-    "recommendedAge": "7+",
+    "recommendedAge": "8+",
     "playTime": "30-45 minutes",
-    "components": ["Land Tiles", "Meeples", "Scoreboard"],
+    "components": ["Board", "Pieces"],
     "description": "A tile-placement game where players build a medieval landscape and score points by claiming features like cities and roads.",
     "image": "carcassonne.webp",
     "link": "https://boardgamegeek.com/boardgame/822/carcassonne"
@@ -101,9 +88,9 @@
     "title": "Magic: The Gathering",
     "genre": "Collectible Card Game",
     "numberOfPlayers": "2+",
-    "recommendedAge": "13+",
+    "recommendedAge": "12+",
     "playTime": "20-40 minutes",
-    "components": ["Decks of Cards", "Life Counter", "Game Mat", "Tokens"],
+    "components": ["Cards"],
     "description": "A collectible card game where players assume the role of planeswalkers who cast spells, use artifacts, and summon creatures to defeat their opponents.",
     "image": "magic_the_gathering.webp",
     "link": "https://magic.wizards.com/"

@@ -8,7 +8,6 @@ export type IconMapping = {
   };
 };
 
-type PlayerRange = '1' | '2' | '3-5' | '6+';
 type Genre =
   | 'RPG'
   | 'CCG'
@@ -27,18 +26,20 @@ type AgeRange = '6+' | '7+' | '8+' | '10+' | '12+' | '13+';
 export const IconRules = {
   players: {
     '1': { icon: 'mdi-account', type: 'mdi' },
-    '2': { icon: 'mdi-account-multiple-outline', type: 'mdi' },
+    '2': { icon: 'mdi-account-multiple', type: 'mdi' },
+    '2+': { icon: 'mdi-account-multiple-outline', type: 'mdi' },
     '2-4': { icon: 'mdi-account-multiple', type: 'mdi' },
-    '2-5': { icon: 'mdi-account-group-outline', type: 'mdi' },
-    '3+': { icon: 'mdi-account-group', type: 'mdi' },
+    '2-5': { icon: 'mdi-account-multiple', type: 'mdi' },
+    '3': { icon: 'mdi-account-group', type: 'mdi' },
+    '3+': { icon: 'mdi-account-group-outline', type: 'mdi' },
     '3-4': { icon: 'mdi-account-group', type: 'mdi' },
     '3-5': { icon: 'mdi-account-group', type: 'mdi' },
-    '6+': { icon: 'mdi-account-supervisor', type: 'mdi' },
+    '6+': { icon: 'mdi-account-group-outline', type: 'mdi' },
   } as IconMapping,
 
   genres: {
     RPG: { icon: 'mdi-sword', type: 'mdi' },
-    'Role-Playing Game': { icon: 'mdi-sword', type: 'mdi' },
+    'Role-Playing Game': { icon: 'mdi-drama-masks', type: 'mdi' },
     CCG: { icon: 'mdi-cards', type: 'mdi' },
     'Collectible Card Game': { icon: 'mdi-cards', type: 'mdi' },
     Strategy: { icon: 'mdi-chess-knight', type: 'mdi' },
@@ -58,30 +59,20 @@ export const IconRules = {
   } as IconMapping,
 
   age: {
-    '6+': { icon: 'mdi-numeric-6-plus', type: 'mdi' },
-    '7+': { icon: 'mdi-numeric-7-plus', type: 'mdi' },
-    '8+': { icon: 'mdi-numeric-8-plus', type: 'mdi' },
-    '10+': { icon: 'mdi-numeric-10-plus', type: 'mdi' },
-    '12+': { icon: 'mdi-numeric-10-plus', type: 'mdi' },
-    '13+': { icon: 'mdi-numeric-10-plus', type: 'mdi' },
+    '3+': { icon: 'mdi-numeric-3', type: 'mdi' },
+    '6+': { icon: 'mdi-numeric-6', type: 'mdi' },
+    '8+': { icon: 'mdi-numeric-8', type: 'mdi' },
+    '10+': { icon: 'mdi-numeric-9-plus', type: 'mdi' },
+    '12+': { icon: 'mdi-numeric-9-plus', type: 'mdi' },
+    '18+': { icon: 'mdi-numeric-9-plus', type: 'mdi' },
   } as IconMapping,
 
   components: {
     Cards: { icon: 'mdi-cards', type: 'mdi' },
     Dice: { icon: 'mdi-dice-multiple', type: 'mdi' },
-    Board: { icon: 'mdi-tablet', type: 'mdi' },
-    'Game Board': { icon: 'mdi-tablet', type: 'mdi' },
-    Tiles: { icon: 'mdi-shape-square-plus', type: 'mdi' },
-    'Land Tiles': { icon: 'mdi-shape-square-plus', type: 'mdi' },
-    Miniatures: { icon: 'mdi-chess-pawn', type: 'mdi' },
-    Tokens: { icon: 'mdi-coin', type: 'mdi' },
-    Chessboard: { icon: 'mdi-chess-board', type: 'mdi' },
-    Pieces: { icon: 'mdi-chess-queen', type: 'mdi' },
-    Pawns: { icon: 'mdi-chess-pawn', type: 'mdi' },
-    Meeples: { icon: 'mdi-human', type: 'mdi' },
-    Rulebook: { icon: 'mdi-book-open-variant', type: 'mdi' },
-    'Core Rulebook': { icon: 'mdi-book-open-variant', type: 'mdi' },
-    Rulebooks: { icon: 'mdi-book-open-variant', type: 'mdi' },
+    Board: { icon: 'mdi-checkerboard', type: 'mdi' },
+    Pieces: { icon: 'mdi-chess-pawn', type: 'mdi' },
+    Books: { icon: 'mdi-book-open-page-variant', type: 'mdi' },
   } as IconMapping,
 };
 
@@ -97,16 +88,29 @@ export function getGameIcon(
 
 export function getCategoryForComponent(component: string): string | null {
   const lowerComponent = component.toLowerCase();
-  for (const [key] of Object.entries(IconRules.components)) {
+  const componentMap: Record<string, string> = {
+    card: 'Cards',
+    dice: 'Dice',
+    board: 'Board',
+    piece: 'Pieces',
+    pawn: 'Pieces',
+    miniature: 'Pieces',
+    token: 'Pieces',
+    meeple: 'Pieces',
+    book: 'Books',
+    rulebook: 'Books',
+  };
+
+  for (const [key, value] of Object.entries(componentMap)) {
     if (lowerComponent.includes(key.toLowerCase())) {
-      return key;
+      return value;
     }
   }
   return null;
 }
 
 // Utility type for component props
-export type GameIconName = PlayerRange | Genre | Mechanic | AgeRange;
+export type GameIconName = Genre | Mechanic | AgeRange;
 
 // Component implementation
 import { defineComponent, h } from 'vue';

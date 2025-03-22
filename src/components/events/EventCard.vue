@@ -33,7 +33,7 @@ const gameTitle = computed(() => {
 </script>
 
 <template>
-  <q-card class="event-card q-mb-xs" flat>
+  <q-card class="event-card " flat dark>
     <q-card-section class="q-pb-xs">
       <div class="row items-center justify-between">
         <div class="text-h6 ">{{ event.title }}</div>
@@ -44,19 +44,19 @@ const gameTitle = computed(() => {
     <q-card-section class="q-pt-none q-pb-xs">
       <div class="row items-center">
         <q-icon name="mdi-calendar" size="sm" class="q-mr-xs" />
-        <span class="text-subtitle2">{{ formattedDate }}</span>
+        <span>{{ formattedDate }}</span>
       </div>
       <div class="row items-center">
         <q-icon name="mdi-clock-outline" size="sm" class="q-mr-xs" />
-        <span class="text-subtitle2">{{ event.time }}</span>
+        <span>{{ event.time }}</span>
       </div>
       <div class="row items-center">
         <q-icon name="mdi-account-group" size="sm" class="q-mr-xs" />
-        <span class="text-subtitle2">{{ event.currentPlayers }} / {{ event.maxPlayers }} players</span>
+        <span>{{ event.currentPlayers }} / {{ event.maxPlayers }} players</span>
       </div>
       <div class="row items-center" v-if="gameTitle">
-        <q-icon name="mdi-gamepad-variant" size="sm" class="q-mr-xs" />
-        <span class="text-subtitle2">{{ gameTitle }}</span>
+        <q-icon name="mdi-book" size="sm" class="q-mr-xs" />
+        <span>{{ gameTitle }}</span>
       </div>
     </q-card-section>
 

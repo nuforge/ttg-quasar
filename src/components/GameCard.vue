@@ -3,7 +3,6 @@ import { ref, onMounted, computed } from 'vue';
 import type { Game } from 'src/models/Game';
 import QRCode from './qrcode/QRCode.vue';
 import GameIcon from './GameIcon.vue';
-import { getCategoryForComponent } from 'src/utils/game-icons';
 
 const imageSrc = '/images/games/';
 const showQRCode = ref(false);
@@ -28,7 +27,7 @@ const mainGameComponents = computed(() => {
   return props.game.components.slice(0, 3).map(component => {
     return {
       original: component,
-      category: getCategoryForComponent(component) || component
+      category: component  // Since we're now using standardized components, we can use them directly
     };
   });
 });
@@ -66,55 +65,58 @@ onMounted(() => {
 </script>
 
 <template>
-  <q-card flat class="game-card">
+  <q-card class="game-card" flat dark>
     <q-card-section>
       <router-link :to="`/games/${game.id}`" class="text-h6 text-uppercase no-underline">
         {{ game.title }}
       </router-link>
     </q-card-section>
-    <q-card-section class="row q-gutter-md justify-between">
-      <div class="col">
-        <q-img :src="`${imageSrc}${game.image}`" style=" max-width: 120px; max-height: 150px; width: 100%;" no-spinner
-          fit="scale-down" />
-      </div>
-      <div class="game-card-description col text-caption text-grey">
+    <q-card-section horizontal class=" q-gutter-sm q-px-md justify-between ">
+      <q-img :src="`${imageSrc}${game.image}`" style=" max-width: 100px; max-height: 150px; align-self: start;"
+        no-spinner fit="scale-down" />
+
+      <div class="game-card-description col text-body2 text-grey ">
         {{ game.description }}
       </div>
-      <div class="col-1 text-caption">
-        <!-- Game information icons with tooltips -->
-        <div class="game-info-icons">
-          <q-item dense class="q-pa-none q-my-xs">
-            <q-tooltip>Players: {{ game.numberOfPlayers }}</q-tooltip>
-            <GameIcon category="players" :value="game.numberOfPlayers" size="sm" class="q-mr-xs" />
+      <!-- Game information icons with tooltips -->
+      <div class="col-1 ">
+        <q-list dense class="text-grey-8 ">
+          <q-item>
+            <q-tooltip class="bg-primary text-black">Players: {{ game.numberOfPlayers }}</q-tooltip>
+            <GameIcon category="players" :value="game.numberOfPlayers" size="xs" class="text-grey-9" />
           </q-item>
 
-
-          <q-item dense class="q-pa-none q-my-xs">
-            <q-tooltip>Genre: {{ game.genre }}</q-tooltip>
-            <GameIcon category="genres" :value="game.genre" size="sm" class="q-mr-xs" />
+          <q-item>
+            <q-tooltip class="bg-secondary text-black">Age: {{ game.recommendedAge }}</q-tooltip>
+            <span class="font-aldrich text-grey-9 text-bold non-selectable	">{{ game.recommendedAge }}</span>
           </q-item>
 
-          <q-item v-for="(component, index) in mainGameComponents" :key="index" dense class="q-pa-none q-my-xs">
-            <q-tooltip>Component: {{ component.original }}</q-tooltip>
-            <GameIcon category="components" :value="component.category" size="sm" class="q-mr-xs" />
+          <q-item>
+            <q-tooltip class="bg-accent text-black">Genre: {{ game.genre }}</q-tooltip>
+            <GameIcon category="genres" :value="game.genre" size="xs" class="text-grey-9" />
           </q-item>
-        </div>
+
+          <q-item v-for="(component, index) in mainGameComponents" :key="index">
+            <q-tooltip class="bg-info text-black">{{ component.original }}</q-tooltip>
+            <GameIcon category="components" :value="component.category" size="xs" class="text-grey-9" />
+          </q-item>
+        </q-list>
       </div>
     </q-card-section>
-    <q-card-actions align="between">
+    <q-card-actions align="between" class="text-grey-6">
       <div>
-        <q-btn flat icon="mdi-qrcode" @click="toggleQR()" />
-        <q-btn flat icon="mdi-share" @click="nativeShare(game)" />
-        <q-btn v-if="game.link" flat icon="mdi-open-in-new" :href="game.link" target="_blank" />
+        <q-btn flat icon="mdi-qrcode" @click="toggleQR()" size="md" />
+        <q-btn flat icon="mdi-share" @click="nativeShare(game)" size="sm" />
+        <q-btn v-if="game.link" flat icon="mdi-open-in-new" :href="game.link" target="_blank" size="sm" />
       </div>
 
       <div>
         <q-btn flat :icon="`mdi-calendar-clock${reserved ? '' : '-outline'}`" @click="toggleReserved()"
-          :color="reserved ? 'primary' : 'grey'" />
+          :color="reserved ? 'primary' : ''" size="md" />
         <q-btn flat :icon="`mdi-bookmark${bookmark ? '' : '-outline'}`" @click="toggleBookmark()"
-          :color="bookmark ? 'accent' : 'grey'" />
+          :color="bookmark ? 'accent' : ''" size="md" />
         <q-btn flat :icon="`mdi-star${favorite ? '' : '-outline'}`" @click="toggleFavorite()"
-          :color="favorite ? 'secondary' : 'grey'" />
+          :color="favorite ? 'secondary' : ''" size="md" />
       </div>
     </q-card-actions>
     <QRCode :game="game" v-model:showQR="showQRCode" />
@@ -125,11 +127,11 @@ onMounted(() => {
 <style scoped>
 .game-card {
   align-self: start;
+  border-top: 2px solid grey;
 }
 
 .game-card-description {
-  max-width: 300px;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .game-info-icons {
