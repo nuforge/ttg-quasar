@@ -126,9 +126,7 @@ onMounted(() => {
 
 <style scoped>
 .game-card {
-  align-self: start;
   border-top: 2px solid var(--q-dark);
-  border-bottom: 2px solid var(--q-dark);
 }
 
 .game-card-description {
