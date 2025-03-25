@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import games from 'src/assets/data/games.json';
 import type { Event } from 'src/models/Event';
 import { useCalendarStore } from 'src/stores/calendar-store';
+import { usePlayersStore } from 'src/stores/players-store';
+import type { Player } from 'src/models/Player';
 import EventQRCode from 'src/components/qrcode/EventQRCode.vue';
+import PlayerAvatar from 'src/components/PlayerAvatar.vue';
 
 defineOptions({
   name: 'EventCard',
@@ -18,6 +21,26 @@ const props = defineProps({
 
 // QR code state
 const showQRCode = ref(false);
+// Player dialog state
+const showPlayersDialog = ref(false);
+
+// Players store
+const playersStore = usePlayersStore();
+const attendingPlayers = ref<Player[]>([]);
+
+// Fetch players on mount
+onMounted(async () => {
+  if (playersStore.players.length === 0) {
+    await playersStore.fetchPlayers();
+  }
+});
+
+// Get players for this event
+const getEventPlayers = () => {
+  const playerIds = props.event.getPlayerIds();
+  attendingPlayers.value = playersStore.getPlayersByIds(playerIds);
+  showPlayersDialog.value = true;
+};
 
 // Toggle QR code dialog visibility
 const toggleQR = () => {
@@ -110,7 +133,7 @@ const selectEventDate = () => {
             <q-item-label caption>{{ timeDisplay }}</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item>
+        <q-item clickable @click="getEventPlayers">
           <q-item-section avatar>
             <q-icon name="mdi-account-group" :color="statusColor" size="xs">
             </q-icon>
@@ -138,5 +161,38 @@ const selectEventDate = () => {
 
     <!-- Add the EventQRCode component -->
     <EventQRCode :event="event" v-model:showQR="showQRCode" />
+
+    <!-- Players Dialog -->
+    <q-dialog v-model="showPlayersDialog" persistent>
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">{{ $t('player', 2) }} ({{ attendingPlayers.length }})</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-list>
+            <q-item v-for="player in attendingPlayers" :key="player.id">
+              <q-item-section avatar>
+                <PlayerAvatar :player="player" size="40px" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ player.name }}</q-item-label>
+                <q-item-label caption>{{ player.email }}</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item v-if="attendingPlayers.length === 0">
+              <q-item-section>
+                <q-item-label>No players registered yet.</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Close" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-card>
 </template>

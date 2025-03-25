@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import games from 'src/assets/data/games.json';
 import type { Event } from 'src/models/Event';
-import GameIcon from '../GameIcon.vue';  // Add GameIcon import
+import { usePlayersStore } from 'src/stores/players-store';
+import type { Player } from 'src/models/Player';
+import GameIcon from '../GameIcon.vue';
 
 defineOptions({
   name: 'EventCard',
@@ -14,6 +16,25 @@ const props = defineProps({
     required: true
   }
 });
+
+// Players store and dialog
+const playersStore = usePlayersStore();
+const showPlayersDialog = ref(false);
+const attendingPlayers = ref<Player[]>([]);
+
+// Fetch players on mount
+onMounted(async () => {
+  if (playersStore.players.length === 0) {
+    await playersStore.fetchPlayers();
+  }
+});
+
+// Get players for this event
+const getEventPlayers = () => {
+  const playerIds = props.event.getPlayerIds();
+  attendingPlayers.value = playersStore.getPlayersByIds(playerIds);
+  showPlayersDialog.value = true;
+};
 
 const formattedDate = computed(() => {
   return props.event.getFormattedDate();
@@ -109,7 +130,7 @@ const mainGameComponents = computed(() => {
           <q-icon name="mdi-clock-outline" size="sm" class="q-mr-xs" />
           <span>{{ timeDisplay }}</span>
         </div>
-        <div class="row items-center">
+        <div class="row items-center" @click="getEventPlayers" style="cursor: pointer;">
           <q-icon name="mdi-account-group" size="sm" class="q-mr-xs" />
           <span>{{ event.currentPlayers }} / {{ event.maxPlayers }} players</span>
         </div>
@@ -124,6 +145,43 @@ const mainGameComponents = computed(() => {
       <!-- Replace text buttons with icon buttons -->
       <q-btn flat icon="mdi-information-outline" />
       <q-btn flat :disabled="isEventFull" icon="mdi-calendar-check" />
+      <q-btn flat icon="mdi-account-group" @click="getEventPlayers" />
     </q-card-actions>
+
+    <!-- Players Dialog -->
+    <q-dialog v-model="showPlayersDialog">
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">{{ $t('player', 2) }} ({{ attendingPlayers.length }})</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-list>
+            <q-item v-for="player in attendingPlayers" :key="player.id">
+              <q-item-section avatar>
+                <q-avatar>
+                  <img v-if="player.avatar" :src="`/images/avatars/${player.avatar}`" />
+                  <div v-else class="bg-primary text-black flex flex-center">{{ player.getInitials() }}</div>
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{ player.name }}</q-item-label>
+                <q-item-label caption>{{ player.email }}</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item v-if="attendingPlayers.length === 0">
+              <q-item-section>
+                <q-item-label>No players registered yet.</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Close" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-card>
 </template>

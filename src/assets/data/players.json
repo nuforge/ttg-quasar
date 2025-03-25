@@ -1,0 +1,123 @@
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "avatar": "john.jpg",
+    "joinDate": "2023-01-15",
+    "bio": "Avid board game collector and RPG enthusiast.",
+    "preferences": {
+      "favoriteGames": [3, 4],
+      "preferredGenres": ["Role-Playing Game", "Strategy"]
+    }
+  },
+  {
+    "id": 2,
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "avatar": "jane.jpg",
+    "joinDate": "2023-02-20",
+    "bio": "Competitive chess player and strategy game lover.",
+    "preferences": {
+      "favoriteGames": [1, 4],
+      "preferredGenres": ["Classic Strategy", "Family Strategy"]
+    }
+  },
+  {
+    "id": 3,
+    "name": "Mike Johnson",
+    "email": "mike@example.com",
+    "joinDate": "2023-03-10",
+    "bio": "New to tabletop gaming but eager to learn!",
+    "preferences": {
+      "favoriteGames": [5, 6],
+      "preferredGenres": ["Family Strategy", "Tile Placement"]
+    }
+  },
+  {
+    "id": 4,
+    "name": "Sarah Williams",
+    "email": "sarah@example.com",
+    "avatar": "sarah.jpg",
+    "joinDate": "2023-02-05",
+    "bio": "D&D Dungeon Master with 5 years of experience.",
+    "preferences": {
+      "favoriteGames": [3],
+      "preferredGenres": ["Role-Playing Game"]
+    }
+  },
+  {
+    "id": 5,
+    "name": "Robert Chen",
+    "email": "robert@example.com",
+    "joinDate": "2023-04-12",
+    "preferences": {
+      "favoriteGames": [2, 8],
+      "preferredGenres": ["Cooperative Strategy", "Collectible Card Game"]
+    }
+  },
+  {
+    "id": 6,
+    "name": "Emily Clark",
+    "email": "emily@example.com",
+    "avatar": "emily.jpg",
+    "joinDate": "2023-01-30",
+    "bio": "Loves cooperative games and storytelling.",
+    "preferences": {
+      "favoriteGames": [2, 3],
+      "preferredGenres": ["Cooperative Strategy", "Role-Playing Game"]
+    }
+  },
+  {
+    "id": 7,
+    "name": "David Kim",
+    "email": "david@example.com",
+    "joinDate": "2023-03-22",
+    "preferences": {
+      "favoriteGames": [1],
+      "preferredGenres": ["Classic Strategy"]
+    }
+  },
+  {
+    "id": 8,
+    "name": "Lisa Wong",
+    "email": "lisa@example.com",
+    "joinDate": "2023-02-18",
+    "bio": "Tournament chess player and strategy game enthusiast.",
+    "preferences": {
+      "favoriteGames": [1, 4],
+      "preferredGenres": ["Classic Strategy", "Family Strategy"]
+    }
+  },
+  {
+    "id": 9,
+    "name": "James Miller",
+    "email": "james@example.com",
+    "joinDate": "2023-04-05"
+  },
+  {
+    "id": 10,
+    "name": "Alex Johnson",
+    "email": "alex@example.com",
+    "avatar": "alex.jpg",
+    "joinDate": "2023-01-10",
+    "bio": "Organizes weekly game nights. Loves resource management games."
+  },
+  {
+    "id": 11,
+    "name": "Maria Garcia",
+    "email": "maria@example.com",
+    "joinDate": "2023-03-15",
+    "preferences": {
+      "favoriteGames": [4, 6],
+      "preferredGenres": ["Family Strategy", "Tile Placement"]
+    }
+  },
+  {
+    "id": 12,
+    "name": "Sam Taylor",
+    "email": "sam@example.com",
+    "joinDate": "2023-02-28",
+    "bio": "Board game collector with over 200 games."
+  }
+]

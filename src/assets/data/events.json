@@ -13,23 +13,19 @@
     "currentPlayers": 4,
     "rsvps": [
       {
-        "name": "John Doe",
-        "email": "john@example.com",
+        "playerId": 1,
         "status": "confirmed"
       },
       {
-        "name": "Jane Smith",
-        "email": "jane@example.com",
+        "playerId": 2,
         "status": "confirmed"
       },
       {
-        "name": "Mike Johnson",
-        "email": "mike@example.com",
+        "playerId": 3,
         "status": "confirmed"
       },
       {
-        "name": "Sarah Williams",
-        "email": "sarah@example.com",
+        "playerId": 4,
         "status": "confirmed"
       }
     ],
@@ -55,13 +51,11 @@
     "currentPlayers": 2,
     "rsvps": [
       {
-        "name": "Robert Chen",
-        "email": "robert@example.com",
+        "playerId": 5,
         "status": "confirmed"
       },
       {
-        "name": "Emily Clark",
-        "email": "emily@example.com",
+        "playerId": 6,
         "status": "confirmed"
       }
     ],
@@ -84,21 +78,18 @@
     "status": "upcoming",
     "minPlayers": 8,
     "maxPlayers": 32,
-    "currentPlayers": 12,
+    "currentPlayers": 3,
     "rsvps": [
       {
-        "name": "David Kim",
-        "email": "david@example.com",
+        "playerId": 7,
         "status": "confirmed"
       },
       {
-        "name": "Lisa Wong",
-        "email": "lisa@example.com",
+        "playerId": 8,
         "status": "confirmed"
       },
       {
-        "name": "James Miller",
-        "email": "james@example.com",
+        "playerId": 9,
         "status": "waiting"
       }
     ],
@@ -124,18 +115,15 @@
     "currentPlayers": 3,
     "rsvps": [
       {
-        "name": "Alex Johnson",
-        "email": "alex@example.com",
+        "playerId": 10,
         "status": "confirmed"
       },
       {
-        "name": "Maria Garcia",
-        "email": "maria@example.com",
+        "playerId": 11,
         "status": "confirmed"
       },
       {
-        "name": "Sam Taylor",
-        "email": "sam@example.com",
+        "playerId": 12,
         "status": "confirmed"
       }
     ],
@@ -163,7 +151,8 @@
     "host": {
       "name": "Captain Mark",
       "email": "mark@example.com",
-      "phone": "555-321-6789"
+      "phone": "555-321-6789",
+      "playerId": 3
     },
     "description": "Starting a new Star Trek Adventures campaign. Create your Starfleet officer and join the crew of the USS Horizon.",
     "notes": "Character creation will be part of the first session. Core rulebook provided."
@@ -182,14 +171,12 @@
     "currentPlayers": 5,
     "rsvps": [
       {
-        "name": "The Johnson Family",
-        "email": "johnson@example.com",
+        "playerId": 1,
         "status": "confirmed",
         "participants": 3
       },
       {
-        "name": "The Miller Family",
-        "email": "miller@example.com",
+        "playerId": 4,
         "status": "confirmed",
         "participants": 2
       }
@@ -216,25 +203,23 @@
     "currentPlayers": 3,
     "rsvps": [
       {
-        "name": "Nicole Adams",
-        "email": "nicole@example.com",
+        "playerId": 6,
         "status": "confirmed"
       },
       {
-        "name": "Brian White",
-        "email": "brian@example.com",
+        "playerId": 9,
         "status": "confirmed"
       },
       {
-        "name": "Jessica Thompson",
-        "email": "jessica@example.com",
+        "playerId": 11,
         "status": "confirmed"
       }
     ],
     "host": {
       "name": "Teacher Tim",
       "email": "tim@example.com",
-      "phone": "555-876-5432"
+      "phone": "555-876-5432",
+      "playerId": 10
     },
     "description": "Learn to play Carcassonne! This session is perfect for beginners who want to understand the rules and basic strategies.",
     "notes": "All materials provided. No experience necessary."
@@ -253,23 +238,19 @@
     "currentPlayers": 4,
     "rsvps": [
       {
-        "name": "Kevin Moore",
-        "email": "kevin@example.com",
+        "playerId": 2,
         "status": "confirmed"
       },
       {
-        "name": "Rachel Green",
-        "email": "rachel@example.com",
+        "playerId": 6,
         "status": "confirmed"
       },
       {
-        "name": "Peter Jackson",
-        "email": "peter@example.com",
+        "playerId": 8,
         "status": "confirmed"
       },
       {
-        "name": "Amanda Lee",
-        "email": "amanda@example.com",
+        "playerId": 12,
         "status": "confirmed"
       }
     ],
@@ -295,13 +276,11 @@
     "currentPlayers": 2,
     "rsvps": [
       {
-        "name": "Michelle Davis",
-        "email": "michelle@example.com",
+        "playerId": 5,
         "status": "confirmed"
       },
       {
-        "name": "Ryan Phillips",
-        "email": "ryan@example.com",
+        "playerId": 7,
         "status": "confirmed"
       }
     ],
@@ -325,11 +304,17 @@
     "minPlayers": 2,
     "maxPlayers": 30,
     "currentPlayers": 15,
-    "rsvps": [],
+    "rsvps": [
+      { "playerId": 1, "status": "confirmed" },
+      { "playerId": 2, "status": "confirmed" },
+      { "playerId": 7, "status": "confirmed" },
+      { "playerId": 8, "status": "confirmed" }
+    ],
     "host": {
       "name": "Chess Club President",
       "email": "president@chessclubemail.com",
-      "phone": "555-123-7890"
+      "phone": "555-123-7890",
+      "playerId": 7
     },
     "description": "Weekly chess club meeting. All skill levels welcome.",
     "notes": "Bring your own board if possible, but we have extras."

@@ -1,6 +1,5 @@
 export interface RSVP {
-  name: string;
-  email: string;
+  playerId: number;
   status: 'confirmed' | 'waiting' | 'cancelled';
   participants?: number;
 }
@@ -9,6 +8,7 @@ export interface Host {
   name: string;
   email: string;
   phone: string;
+  playerId?: number; // Optional reference to a player ID
 }
 
 export type EventStatus = 'upcoming' | 'completed' | 'cancelled';
@@ -75,6 +75,11 @@ export class Event {
 
   isUpcoming(): boolean {
     return this.status === 'upcoming' && this.getDateObject() >= new Date();
+  }
+
+  // Get player IDs from RSVPs
+  getPlayerIds(): number[] {
+    return this.rsvps.filter((rsvp) => rsvp.status === 'confirmed').map((rsvp) => rsvp.playerId);
   }
 
   // Class method to convert raw JSON data to Event objects
