@@ -19,6 +19,7 @@ export class Event {
   title: string;
   date: string;
   time: string;
+  endTime: string; // Added end time property
   location: string;
   status: EventStatus;
   minPlayers: number;
@@ -35,6 +36,7 @@ export class Event {
     this.title = eventData.title || '';
     this.date = eventData.date || '';
     this.time = eventData.time || '';
+    this.endTime = eventData.endTime || ''; // Initialize end time
     this.location = eventData.location || '';
     this.status = eventData.status || 'upcoming';
     this.minPlayers = eventData.minPlayers || 1;
@@ -52,7 +54,14 @@ export class Event {
     const [year, month, day] = this.date.split('-').map(Number) as [number, number, number];
     // Create date using local timezone (month is 0-indexed in JS Date)
     const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString();
+
+    // Format the date as "Day, Month Date"
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    };
+    return date.toLocaleDateString(undefined, options);
   }
 
   getDateObject(): Date {

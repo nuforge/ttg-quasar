@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import games from 'src/assets/data/games.json';
 import type { Event } from 'src/models/Event';
+import GameIcon from '../GameIcon.vue';  // Add GameIcon import
 
 defineOptions({
   name: 'EventCard',
@@ -26,9 +27,41 @@ const isEventFull = computed(() => {
   return props.event.isFull();
 });
 
-const gameTitle = computed(() => {
-  const game = games.find(g => g.id === props.event.gameId);
-  return game ? game.title : null;
+// Replace gameTitle with full game object
+const game = computed(() => {
+  return games.find(g => g.id === props.event.gameId) || null;
+});
+
+// Simple time formatter that converts 24h to 12h format
+const formatTo12Hour = (timeStr: string): string => {
+  if (!timeStr) return '';
+
+  const [hours, minutes] = timeStr.split(':');
+  if (!hours || !minutes) return '';
+
+  const hour = parseInt(hours);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+
+  return minutes === '00' ? `${hour12}${ampm}` : `${hour12}:${minutes}${ampm}`;
+};
+
+const timeDisplay = computed(() => {
+  if (props.event.endTime) {
+    return `${formatTo12Hour(props.event.time)} - ${formatTo12Hour(props.event.endTime)}`;
+  }
+  return formatTo12Hour(props.event.time);
+});
+
+// Add mainGameComponents computed property
+const mainGameComponents = computed(() => {
+  if (!game.value || !game.value.components || !Array.isArray(game.value.components)) return [];
+  return game.value.components.slice(0, 3).map(component => {
+    return {
+      original: component,
+      category: component
+    };
+  });
 });
 </script>
 
@@ -41,33 +74,56 @@ const gameTitle = computed(() => {
       </div>
     </q-card-section>
 
-    <q-card-section class="q-pt-none q-pb-xs text-grey-5 row">
-      <div class="col text-body2 text-grey ">
+    <!-- Game information icons with tooltips -->
+    <div class="col-1" v-if="game">
+      <q-list dense class="text-grey-8">
+        <q-item>
+          <q-tooltip class="bg-primary text-black">Players: {{ game.numberOfPlayers }}</q-tooltip>
+          <GameIcon category="players" :value="game.numberOfPlayers" size="xs" class="text-grey-9" />
+        </q-item>
+
+        <q-item>
+          <q-tooltip class="bg-secondary text-black">Age: {{ game.recommendedAge }}</q-tooltip>
+          <span class="font-aldrich text-grey-9 text-bold non-selectable">{{ game.recommendedAge }}</span>
+        </q-item>
+
+        <q-item>
+          <q-tooltip class="bg-accent text-black">Genre: {{ game.genre }}</q-tooltip>
+          <GameIcon category="genres" :value="game.genre" size="xs" class="text-grey-9" />
+        </q-item>
+
+        <q-item v-for="(component, index) in mainGameComponents" :key="index">
+          <q-tooltip class="bg-info text-black">{{ component.original }}</q-tooltip>
+          <GameIcon category="components" :value="component.category" size="xs" class="text-grey-9" />
+        </q-item>
+      </q-list>
+    </div>
+    <q-card-section class="text-grey-5 ">
+      <div class=" text-body2">
         {{ event.description }}
-      </div>
-      <div class="col">
         <div class="row items-center">
           <q-icon name="mdi-calendar" size="sm" class="q-mr-xs" />
           <span>{{ formattedDate }}</span>
         </div>
         <div class="row items-center">
           <q-icon name="mdi-clock-outline" size="sm" class="q-mr-xs" />
-          <span>{{ event.time }}</span>
+          <span>{{ timeDisplay }}</span>
         </div>
         <div class="row items-center">
           <q-icon name="mdi-account-group" size="sm" class="q-mr-xs" />
           <span>{{ event.currentPlayers }} / {{ event.maxPlayers }} players</span>
         </div>
-        <div class="row items-center" v-if="gameTitle">
+        <div class="row items-center" v-if="game">
           <q-icon name="mdi-dice-multiple" size="sm" class="q-mr-xs" />
-          <span>{{ gameTitle }}</span>
+          <span>{{ game.title }}</span>
         </div>
       </div>
     </q-card-section>
 
     <q-card-actions>
-      <q-btn flat label="Details" />
-      <q-btn flat :disabled="isEventFull" label="RSVP" />
+      <!-- Replace text buttons with icon buttons -->
+      <q-btn flat icon="mdi-information-outline" />
+      <q-btn flat :disabled="isEventFull" icon="mdi-calendar-check" />
     </q-card-actions>
   </q-card>
 </template>
