@@ -3,7 +3,8 @@ import { ref, onMounted, computed } from 'vue';
 import { usePlayersStore } from 'src/stores/players-store';
 import { useEventsStore } from 'src/stores/events-store';
 import type { Player } from 'src/models/Player';
-import PlayerAvatar from 'src/components/PlayerAvatar.vue';
+import PlayerCard from 'src/components/players/PlayerCard.vue';
+import PlayerDetails from 'src/components/players/PlayerDetails.vue';
 
 // Stores
 const playersStore = usePlayersStore();
@@ -75,29 +76,7 @@ const showDetails = (player: Player) => {
       <!-- Players grid -->
       <div class="row q-col-gutter-md q-mt-md">
         <div v-for="player in filteredPlayers" :key="player.id" class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-          <q-card class="player-card" clickable @click="showDetails(player)">
-            <q-card-section class="row items-center">
-              <PlayerAvatar :player="player" size="64px" class="q-mr-md" />
-
-              <div>
-                <div class="text-h6">{{ player.name }}</div>
-                <div class="text-subtitle2">{{ player.email }}</div>
-              </div>
-            </q-card-section>
-
-            <q-card-section v-if="player.bio" class="q-pt-none">
-              <q-item-label caption>{{ player.bio }}</q-item-label>
-            </q-card-section>
-
-            <q-card-section class="q-pt-none">
-              <q-badge color="primary" class="q-mr-xs">
-                {{ getPlayerEvents(player).length }} {{ $t('event', getPlayerEvents(player).length) }}
-              </q-badge>
-              <q-badge v-if="player.preferences?.favoriteGames?.length" color="secondary" class="q-mr-xs">
-                {{ player.preferences.favoriteGames.length }} games
-              </q-badge>
-            </q-card-section>
-          </q-card>
+          <PlayerCard :player="player" :player-events="getPlayerEvents(player)" @show-details="showDetails" />
         </div>
       </div>
 
@@ -110,63 +89,15 @@ const showDetails = (player: Player) => {
 
     <!-- Player details dialog -->
     <q-dialog v-model="showPlayerDetails" persistent>
-      <q-card v-if="selectedPlayer" style="min-width: 350px; max-width: 600px;">
-        <q-card-section>
-          <div class="text-h6">{{ selectedPlayer.name }}</div>
-        </q-card-section>
-
-        <q-card-section class="row items-center q-pb-none">
-          <PlayerAvatar :player="selectedPlayer" size="72px" class="q-mr-md" />
-
-          <div>
-            <div class="text-subtitle1">{{ selectedPlayer.email }}</div>
-            <div class="text-caption">Joined: {{ selectedPlayer.joinDate }}</div>
-          </div>
-        </q-card-section>
-
-        <q-card-section v-if="selectedPlayer.bio" class="q-pb-none">
-          <div class="text-subtitle2">Bio</div>
-          <p>{{ selectedPlayer.bio }}</p>
-        </q-card-section>
-
-        <q-card-section>
-          <div class="text-subtitle2">{{ $t('event', 2) }}</div>
-          <q-list dense>
-            <q-item v-for="event in getPlayerEvents(selectedPlayer)" :key="event.id" clickable
-              :to="`/events/${event.id}`">
-              <q-item-section>
-                <q-item-label>{{ event.title }}</q-item-label>
-                <q-item-label caption>{{ event.getFormattedDate() }}</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-badge :color="event.status === 'upcoming' ? 'green' : 'grey'">
-                  {{ event.status }}
-                </q-badge>
-              </q-item-section>
-            </q-item>
-            <q-item v-if="getPlayerEvents(selectedPlayer).length === 0">
-              <q-item-section>
-                <q-item-label class="text-italic">No events</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
-
-        <q-card-actions align="right">
+      <PlayerDetails v-if="selectedPlayer" :player="selectedPlayer" :player-events="getPlayerEvents(selectedPlayer)">
+        <template v-slot:actions>
           <q-btn flat label="Close" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
+        </template>
+      </PlayerDetails>
     </q-dialog>
   </div>
 </template>
 
 <style scoped>
-.player-card {
-  height: 100%;
-  transition: transform 0.2s;
-}
-
-.player-card:hover {
-  transform: translateY(-4px);
-}
+/* Styles moved to PlayerCard component */
 </style>

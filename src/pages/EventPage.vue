@@ -6,6 +6,8 @@ import { usePlayersStore } from 'src/stores/players-store';
 import type { Event } from 'src/models/Event';
 import type { Player } from 'src/models/Player';
 import games from 'src/assets/data/games.json';
+import PlayerDetails from 'src/components/players/PlayerDetails.vue';
+import PlayerAvatar from 'src/components/PlayerAvatar.vue';
 
 const route = useRoute();
 const eventsStore = useEventsStore();
@@ -13,6 +15,8 @@ const playersStore = usePlayersStore();
 const eventId = ref(route.params.id ? route.params.id.toString().split('/')[0] : '');
 const event = ref<Event | null>(null);
 const loading = ref(true);
+const selectedPlayer = ref<Player | null>(null);
+const showPlayerDetailsDialog = ref(false);
 
 // Get game details for this event
 const game = computed(() => {
@@ -46,6 +50,21 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+// Show player details
+const showPlayerDetails = (player: Player) => {
+  selectedPlayer.value = player;
+  showPlayerDetailsDialog.value = true;
+};
+
+// Get events for a specific player
+const getPlayerEvents = (player: Player) => {
+  return eventsStore.events.filter(event =>
+    event.rsvps.some(rsvp =>
+      rsvp.playerId === player.id && rsvp.status === 'confirmed'
+    )
+  );
+};
 </script>
 
 <template>
@@ -163,12 +182,9 @@ onMounted(async () => {
               <q-card-section>
                 <div class="text-h6">Players ({{ eventPlayers.length }})</div>
                 <q-list dense>
-                  <q-item v-for="player in eventPlayers" :key="player.id">
+                  <q-item v-for="player in eventPlayers" :key="player.id" @click="showPlayerDetails(player)" clickable>
                     <q-item-section avatar>
-                      <q-avatar>
-                        <img v-if="player.avatar" :src="`/images/avatars/${player.avatar}`" />
-                        <div v-else class="bg-primary text-black flex flex-center">{{ player.getInitials() }}</div>
-                      </q-avatar>
+                      <PlayerAvatar :player="player" size="40px" />
                     </q-item-section>
                     <q-item-section>{{ player.name }}</q-item-section>
                   </q-item>
@@ -195,10 +211,19 @@ onMounted(async () => {
           </div>
         </div>
       </div>
-
       <div v-else class="text-h5 text-center q-pa-xl">
         Event not found
       </div>
     </div>
+
+    <!-- Player details dialog -->
+    <q-dialog v-model="showPlayerDetailsDialog" persistent>
+      <PlayerDetails v-if="selectedPlayer" :player="selectedPlayer" :player-events="getPlayerEvents(selectedPlayer)"
+        @close="showPlayerDetailsDialog = false">
+        <template v-slot:actions>
+          <q-btn flat label="Close" color="primary" v-close-popup />
+        </template>
+      </PlayerDetails>
+    </q-dialog>
   </q-page>
 </template>
