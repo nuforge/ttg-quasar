@@ -18,11 +18,10 @@ defineProps({
   <q-list>
     <q-item v-for="player in players" :key="player.id">
       <q-item-section avatar>
-        <PlayerAvatar :player="player" size="40px" />
+        <PlayerAvatar :player="player" size="32px" />
       </q-item-section>
       <q-item-section>
         <q-item-label>{{ player.name }}</q-item-label>
-        <q-item-label caption>{{ player.email }}</q-item-label>
       </q-item-section>
     </q-item>
 

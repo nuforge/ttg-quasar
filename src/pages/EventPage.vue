@@ -7,7 +7,7 @@ import type { Event } from 'src/models/Event';
 import type { Player } from 'src/models/Player';
 import games from 'src/assets/data/games.json';
 import PlayerDetails from 'src/components/players/PlayerDetails.vue';
-import PlayerAvatar from 'src/components/PlayerAvatar.vue';
+import PlayersList from 'src/components/players/PlayersList.vue';
 
 const route = useRoute();
 const eventsStore = useEventsStore();
@@ -181,20 +181,7 @@ const getPlayerEvents = (player: Player) => {
             <q-card flat class="q-mb-md">
               <q-card-section>
                 <div class="text-h6">Players ({{ eventPlayers.length }})</div>
-                <q-list dense>
-                  <q-item v-for="player in eventPlayers" :key="player.id" @click="showPlayerDetails(player)" clickable>
-                    <q-item-section avatar>
-                      <PlayerAvatar :player="player" size="40px" />
-                    </q-item-section>
-                    <q-item-section>{{ player.name }}</q-item-section>
-                  </q-item>
-
-                  <q-item v-if="eventPlayers.length === 0">
-                    <q-item-section>
-                      <q-item-label>No players registered yet.</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
+                <PlayersList :players="eventPlayers" @show-player="showPlayerDetails" />
               </q-card-section>
 
               <q-card-section v-if="event.currentPlayers < event.maxPlayers">

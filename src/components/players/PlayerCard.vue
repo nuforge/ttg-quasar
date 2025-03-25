@@ -27,10 +27,9 @@ const showDetails = () => {
 <template>
   <q-card class="player-card" clickable @click="showDetails" flat>
     <q-card-section class="row items-center">
-      <PlayerAvatar :player="player" size="64px" class="q-mr-md" />
+      <PlayerAvatar :player="player" size="32px" class="q-mr-md" />
       <div>
         <div class="text-h6">{{ player.name }}</div>
-        <div class="text-subtitle2">{{ player.email }}</div>
       </div>
     </q-card-section>
 
