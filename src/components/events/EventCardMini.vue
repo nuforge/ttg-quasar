@@ -6,7 +6,7 @@ import { useCalendarStore } from 'src/stores/calendar-store';
 import { usePlayersStore } from 'src/stores/players-store';
 import type { Player } from 'src/models/Player';
 import EventQRCode from 'src/components/qrcode/EventQRCode.vue';
-import PlayerAvatar from 'src/components/PlayerAvatar.vue';
+import PlayerListDialog from 'src/components/players/PlayerListDialog.vue';
 
 defineOptions({
   name: 'EventCard',
@@ -162,37 +162,7 @@ const selectEventDate = () => {
     <!-- Add the EventQRCode component -->
     <EventQRCode :event="event" v-model:showQR="showQRCode" />
 
-    <!-- Players Dialog -->
-    <q-dialog v-model="showPlayersDialog" persistent>
-      <q-card style="min-width: 350px">
-        <q-card-section>
-          <div class="text-h6">{{ $t('player', 2) }} ({{ attendingPlayers.length }})</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-list>
-            <q-item v-for="player in attendingPlayers" :key="player.id">
-              <q-item-section avatar>
-                <PlayerAvatar :player="player" size="40px" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ player.name }}</q-item-label>
-                <q-item-label caption>{{ player.email }}</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item v-if="attendingPlayers.length === 0">
-              <q-item-section>
-                <q-item-label>No players registered yet.</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="Close" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <!-- Players Dialog - replaced with reusable component -->
+    <PlayerListDialog :players="attendingPlayers" v-model:visible="showPlayersDialog" :title="$t('player', 2)" />
   </q-card>
 </template>
