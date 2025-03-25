@@ -3,6 +3,7 @@ import { computed, ref, onMounted } from 'vue';
 import games from 'src/assets/data/games.json';
 import type { Event } from 'src/models/Event';
 import { usePlayersStore } from 'src/stores/players-store';
+import { useCalendarStore } from 'src/stores/calendar-store';
 import type { Player } from 'src/models/Player';
 import GameIcon from '../GameIcon.vue';
 import PlayerListDialog from 'src/components/players/PlayerListDialog.vue';
@@ -20,6 +21,8 @@ const props = defineProps({
 
 // Players store and dialog
 const playersStore = usePlayersStore();
+
+const calendarStore = useCalendarStore();
 const showPlayersDialog = ref(false);
 const attendingPlayers = ref<Player[]>([]);
 
@@ -43,10 +46,6 @@ const formattedDate = computed(() => {
 
 const statusColor = computed(() => {
   return props.event.status === 'upcoming' ? 'green' : 'grey';
-});
-
-const isEventFull = computed(() => {
-  return props.event.isFull();
 });
 
 // Replace gameTitle with full game object
@@ -85,6 +84,12 @@ const mainGameComponents = computed(() => {
     };
   });
 });
+
+
+// Function to handle date click and update calendar
+const selectEventDate = () => {
+  calendarStore.setSelectedDate(props.event.date);
+};
 </script>
 
 <template>
@@ -95,59 +100,66 @@ const mainGameComponents = computed(() => {
         <q-badge :color="statusColor">{{ event.status }}</q-badge>
       </div>
     </q-card-section>
-
-    <!-- Game information icons with tooltips -->
-    <div class="col-1" v-if="game">
-      <q-list dense class="text-grey-8">
-        <q-item>
-          <q-tooltip class="bg-primary text-black">Players: {{ game.numberOfPlayers }}</q-tooltip>
-          <GameIcon category="players" :value="game.numberOfPlayers" size="xs" class="text-grey-9" />
-        </q-item>
-
-        <q-item>
-          <q-tooltip class="bg-secondary text-black">Age: {{ game.recommendedAge }}</q-tooltip>
-          <span class="font-aldrich text-grey-9 text-bold non-selectable">{{ game.recommendedAge }}</span>
-        </q-item>
-
-        <q-item>
-          <q-tooltip class="bg-accent text-black">Genre: {{ game.genre }}</q-tooltip>
-          <GameIcon category="genres" :value="game.genre" size="xs" class="text-grey-9" />
-        </q-item>
-
-        <q-item v-for="(component, index) in mainGameComponents" :key="index">
-          <q-tooltip class="bg-info text-black">{{ component.original }}</q-tooltip>
-          <GameIcon category="components" :value="component.category" size="xs" class="text-grey-9" />
-        </q-item>
-      </q-list>
-    </div>
-    <q-card-section class="text-grey-5 ">
+    <q-card-section class="text-grey-5 q-px-md " horizontal>
       <div class=" text-body2">
         {{ event.description }}
-        <div class="row items-center">
-          <q-icon name="mdi-calendar" size="sm" class="q-mr-xs" />
-          <span>{{ formattedDate }}</span>
-        </div>
-        <div class="row items-center">
-          <q-icon name="mdi-clock-outline" size="sm" class="q-mr-xs" />
-          <span>{{ timeDisplay }}</span>
-        </div>
-        <div class="row items-center" @click="getEventPlayers" style="cursor: pointer;">
-          <q-icon name="mdi-account-group" size="sm" class="q-mr-xs" />
-          <span>{{ event.currentPlayers }} / {{ event.maxPlayers }} players</span>
-        </div>
-        <div class="row items-center" v-if="game">
-          <q-icon name="mdi-dice-multiple" size="sm" class="q-mr-xs" />
-          <span>{{ game.title }}</span>
-        </div>
+        <q-list dense class="q-mt-sm">
+          <q-item clickable @click="selectEventDate">
+            <q-item-section avatar>
+              <q-tooltip class="bg-primary text-black">Date: {{ formattedDate }} @ {{ timeDisplay }}</q-tooltip>
+              <q-icon name="mdi-calendar" size="xs" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ formattedDate }}</q-item-label>
+              <q-item-label caption>{{ timeDisplay }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item clickable @click="getEventPlayers">
+            <q-item-section avatar>
+              <q-icon name="mdi-account-group" :color="statusColor" size="xs">
+              </q-icon>
+              <q-tooltip class="bg-primary text-black">
+                Players: {{ event.currentPlayers }} / {{ event.maxPlayers }}
+              </q-tooltip>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ event.currentPlayers }} / {{ event.maxPlayers }} {{ $t('player', 2) }}</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item v-if="game" :to="`/games/${game.id}`" clickable>
+            <q-item-section avatar>
+              <q-tooltip class="bg-primary text-black">Game: {{ game.title }}</q-tooltip>
+              <q-icon name="mdi-dice-multiple" size="xs" />
+            </q-item-section>
+            <q-item-section>{{ game.title }}</q-item-section>
+          </q-item>
+        </q-list>
       </div>
-    </q-card-section>
 
-    <q-card-actions>
-      <!-- Replace text buttons with icon buttons -->
-      <q-btn flat icon="mdi-information-outline" />
-      <q-btn flat :disabled="isEventFull" icon="mdi-calendar-check" />
-      <q-btn flat icon="mdi-account-group" @click="getEventPlayers" />
-    </q-card-actions>
+      <q-card-actions vertical v-if="game">
+        <q-list dense class="text-grey-8">
+          <q-item>
+            <q-tooltip class="bg-primary text-black">Players: {{ game.numberOfPlayers }}</q-tooltip>
+            <GameIcon category="players" :value="game.numberOfPlayers" size="xs" class="text-grey-9" />
+          </q-item>
+
+          <q-item>
+            <q-tooltip class="bg-secondary text-black">Age: {{ game.recommendedAge }}</q-tooltip>
+            <span class="font-aldrich text-grey-9 text-bold non-selectable">{{ game.recommendedAge }}</span>
+          </q-item>
+
+          <q-item>
+            <q-tooltip class="bg-accent text-black">Genre: {{ game.genre }}</q-tooltip>
+            <GameIcon category="genres" :value="game.genre" size="xs" class="text-grey-9" />
+          </q-item>
+
+          <q-item v-for="(component, index) in mainGameComponents" :key="index">
+            <q-tooltip class="bg-info text-black">{{ component.original }}</q-tooltip>
+            <GameIcon category="components" :value="component.category" size="xs" class="text-grey-9" />
+          </q-item>
+        </q-list>
+      </q-card-actions>
+    </q-card-section>
 
     <!-- Players Dialog - replaced with reusable component -->
     <PlayerListDialog :players="attendingPlayers" v-model:visible="showPlayersDialog" :title="$t('player', 2)" />
