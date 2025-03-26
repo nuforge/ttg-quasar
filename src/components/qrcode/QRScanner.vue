@@ -105,8 +105,6 @@ onUnmounted(() => {
   stopCamera();
 });
 </script>
-
-
 <template>
   <div>
     <!-- Camera Preview -->

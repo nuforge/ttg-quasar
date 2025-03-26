@@ -96,7 +96,9 @@ const selectEventDate = () => {
   <q-card class="event-card " flat dark>
     <q-card-section class="q-pb-xs">
       <div class="row items-center justify-between">
-        <div class="text-h6 text-primary ">{{ event.title }}</div>
+
+        <router-link :to="`/events/${event.id}`" class="text-h6 text-uppercase no-underline">{{ event.title
+          }}</router-link>
         <q-badge :color="statusColor">{{ event.status }}</q-badge>
       </div>
     </q-card-section>

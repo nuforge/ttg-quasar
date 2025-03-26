@@ -20,7 +20,7 @@ defineProps({
 </script>
 
 <template>
-  <q-card style="min-width: 350px; max-width: 600px;">
+  <q-card style="min-width: 350px; max-width: 600px;" flat>
     <q-card-section>
       <div class="text-h6">{{ player.name }}</div>
     </q-card-section>

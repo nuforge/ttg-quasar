@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import QRScanner from './QRScanner.vue';
 
-
 </script>
 
 <template>

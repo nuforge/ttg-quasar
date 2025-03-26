@@ -118,7 +118,9 @@ const selectEventDate = () => {
 <template>
   <q-card class="event-card q-px-none q-mb-sm" flat>
     <q-card-section class="text-h6 text-primary q-py-xs">
-      {{ event.title }}
+      <router-link :to="`/events/${event.id}`">
+        {{ event.title }}
+      </router-link>
     </q-card-section>
 
     <q-card-section class="row items-center justify-between q-py-xs ">

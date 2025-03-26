@@ -42,8 +42,9 @@ const closeDialog = () => {
 </script>
 
 <template>
-  <q-dialog v-model="localVisible" @update:model-value="emit('update:visible', $event)">
-    <q-card style="min-width: 350px">
+  <q-dialog v-model="localVisible" @update:model-value="emit('update:visible', $event)"
+    backdrop-filter="blur(4px) saturate(150%)">
+    <q-card style="min-width: 350px" flat>
       <q-card-section>
         <div class="text-h6">{{ title }} ({{ players.length }})</div>
       </q-card-section>

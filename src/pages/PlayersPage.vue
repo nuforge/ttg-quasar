@@ -88,7 +88,7 @@ const showDetails = (player: Player) => {
     </div>
 
     <!-- Player details dialog -->
-    <q-dialog v-model="showPlayerDetails" persistent>
+    <q-dialog v-model="showPlayerDetails" persistent backdrop-filter="blur(4px) saturate(150%)">
       <PlayerDetails v-if="selectedPlayer" :player="selectedPlayer" :player-events="getPlayerEvents(selectedPlayer)">
         <template v-slot:actions>
           <q-btn flat label="Close" color="primary" v-close-popup />
