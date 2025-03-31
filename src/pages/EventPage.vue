@@ -3,15 +3,19 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useEventsStore } from 'src/stores/events-store';
 import { usePlayersStore } from 'src/stores/players-store';
+import { useMessagesStore } from 'src/stores/messages-store';
 import type { Event } from 'src/models/Event';
 import type { Player } from 'src/models/Player';
 import games from 'src/assets/data/games.json';
 import PlayerDetails from 'src/components/players/PlayerDetails.vue';
 import PlayersList from 'src/components/players/PlayersList.vue';
+import MessageList from 'src/components/messaging/MessageList.vue';
 
 const route = useRoute();
 const eventsStore = useEventsStore();
 const playersStore = usePlayersStore();
+const messagesStore = useMessagesStore();
+
 const eventId = ref(route.params.id ? route.params.id.toString().split('/')[0] : '');
 const event = ref<Event | null>(null);
 const loading = ref(true);
@@ -33,6 +37,12 @@ const eventPlayers = computed<Player[]>(() => {
   return playersStore.getPlayersByIds(playerIds);
 });
 
+// Get event comments
+const eventComments = computed(() => {
+  if (!eventId.value) return [];
+  return messagesStore.eventComments(parseInt(eventId.value));
+});
+
 onMounted(async () => {
   try {
     if (eventId.value) {
@@ -43,6 +53,11 @@ onMounted(async () => {
 
       // Fetch the event data using the ID from the route
       event.value = await eventsStore.getEventById(eventId.value);
+
+      // Load messages data
+      if (messagesStore.messages.length === 0) {
+        await messagesStore.fetchMessages();
+      }
     }
   } catch (error) {
     console.error('Error fetching event:', error);
@@ -193,6 +208,22 @@ const getPlayerEvents = (player: Player) => {
                     'player' :
                     'players' }} needed!
                 </q-banner>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+
+        <!-- Event Comments Section -->
+        <div class="row q-col-gutter-md q-mt-md">
+          <div class="col-12">
+            <q-card flat bordered>
+              <q-card-section>
+                <div class="text-h6">
+                  <q-icon name="mdi-comment-multiple" /> Event Discussion
+                </div>
+              </q-card-section>
+              <q-card-section class="q-pa-none">
+                <MessageList :messages="eventComments" :show-sender="true" />
               </q-card-section>
             </q-card>
           </div>

@@ -7,7 +7,7 @@ export const useMessagesStore = defineStore('messages', {
     messages: [] as Message[],
     loading: false,
     error: null as string | null,
-    currentUserId: 1, // Default user ID (can be updated based on authentication)
+    currentUserId: 1, // Default user ID for testing
   }),
 
   getters: {
@@ -151,6 +151,8 @@ export const useMessagesStore = defineStore('messages', {
       try {
         await Promise.resolve(); // Simulate async operation
         this.messages = Message.fromJSON(messagesData as MessageData[]);
+        // Set a default testing user ID
+        this.setCurrentUser(1); // Using player ID 1 (John) as default for testing
       } catch (error) {
         this.error = (error as Error).message;
         console.error('Error fetching messages:', error);
