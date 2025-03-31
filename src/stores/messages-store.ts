@@ -3,6 +3,8 @@ import messagesData from 'src/assets/data/messages.json';
 import { Message, type MessageData } from 'src/models/Message';
 import type { DirectConversation, GroupConversation } from 'src/models/Conversation';
 
+type SendMessageData = Omit<MessageData, 'id' | 'timestamp' | 'isRead'>;
+
 export const useMessagesStore = defineStore('messages', {
   state: () => ({
     messages: [] as Message[],
@@ -198,7 +200,7 @@ export const useMessagesStore = defineStore('messages', {
     },
 
     // Send a new message
-    sendMessage(messageData: Omit<MessageData, 'id' | 'timestamp' | 'isRead'>) {
+    sendMessage(messageData: SendMessageData): Message {
       const newId = Math.max(...this.messages.map((msg) => msg.id), 0) + 1;
 
       const newMessage = new Message({
@@ -229,6 +231,35 @@ export const useMessagesStore = defineStore('messages', {
       return this.messages
         .filter((msg) => msg.type === 'group' && msg.groupName === groupName)
         .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    },
+
+    // Send a new direct message
+    sendDirectMessage(recipientId: number, content: string): Message {
+      return this.sendMessage({
+        type: 'direct',
+        sender: this.currentUserId,
+        recipients: [recipientId],
+        content,
+      });
+    },
+
+    // Send a new group message
+    sendGroupMessage(groupName: string, content: string): Message | null {
+      const existingGroup = this.messageGroups.find((g) => g.groupName === groupName);
+      if (!existingGroup) return null;
+
+      return this.sendMessage({
+        type: 'group',
+        sender: this.currentUserId,
+        recipients: existingGroup.participants,
+        groupName,
+        content,
+      });
+    },
+
+    // Start a new conversation
+    startConversation(recipientId: number, content: string) {
+      return this.sendDirectMessage(recipientId, content);
     },
   },
 });

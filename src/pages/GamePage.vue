@@ -7,6 +7,7 @@ import type { Game } from 'src/models/Game';
 import { useMessagesStore } from 'src/stores/messages-store';
 import { usePlayersStore } from 'src/stores/players-store';
 import MessageList from 'src/components/messaging/MessageList.vue';
+import MessageComposer from 'src/components/messaging/MessageComposer.vue';
 
 const route = useRoute();
 const messagesStore = useMessagesStore();
@@ -28,6 +29,18 @@ const gameComments = computed(() => {
   if (!game.value) return [];
   return messagesStore.gameComments(game.value.id);
 });
+
+const sendGameComment = (message: string) => {
+  if (!game.value) return;
+
+  void messagesStore.sendMessage({
+    type: 'game',
+    gameId: game.value.id,
+    sender: messagesStore.currentUserId,
+    content: message,
+    recipients: [], // Add required recipients array
+  });
+};
 
 // Initialize stores
 onMounted(async () => {
@@ -56,6 +69,9 @@ onMounted(async () => {
         </q-card-section>
         <q-card-section class="q-pa-none">
           <MessageList :messages="gameComments" :show-sender="true" />
+        </q-card-section>
+        <q-card-section>
+          <MessageComposer @message-sent="sendGameComment" />
         </q-card-section>
       </q-card>
     </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MessageList from './MessageList.vue';
+import MessageComposer from './MessageComposer.vue';
 import type { Message } from 'src/models/Message';
 
 defineProps({
@@ -14,10 +15,16 @@ defineProps({
   showSender: {
     type: Boolean,
     default: false
+  },
+  recipientId: {
+    type: Number,
+    default: undefined
+  },
+  groupName: {
+    type: String,
+    default: undefined
   }
 });
-
-// Future enhancement: Add message composition functionality here
 </script>
 
 <template>
@@ -28,7 +35,7 @@ defineProps({
     <q-card-section class="q-pa-none">
       <MessageList :messages="messages" :show-sender="showSender" />
     </q-card-section>
-    <!-- Future enhancement: Add message input form here -->
+    <MessageComposer v-if="recipientId || groupName" :recipient-id="recipientId" :group-name="groupName" />
   </q-card>
   <div v-else class="text-center q-pa-lg text-grey">
     Select a conversation to view messages

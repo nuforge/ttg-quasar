@@ -4,14 +4,14 @@ export interface MessageData {
   id: number;
   type: MessageType;
   sender: number; // Player ID
-  recipients?: number[]; // For direct/group messages
+  recipients: number[]; // For direct/group messages - make required
   groupName?: string; // For group messages
   eventId?: number; // For event comments
   gameId?: number; // For game comments
   content: string;
   timestamp: string;
-  isRead?: boolean; // For direct/group messages
-  replyTo?: number; // ID of message being replied to
+  isRead: boolean; // Make required
+  replyTo?: number | undefined; // Make explicitly optional
   attachments?: string[]; // URLs to attachments
 }
 

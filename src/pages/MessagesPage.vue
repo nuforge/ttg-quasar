@@ -80,7 +80,8 @@ const getConversationTitle = () => {
 
           <!-- Conversation Messages -->
           <div class="col-12 col-sm-8">
-            <MessagePanel :title="getConversationTitle()" :messages="conversationMessages" />
+            <MessagePanel :title="getConversationTitle()" :messages="conversationMessages"
+              :recipient-id="selectedConversation" />
           </div>
         </div>
       </q-tab-panel>
@@ -96,7 +97,8 @@ const getConversationTitle = () => {
 
           <!-- Group Messages -->
           <div class="col-12 col-sm-8">
-            <MessagePanel :title="selectedGroup" :messages="groupMessages" :show-sender="true" />
+            <MessagePanel :title="selectedGroup" :messages="groupMessages" :show-sender="true"
+              :group-name="selectedGroup" />
           </div>
         </div>
       </q-tab-panel>

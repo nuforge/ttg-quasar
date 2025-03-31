@@ -10,6 +10,7 @@ import games from 'src/assets/data/games.json';
 import PlayerDetails from 'src/components/players/PlayerDetails.vue';
 import PlayersList from 'src/components/players/PlayersList.vue';
 import MessageList from 'src/components/messaging/MessageList.vue';
+import MessageComposer from 'src/components/messaging/MessageComposer.vue';
 
 const route = useRoute();
 const eventsStore = useEventsStore();
@@ -79,6 +80,18 @@ const getPlayerEvents = (player: Player) => {
       rsvp.playerId === player.id && rsvp.status === 'confirmed'
     )
   );
+};
+
+const sendEventComment = (message: string) => {
+  if (!event.value) return;
+
+  void messagesStore.sendMessage({
+    type: 'event',
+    eventId: event.value.id,
+    sender: messagesStore.currentUserId,
+    content: message,
+    recipients: [], // Add required recipients array
+  });
 };
 </script>
 
@@ -224,6 +237,9 @@ const getPlayerEvents = (player: Player) => {
               </q-card-section>
               <q-card-section class="q-pa-none">
                 <MessageList :messages="eventComments" :show-sender="true" />
+              </q-card-section>
+              <q-card-section>
+                <MessageComposer @message-sent="sendEventComment" />
               </q-card-section>
             </q-card>
           </div>
