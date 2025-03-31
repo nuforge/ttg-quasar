@@ -10,15 +10,13 @@ export const usePlayersStore = defineStore('players', {
   }),
 
   getters: {
-    getPlayerById: (state) => {
-      return (id: number) => state.players.find((player) => player.id === id);
+    getPlayerById: (state) => (id: number) => {
+      return state.players.find((player) => player.id === id);
     },
 
-    getPlayersByIds: (state) => {
-      return (ids: number[]) =>
-        ids
-          .map((id) => state.players.find((player) => player.id === id))
-          .filter((player): player is Player => player !== undefined);
+    // Add new getter to retrieve multiple players by their IDs
+    getPlayersByIds: (state) => (ids: number[]) => {
+      return state.players.filter((player) => ids.includes(player.id));
     },
   },
 
@@ -28,7 +26,7 @@ export const usePlayersStore = defineStore('players', {
       this.error = null;
 
       try {
-        // Simulate API call
+        // Simulate API request
         await Promise.resolve();
         this.players = Player.fromJSON(playersData);
       } catch (error) {

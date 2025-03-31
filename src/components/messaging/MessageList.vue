@@ -1,0 +1,52 @@
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
+import { useMessagesStore } from 'src/stores/messages-store';
+import { usePlayersStore } from 'src/stores/players-store';
+import type { Message } from 'src/models/Message';
+import MessageItem from './MessageItem.vue';
+
+const props = defineProps<{
+  messages: Message[];
+  showSender?: boolean;
+}>();
+
+const messagesStore = useMessagesStore();
+const playersStore = usePlayersStore();
+
+// Initialize stores if needed
+if (playersStore.players.length === 0) {
+  void playersStore.fetchPlayers();
+}
+
+const currentUserId = computed(() => messagesStore.currentUserId);
+
+// Scroll to bottom on new messages
+const messageContainer = ref<HTMLElement | null>(null);
+
+watch(() => props.messages.length, () => {
+  setTimeout(() => {
+    if (messageContainer.value) {
+      messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
+    }
+  }, 50);
+});
+</script>
+
+<template>
+  <div ref="messageContainer" class="message-list q-pa-sm" style="max-height: 400px; overflow-y: auto;">
+    <template v-if="messages.length">
+      <MessageItem v-for="message in messages" :key="message.id" :message="message"
+        :is-from-current-user="message.sender === currentUserId" :show-sender="showSender" />
+    </template>
+    <div v-else class="text-center q-pa-lg text-grey">
+      No messages yet
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.message-list {
+  display: flex;
+  flex-direction: column;
+}
+</style>

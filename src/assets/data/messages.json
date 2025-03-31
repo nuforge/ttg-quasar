@@ -1,0 +1,140 @@
+[
+  {
+    "id": 1,
+    "type": "direct",
+    "sender": 1,
+    "recipients": [4],
+    "content": "Hi Sarah, are you still DMing the D&D campaign next week?",
+    "timestamp": "2025-03-10T14:30:00Z",
+    "isRead": true
+  },
+  {
+    "id": 2,
+    "type": "direct",
+    "sender": 4,
+    "recipients": [1],
+    "content": "Yes, John! We're all set for Thursday at 6pm. Don't forget your character sheet!",
+    "timestamp": "2025-03-10T15:45:00Z",
+    "isRead": true,
+    "replyTo": 1
+  },
+  {
+    "id": 3,
+    "type": "direct",
+    "sender": 1,
+    "recipients": [4],
+    "content": "Great, I'll be there. I updated my character with the new spells we found.",
+    "timestamp": "2025-03-10T16:20:00Z",
+    "isRead": false,
+    "replyTo": 2
+  },
+  {
+    "id": 4,
+    "type": "group",
+    "sender": 4,
+    "recipients": [1, 2, 3, 6],
+    "groupName": "D&D Weekly Campaign",
+    "content": "Everyone, I've prepared a new dungeon for our session this week. Be prepared for traps!",
+    "timestamp": "2025-03-11T10:15:00Z",
+    "isRead": false
+  },
+  {
+    "id": 5,
+    "type": "group",
+    "sender": 2,
+    "recipients": [1, 3, 4, 6],
+    "groupName": "D&D Weekly Campaign",
+    "content": "I'll bring snacks for everyone. Any requests?",
+    "timestamp": "2025-03-11T11:30:00Z",
+    "isRead": false,
+    "replyTo": 4
+  },
+  {
+    "id": 6,
+    "type": "event",
+    "eventId": 1,
+    "sender": 3,
+    "content": "This campaign has been amazing so far! Looking forward to our next session.",
+    "timestamp": "2025-03-12T09:45:00Z"
+  },
+  {
+    "id": 7,
+    "type": "event",
+    "eventId": 1,
+    "sender": 2,
+    "content": "Agreed! The story is getting really interesting. I wonder what will happen to our characters next.",
+    "timestamp": "2025-03-12T10:20:00Z",
+    "replyTo": 6
+  },
+  {
+    "id": 8,
+    "type": "game",
+    "gameId": 3,
+    "sender": 4,
+    "content": "I've been running D&D campaigns for 5 years now. If anyone needs help getting started as a DM, feel free to message me!",
+    "timestamp": "2025-03-13T14:10:00Z"
+  },
+  {
+    "id": 9,
+    "type": "game",
+    "gameId": 3,
+    "sender": 6,
+    "content": "I might take you up on that offer, Sarah! I've always wanted to try being a Dungeon Master.",
+    "timestamp": "2025-03-13T16:05:00Z",
+    "replyTo": 8
+  },
+  {
+    "id": 10,
+    "type": "direct",
+    "sender": 5,
+    "recipients": [6],
+    "content": "Hey Emily, want to join our Pandemic Legacy campaign? We need one more player.",
+    "timestamp": "2025-03-14T12:30:00Z",
+    "isRead": false
+  },
+  {
+    "id": 11,
+    "type": "event",
+    "eventId": 2,
+    "sender": 5,
+    "content": "Is this tournament suitable for beginners? I've only played Pandemic a few times.",
+    "timestamp": "2025-03-15T09:15:00Z"
+  },
+  {
+    "id": 12,
+    "type": "event",
+    "eventId": 2,
+    "sender": 10,
+    "content": "Absolutely! We welcome players of all skill levels. There will be a brief rules refresher before we start.",
+    "timestamp": "2025-03-15T10:40:00Z",
+    "replyTo": 11
+  },
+  {
+    "id": 13,
+    "type": "game",
+    "gameId": 2,
+    "sender": 6,
+    "content": "Pandemic is one of my favorite cooperative games. The tension of drawing cards is just right!",
+    "timestamp": "2025-03-16T13:25:00Z"
+  },
+  {
+    "id": 14,
+    "type": "direct",
+    "sender": 6,
+    "recipients": [5],
+    "content": "I'd love to join the Pandemic Legacy campaign! When are you planning to start?",
+    "timestamp": "2025-03-16T15:10:00Z",
+    "isRead": true,
+    "replyTo": 10
+  },
+  {
+    "id": 15,
+    "type": "group",
+    "sender": 7,
+    "recipients": [2, 8],
+    "groupName": "Chess Club",
+    "content": "Don't forget our weekly tournament this Saturday at 2pm!",
+    "timestamp": "2025-03-17T11:05:00Z",
+    "isRead": false
+  }
+]
