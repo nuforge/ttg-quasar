@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useMessagesStore } from 'src/stores/messages-store';
 import type { Message } from 'src/models/Message';
 import { usePlayersStore } from 'src/stores/players-store';
@@ -28,6 +28,8 @@ const updateConversationMessages = () => {
   if (selectedConversation.value) {
     conversationMessages.value = messagesStore.getConversationWith(selectedConversation.value);
     messagesStore.markConversationAsRead(selectedConversation.value);
+  } else {
+    conversationMessages.value = [];
   }
 };
 
@@ -37,8 +39,34 @@ const updateGroupMessages = () => {
   if (selectedGroup.value) {
     groupMessages.value = messagesStore.getGroupMessages(selectedGroup.value);
     messagesStore.markGroupAsRead(selectedGroup.value);
+  } else {
+    groupMessages.value = [];
   }
 };
+
+// Watch for changes in messages store
+watch(() => messagesStore.messages, () => {
+  if (tab.value === 'direct') {
+    updateConversationMessages();
+  } else {
+    updateGroupMessages();
+  }
+}, { deep: true });
+
+// Watch for tab changes
+watch(tab, () => {
+  if (tab.value === 'direct') {
+    updateConversationMessages();
+  } else {
+    updateGroupMessages();
+  }
+});
+
+// Watch for conversation selection
+watch(selectedConversation, updateConversationMessages);
+
+// Watch for group selection
+watch(selectedGroup, updateGroupMessages);
 
 // Handle conversation selection
 const handleConversationSelect = (id: string | number) => {
