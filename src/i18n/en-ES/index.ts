@@ -17,4 +17,5 @@ export default {
   previous: 'anteriores',
   next: 'siguientes',
   search: 'buscar',
+  searchGames: 'buscar juegos',
 };

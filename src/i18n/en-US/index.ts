@@ -23,4 +23,5 @@ export default {
   previous: 'previous',
   next: 'next',
   search: 'search',
+  searchGames: 'search games',
 };
