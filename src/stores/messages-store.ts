@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import messagesData from 'src/assets/data/messages.json';
 import { Message, type MessageData } from 'src/models/Message';
+import type { DirectConversation, GroupConversation } from 'src/models/Conversation';
 
 export const useMessagesStore = defineStore('messages', {
   state: () => ({
@@ -30,18 +31,18 @@ export const useMessagesStore = defineStore('messages', {
     },
 
     // Get conversations (grouped by other user)
-    conversations: (state) => {
-      const directMsgs = state.messages.filter(
+    conversations(): DirectConversation[] {
+      const directMsgs = this.messages.filter(
         (msg) =>
           msg.type === 'direct' &&
-          (msg.sender === state.currentUserId || msg.recipients.includes(state.currentUserId)),
+          (msg.sender === this.currentUserId || msg.recipients.includes(this.currentUserId)),
       );
 
       // Group by conversation partner
       const conversationsMap = new Map<number, Message[]>();
 
       directMsgs.forEach((msg) => {
-        const partnerId = msg.sender === state.currentUserId ? msg.recipients[0] : msg.sender;
+        const partnerId = msg.sender === this.currentUserId ? msg.recipients[0] : msg.sender;
 
         // Skip messages without a valid partner ID
         if (partnerId === undefined) return;
@@ -59,10 +60,8 @@ export const useMessagesStore = defineStore('messages', {
           messages: messages.sort(
             (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
           ),
-          latestMessage: messages.sort(
-            (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-          )[0],
-          unreadCount: messages.filter((m) => !m.isRead && m.sender !== state.currentUserId).length,
+          latestMessage: messages[0],
+          unreadCount: messages.filter((m) => !m.isRead && m.sender !== this.currentUserId).length,
         }))
         .sort((a, b) => {
           if (!a.latestMessage) return 1;
@@ -75,11 +74,11 @@ export const useMessagesStore = defineStore('messages', {
     },
 
     // Get all message groups
-    messageGroups: (state) => {
-      const groupMsgs = state.messages.filter(
+    messageGroups(): GroupConversation[] {
+      const groupMsgs = this.messages.filter(
         (msg) =>
           msg.type === 'group' &&
-          (msg.sender === state.currentUserId || msg.recipients.includes(state.currentUserId)),
+          (msg.sender === this.currentUserId || msg.recipients.includes(this.currentUserId)),
       );
 
       // Group by groupName
@@ -101,11 +100,9 @@ export const useMessagesStore = defineStore('messages', {
           messages: messages.sort(
             (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
           ),
-          latestMessage: messages.sort(
-            (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-          )[0],
+          latestMessage: messages[0],
           participants: Array.from(new Set(messages.flatMap((m) => [m.sender, ...m.recipients]))),
-          unreadCount: messages.filter((m) => !m.isRead && m.sender !== state.currentUserId).length,
+          unreadCount: messages.filter((m) => !m.isRead && m.sender !== this.currentUserId).length,
         }))
         .sort((a, b) => {
           if (!a.latestMessage) return 1;
