@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import gamesData from 'src/assets/data/games.json';
 import GameCard from 'src/components/GameCard.vue';
+import GameIcon from 'src/components/GameIcon.vue';
+import QRCode from 'src/components/qrcode/QRCode.vue';
 import { ref, computed, onMounted } from 'vue';
 import { Game } from 'src/models/Game';
+import { useRouter } from 'vue-router';
+
+// Router
+const router = useRouter();
 
 // Reactive state
 const searchQuery = ref('');
@@ -15,6 +21,30 @@ const sortBy = ref('title');
 const sortDirection = ref('asc');
 const viewMode = ref<'cards' | 'list'>('cards');
 const showFilters = ref(false);
+
+// Game interaction states (using Map for per-game state)
+const gameStates = ref<Map<number, {
+  reserved: boolean;
+  favorite: boolean;
+  bookmark: boolean;
+  showQRCode: boolean;
+}>>(new Map());
+
+// Initialize or get game state
+const getGameState = (gameId: number) => {
+  if (!gameStates.value.has(gameId)) {
+    gameStates.value.set(gameId, {
+      reserved: false,
+      favorite: false,
+      bookmark: false,
+      showQRCode: false
+    });
+  }
+  return gameStates.value.get(gameId)!;
+};
+
+// Web share support
+const isWebShareSupported = ref(false);
 
 // Load games data
 const games: Game[] = gamesData.map(gameData => Game.fromJSON(gameData));
@@ -157,8 +187,60 @@ const activeFilterCount = computed(() => {
     selectedComponents.value.length;
 });
 
+// Game interaction handlers
+const toggleReserved = (gameId: number) => {
+  const state = getGameState(gameId);
+  state.reserved = !state.reserved;
+};
+
+const toggleFavorite = (gameId: number) => {
+  const state = getGameState(gameId);
+  state.favorite = !state.favorite;
+};
+
+const toggleBookmark = (gameId: number) => {
+  const state = getGameState(gameId);
+  state.bookmark = !state.bookmark;
+};
+
+const toggleQRCode = (gameId: number) => {
+  const state = getGameState(gameId);
+  state.showQRCode = !state.showQRCode;
+};
+
+const navigateToGame = (game: Game) => {
+  router.push(`/games/${game.id}`).catch((err) => {
+    console.error('Navigation error:', err);
+  });
+};
+
+const shareGame = async (game: Game) => {
+  if (isWebShareSupported.value) {
+    try {
+      await navigator.share({
+        title: game.title,
+        text: `Check out this cool game: ${game.description}`,
+        url: `${window.location.origin}/games/${game.id}`
+      });
+    } catch (err) {
+      console.log('Share canceled', err);
+    }
+  }
+};
+
+const mainGameComponents = (game: Game) => {
+  if (!game.components || !Array.isArray(game.components)) return [];
+  return game.components.slice(0, 3).map(component => ({
+    original: component,
+    category: component
+  }));
+};
+
 // Load saved preferences
 onMounted(() => {
+  // Check for web share support
+  isWebShareSupported.value = !!navigator.share;
+
   const savedViewMode = localStorage.getItem('gamesViewMode');
   if (savedViewMode === 'cards' || savedViewMode === 'list') {
     viewMode.value = savedViewMode;
@@ -304,32 +386,104 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
       <!-- Games list view -->
       <div v-else class="games-list">
         <q-list bordered separator>
-          <q-item v-for="game in filteredAndSortedGames" :key="game.title" clickable v-ripple class="game-list-item">
-            <q-item-section avatar>
-              <q-avatar size="60px" square>
+          <q-item v-for="game in filteredAndSortedGames" :key="game.title" class="game-list-item">
+            <q-item-section avatar class="game-avatar-section">
+              <div class="game-image-container">
                 <img :src="`/images/games/${game.image}`" :alt="game.title"
-                  @error="(e) => { (e.target as HTMLImageElement).src = '/images/games/default.webp' }" />
-              </q-avatar>
+                  @error="(e) => { (e.target as HTMLImageElement).src = '/images/games/default.webp' }"
+                  class="game-image" />
+              </div>
             </q-item-section>
 
-            <q-item-section>
-              <q-item-label class="text-weight-medium">{{ game.title }}</q-item-label>
-              <q-item-label caption lines="2">{{ game.description }}</q-item-label>
-              <q-item-label caption class="game-meta q-mt-xs">
-                <q-chip :label="game.genre" size="sm" color="primary" text-color="white" class="q-mr-xs" />
-                <span class="text-grey-6">
-                  {{ game.numberOfPlayers }} players • {{ game.recommendedAge }} • {{ game.playTime }}
-                </span>
+            <q-item-section @click="navigateToGame(game)" clickable class="game-content-section">
+              <q-item-label class="text-weight-medium game-title-link">{{ game.title }}</q-item-label>
+              <q-item-label caption lines="2" class="game-description">{{ game.description }}</q-item-label>
+
+              <!-- Game attributes with icons -->
+              <q-item-label caption class="game-meta-with-icons q-mt-sm">
+                <div class="meta-row">
+                  <q-chip :label="game.genre" size="sm" color="primary" text-color="white" class="q-mr-sm" />
+                </div>
+
+                <div class="meta-row q-mt-xs">
+                  <div class="meta-item">
+                    <game-icon category="players" :value="game.numberOfPlayers" size="xs"
+                      class="text-secondary q-mr-xs" />
+                    <span class="text-grey-6">{{ game.numberOfPlayers }} players</span>
+                  </div>
+
+                  <div class="meta-item">
+                    <q-icon name="mdi-clock-outline" size="xs" class="text-accent q-mr-xs" />
+                    <span class="text-grey-6">{{ game.playTime }}</span>
+                  </div>
+
+                  <div class="meta-item">
+                    <span class="age-badge">{{ game.recommendedAge }}</span>
+                  </div>
+                </div>
+
+                <!-- Components -->
+                <div v-if="game.components && game.components.length > 0" class="meta-row q-mt-xs">
+                  <div class="components-container">
+                    <div v-for="(component, index) in mainGameComponents(game)" :key="index" class="component-item">
+                      <game-icon category="components" :value="component.category" size="xs"
+                        class="text-grey-5 q-mr-xs" />
+                      <span class="text-grey-5 component-text">{{ component.original }}</span>
+                    </div>
+                  </div>
+                </div>
               </q-item-label>
             </q-item-section>
 
-            <q-item-section side>
+            <q-item-section side class="list-actions-section">
               <div class="list-actions">
-                <q-btn icon="mdi-heart-outline" flat dense round size="sm" color="grey-6" />
-                <q-btn icon="mdi-share-variant" flat dense round size="sm" color="grey-6" />
-                <q-btn icon="mdi-dots-vertical" flat dense round size="sm" color="grey-6" />
+                <!-- Top row actions -->
+                <div class="action-row">
+                  <q-btn :icon="`mdi-calendar-clock${getGameState(game.id).reserved ? '' : '-outline'}`"
+                    @click="toggleReserved(game.id)" :color="getGameState(game.id).reserved ? 'primary' : 'grey-6'" flat
+                    dense round size="sm">
+                    <q-tooltip class="bg-primary">
+                      {{ getGameState(game.id).reserved ? 'Remove reservation' : 'Reserve game' }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn :icon="`mdi-bookmark${getGameState(game.id).bookmark ? '' : '-outline'}`"
+                    @click="toggleBookmark(game.id)" :color="getGameState(game.id).bookmark ? 'accent' : 'grey-6'" flat
+                    dense round size="sm">
+                    <q-tooltip class="bg-accent">
+                      {{ getGameState(game.id).bookmark ? 'Remove bookmark' : 'Bookmark game' }}
+                    </q-tooltip>
+                  </q-btn>
+
+                  <q-btn :icon="`mdi-star${getGameState(game.id).favorite ? '' : '-outline'}`"
+                    @click="toggleFavorite(game.id)" :color="getGameState(game.id).favorite ? 'secondary' : 'grey-6'"
+                    flat dense round size="sm">
+                    <q-tooltip class="bg-secondary">
+                      {{ getGameState(game.id).favorite ? 'Remove from favorites' : 'Add to favorites' }}
+                    </q-tooltip>
+                  </q-btn>
+                </div>
+
+                <!-- Bottom row actions -->
+                <div class="action-row q-mt-xs">
+                  <q-btn icon="mdi-qrcode" @click="toggleQRCode(game.id)" flat dense round size="sm" color="grey-6">
+                    <q-tooltip>Show QR Code</q-tooltip>
+                  </q-btn>
+
+                  <q-btn icon="mdi-share" @click="shareGame(game)" flat dense round size="sm" color="grey-6">
+                    <q-tooltip>Share game</q-tooltip>
+                  </q-btn>
+
+                  <q-btn v-if="game.link" icon="mdi-open-in-new" :href="game.link" target="_blank" flat dense round
+                    size="sm" color="grey-6">
+                    <q-tooltip>Open external link</q-tooltip>
+                  </q-btn>
+                </div>
               </div>
             </q-item-section>
+
+            <!-- QR Code modal for each game -->
+            <QRCode :game="game" v-model:showQR="getGameState(game.id).showQRCode" />
           </q-item>
         </q-list>
       </div>
@@ -424,22 +578,116 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
 .game-list-item {
   padding: 1rem;
   transition: background-color 0.2s ease;
+  align-items: flex-start;
 }
 
 .game-list-item:hover {
   background-color: rgba(25, 118, 210, 0.04);
 }
 
-.game-meta {
+.game-avatar-section {
+  flex: 0 0 auto;
+  margin-right: 1rem;
+  width: auto;
+}
+
+.game-image-container {
+  border-radius: 4px;
+  background: #f5f5f5;
+  display: inline-block;
+  width: auto;
+  height: auto;
+}
+
+.game-image {
+  max-width: 120px;
+  max-height: 120px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  display: block;
+}
+
+.game-content-section {
+  flex: 1 1 auto;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.game-content-section:hover .game-title-link {
+  color: var(--q-primary);
+}
+
+.game-title-link {
+  font-size: 1.1rem;
+  line-height: 1.3;
+  transition: color 0.2s ease;
+}
+
+.game-description {
+  margin: 0.25rem 0;
+  line-height: 1.4;
+}
+
+.game-meta-with-icons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.age-badge {
+  background: var(--q-accent);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.components-container {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
+.component-item {
+  display: flex;
+  align-items: center;
+}
+
+.component-text {
+  font-size: 0.8rem;
+}
+
+.list-actions-section {
+  flex: 0 0 auto;
+  align-self: flex-start;
+}
+
 .list-actions {
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-end;
+}
+
+.action-row {
+  display: flex;
   gap: 0.25rem;
 }
 
@@ -482,10 +730,43 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
 
   .game-list-item {
     padding: 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .game-avatar-section {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+    align-self: center;
+    width: auto;
+  }
+
+  .game-image-container {
+    background: #f5f5f5;
+  }
+
+  .game-image {
+    max-width: 80px !important;
+    max-height: 80px !important;
+  }
+
+  .list-actions-section {
+    align-self: stretch;
+    margin-top: 0.5rem;
   }
 
   .list-actions {
     flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .action-row {
+    display: contents;
+  }
+
+  .meta-row {
+    justify-content: center;
   }
 }
 
@@ -502,6 +783,11 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
 
   .sort-select {
     min-width: 120px;
+  }
+
+  .game-image {
+    max-width: 60px !important;
+    max-height: 60px !important;
   }
 }
 
@@ -537,7 +823,20 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
   background: var(--q-dark);
 }
 
+.body--dark .game-image-container {
+  background: #2d2d2d;
+}
+
 .body--dark .game-list-item:hover {
   background-color: rgba(255, 255, 255, 0.08);
+}
+
+.body--dark .game-content-section:hover .game-title-link {
+  color: var(--q-secondary);
+}
+
+.body--dark .age-badge {
+  background: var(--q-secondary);
+  color: var(--q-dark);
 }
 </style>
