@@ -30,13 +30,13 @@ const filteredGames = computed(() => {
 
   <!-- Search input -->
   <div class="q-mt-md">
-    <q-input v-model="searchQuery" outlined dense clearable :placeholder="$t('search games')" class="game-search">
+    <q-input v-model="searchQuery" outlined dense clearable :placeholder="$t('searchGames')" class="game-search">
       <template v-slot:prepend>
         <q-icon name="search" />
       </template>
     </q-input>
   </div>
-  <div class="games-grid q-mt-sm q-gutter-sm">
+  <div class="games-grid q-mt-sm ">
     <game-card v-for="game in filteredGames" :key="game.title" :game="game" />
   </div>
 </template>
@@ -44,8 +44,8 @@ const filteredGames = computed(() => {
 <style scoped>
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 2rem;
 }
 
 .game-search {

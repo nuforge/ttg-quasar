@@ -1,9 +1,3 @@
-<template>
-  <q-icon v-if="iconInfo.type === 'mdi'" :name="iconInfo.icon" :size="size" class="game-icon" v-bind="$attrs" />
-  <img v-else :src="`/game-icons/${iconInfo.icon}.svg`" :class="['game-icon', `size-${size}`]" :alt="value"
-    v-bind="$attrs" />
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue';
 import { getGameIcon } from 'src/utils/game-icons';
@@ -28,6 +22,12 @@ const iconInfo = computed(() => {
   return getGameIcon(props.category, props.value);
 });
 </script>
+
+<template>
+  <q-icon v-if="iconInfo.type === 'mdi'" :name="iconInfo.icon" :size="size" class="game-icon" v-bind="$attrs" />
+  <img v-else :src="`/game-icons/${iconInfo.icon}.svg`" :class="['game-icon', `size-${size}`]" :alt="value"
+    v-bind="$attrs" />
+</template>
 
 <style scoped>
 .game-icon {
