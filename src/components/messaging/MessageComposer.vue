@@ -35,7 +35,7 @@ const sendMessage = () => {
                 gameId: props.gameId,
                 content: messageContent.value,
                 sender: messagesStore.currentUserId,
-                replyTo: props.replyTo?.id,
+                replyTo: typeof props.replyTo?.id === 'number' ? props.replyTo.id : undefined,
                 recipients: []
             });
         } else if (props.eventId !== undefined) {
@@ -44,7 +44,7 @@ const sendMessage = () => {
                 eventId: props.eventId,
                 content: messageContent.value,
                 sender: messagesStore.currentUserId,
-                replyTo: props.replyTo?.id,
+                replyTo: typeof props.replyTo?.id === 'number' ? props.replyTo.id : undefined,
                 recipients: []
             });
         }

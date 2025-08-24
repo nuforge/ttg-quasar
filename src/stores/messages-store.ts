@@ -201,7 +201,10 @@ export const useMessagesStore = defineStore('messages', {
 
     // Send a new message
     sendMessage(messageData: SendMessageData): Message {
-      const newId = Math.max(...this.messages.map((msg) => msg.id), 0) + 1;
+      const numericIds = this.messages
+        .map((msg) => (typeof msg.id === 'number' ? msg.id : 0))
+        .filter((id): id is number => typeof id === 'number');
+      const newId = Math.max(...numericIds, 0) + 1;
 
       const newMessage = new Message({
         id: newId,

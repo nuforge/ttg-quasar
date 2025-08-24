@@ -1,0 +1,57 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Events collection
+    match /events/{eventId} {
+      // Anyone can read events
+      allow read: if true;
+      
+      // Only authenticated users can create events
+      allow create: if request.auth != null && 
+        request.auth.uid == resource.data.createdBy;
+      
+      // Only the event creator can update or delete
+      allow update, delete: if request.auth != null && 
+        request.auth.uid == resource.data.createdBy;
+    }
+    
+    // Messages collection
+    match /messages/{messageId} {
+      // Users can read messages they're involved in
+      allow read: if request.auth != null && (
+        request.auth.uid in resource.data.recipients ||
+        request.auth.uid == resource.data.sender ||
+        resource.data.type in ['game', 'event'] // Public comments
+      );
+      
+      // Only authenticated users can create messages
+      allow create: if request.auth != null &&
+        request.auth.uid == request.resource.data.sender;
+      
+      // Users can only update/delete their own messages
+      allow update, delete: if request.auth != null &&
+        request.auth.uid == resource.data.sender;
+    }
+    
+    // Players collection
+    match /players/{playerId} {
+      // Anyone can read player profiles (for public info)
+      allow read: if true;
+      
+      // Users can only create/update their own profile
+      allow create, update: if request.auth != null &&
+        request.auth.uid == playerId;
+      
+      // Prevent deletion of player profiles
+      allow delete: if false;
+    }
+    
+    // Friendships collection (for future use)
+    match /friendships/{friendshipId} {
+      allow read, write: if request.auth != null && (
+        request.auth.uid == resource.data.requesterId ||
+        request.auth.uid == resource.data.receiverId
+      );
+    }
+  }
+}

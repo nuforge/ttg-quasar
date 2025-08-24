@@ -1,30 +1,32 @@
 export type MessageType = 'direct' | 'group' | 'event' | 'game';
 
 export interface MessageData {
-  id: number;
+  id: number | string; // Support both number and Firestore document ID
   type: MessageType;
   sender: number; // Player ID
   recipients: number[]; // For direct/group messages - make required
   groupName?: string; // For group messages
-  eventId?: number; // For event comments
+  eventId?: number | string; // For event comments - support string IDs for Firebase
   gameId?: number; // For game comments
+  conversationId?: string; // For conversation threading
   content: string;
-  timestamp: string;
+  timestamp: string | Date; // Support both string and Date objects
   isRead: boolean; // Make required
   replyTo?: number | undefined; // Make explicitly optional
   attachments?: string[]; // URLs to attachments
 }
 
 export class Message {
-  id: number;
+  id: number | string; // Support both for Firebase compatibility
   type: MessageType;
   sender: number;
   recipients: number[];
   groupName?: string | undefined;
-  eventId?: number | undefined;
+  eventId?: number | string | undefined; // Support string IDs
   gameId?: number | undefined;
+  conversationId?: string | undefined;
   content: string;
-  timestamp: string;
+  timestamp: Date; // Always use Date objects internally
   isRead: boolean;
   replyTo?: number | undefined;
   attachments: string[];
@@ -37,8 +39,10 @@ export class Message {
     this.groupName = data.groupName;
     this.eventId = data.eventId;
     this.gameId = data.gameId;
+    this.conversationId = data.conversationId;
     this.content = data.content;
-    this.timestamp = data.timestamp;
+    // Always convert timestamp to Date object
+    this.timestamp = typeof data.timestamp === 'string' ? new Date(data.timestamp) : data.timestamp;
     this.isRead = data.isRead || false;
     this.replyTo = data.replyTo;
     this.attachments = data.attachments || [];
@@ -46,8 +50,7 @@ export class Message {
 
   // Get formatted date/time
   getFormattedTime(): string {
-    const date = new Date(this.timestamp);
-    return date.toLocaleString();
+    return this.timestamp.toLocaleString();
   }
 
   // Check if message is unread

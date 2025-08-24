@@ -1,4 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router';
+import { requireAuth, requireGuest } from 'src/composables/useAuthGuard';
 
 const routes: RouteRecordRaw[] = [
   {
@@ -6,15 +7,46 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
   },
+
+  // Authentication routes
+  {
+    path: '/login',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireGuest,
+    children: [
+      {
+        path: '',
+        name: 'login',
+        component: () => import('pages/LoginPage.vue'),
+        meta: { requiresGuest: true },
+      },
+    ],
+  },
+
+  // Protected routes
   {
     path: '/events/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/EventsPage.vue') }],
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/EventsPage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
     path: '/events/:id(.*)*',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/EventPage.vue') }],
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/EventPage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
     path: '/games/',
@@ -35,17 +67,38 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/account',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/AccountPage.vue') }],
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/AccountPage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
     path: '/messages',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/MessagesPage.vue') }],
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/MessagesPage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
     path: '/settings',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/SettingsPage.vue') }],
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/SettingsPage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
 
   // Always leave this as last one,

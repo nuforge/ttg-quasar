@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import games from 'src/assets/data/games.json';
 import GameCard from 'src/components/GameCard.vue';
 import type { Game } from 'src/models/Game';
-import { useMessagesStore } from 'src/stores/messages-store';
+import { useMessagesFirebaseStore } from 'src/stores/messages-firebase-store';
 import { usePlayersStore } from 'src/stores/players-store';
+import { authService } from 'src/services/auth-service';
 import MessageList from 'src/components/messaging/MessageList.vue';
 import MessageComposer from 'src/components/messaging/MessageComposer.vue';
 
 const route = useRoute();
-const messagesStore = useMessagesStore();
+const messagesStore = useMessagesFirebaseStore();
 const playersStore = usePlayersStore();
 
 const gameId = computed(() => {
@@ -24,31 +25,45 @@ const game = computed(() => {
   return games.find(g => g.id.toString() === gameId.value) as Game | undefined;
 });
 
-// Get game comments
 const gameComments = computed(() => {
   if (!game.value) return [];
   return messagesStore.gameComments(game.value.id);
 });
 
-const sendGameComment = (message: string) => {
-  if (!game.value) return;
+const sendGameComment = async (message: string) => {
+  if (!game.value || !authService.isAuthenticated.value) return;
 
-  void messagesStore.sendMessage({
-    type: 'game',
-    gameId: game.value.id,
-    sender: messagesStore.currentUserId,
-    content: message,
-    recipients: [], // Add required recipients array
-  });
+  try {
+    await messagesStore.sendMessage({
+      type: 'game',
+      gameId: game.value.id,
+      content: message,
+      recipients: [], // Game comments are public
+    });
+  } catch (error) {
+    console.error('Failed to send game comment:', error);
+    // You might want to show a notification here
+  }
 };
 
-// Initialize stores
+// Initialize stores and subscriptions
+let unsubscribe: (() => void) | undefined;
+
 onMounted(async () => {
-  if (messagesStore.messages.length === 0) {
-    await messagesStore.fetchMessages();
-  }
   if (playersStore.players.length === 0) {
     await playersStore.fetchPlayers();
+  }
+
+  // Subscribe to game messages if we have a game
+  if (game.value) {
+    unsubscribe = messagesStore.subscribeToGameMessages(game.value.id);
+  }
+});
+
+onUnmounted(() => {
+  // Clean up subscription
+  if (unsubscribe) {
+    unsubscribe();
   }
 });
 </script>

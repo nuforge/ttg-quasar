@@ -1,0 +1,38 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Profile pictures
+    match /profiles/{userId}/{allPaths=**} {
+      // Users can read any profile picture
+      allow read: if true;
+      
+      // Users can only upload to their own profile folder
+      allow write: if request.auth != null && 
+        request.auth.uid == userId &&
+        request.resource.size < 5 * 1024 * 1024 && // 5MB limit
+        request.resource.contentType.matches('image/.*');
+    }
+    
+    // Event photos
+    match /events/{eventId}/{allPaths=**} {
+      // Anyone can read event photos
+      allow read: if true;
+      
+      // Only authenticated users can upload event photos
+      allow write: if request.auth != null &&
+        request.resource.size < 10 * 1024 * 1024 && // 10MB limit
+        request.resource.contentType.matches('image/.*');
+    }
+    
+    // Game photos
+    match /games/{gameId}/{allPaths=**} {
+      // Anyone can read game photos
+      allow read: if true;
+      
+      // Only authenticated users can upload game photos
+      allow write: if request.auth != null &&
+        request.resource.size < 10 * 1024 * 1024 && // 10MB limit
+        request.resource.contentType.matches('image/.*');
+    }
+  }
+}

@@ -1,40 +1,242 @@
-# Tabletop Gaming (ttg-quasar)
+# Tabletop Gaming (TTG) - Quasar App
 
-A Tabletop Gaming Management Application
+A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar Framework, and Firebase.
 
-## Install the dependencies
+## 🚀 Features
+
+### 🔐 Authentication
+
+- **Multi-Provider Sign-In**: Google, Facebook, and Email/Password authentication
+- **VueFire Integration**: Reactive authentication state management
+- **Route Protection**: Secure pages with authentication guards
+- **User Profiles**: Automatic player profile creation and management
+
+### 📅 Event Management
+
+- **Create Events**: Organize gaming sessions with real-time RSVP tracking
+- **Google Calendar Sync**: Optional integration with personal calendars
+- **Player Limits**: Set minimum and maximum player counts
+- **Real-time Updates**: Live event updates across all users
+
+### 💬 Real-time Messaging
+
+- **Game Comments**: Public discussions for each game
+- **Event Messages**: Event-specific chat and coordination
+- **Direct Messages**: Private conversations between players
+- **Live Updates**: Real-time messaging with Firebase
+
+### 🎮 Game Library
+
+- **Comprehensive Database**: 50+ board games with detailed information
+- **Smart Icons**: Intelligent icon mapping based on game mechanics
+- **Rich Details**: Player counts, age ratings, playtime, and descriptions
+- **Visual Assets**: High-quality game images and artwork
+
+### 👥 Player Management
+
+- **Player Profiles**: Rich player information and preferences
+- **Avatar Support**: Profile pictures and customization
+- **Game History**: Track events and participation
+- **Social Features**: Connect with other players
+
+## 🛠️ Technology Stack
+
+- **Framework**: Vue 3 + Quasar v2.18.2
+- **Language**: TypeScript
+- **Backend**: Firebase v12.1.0 (Firestore, Authentication, Storage)
+- **State Management**: Pinia + VueFire v3.2.2
+- **Routing**: Vue Router with authentication guards
+- **Styling**: SCSS + Quasar components
+- **Icons**: Material Design Icons + Material Design Icons (mdi-v7)
+- **Build Tool**: Vite
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Firebase project (see setup guides)
+
+### Installation
+
+1. **Clone and Install**
+
+   ```bash
+   git clone <repository-url>
+   cd ttg-quasar
+   npm install
+   ```
+
+2. **Firebase Setup**
+
+   ```bash
+   # Copy environment template
+   cp .env.example .env
+
+   # Edit .env with your Firebase configuration
+   # Follow DEV_SETUP.md for detailed instructions
+   ```
+
+3. **Start Development Server**
+
+   ```bash
+   npm run dev
+   ```
+
+4. **Build for Production**
+   ```bash
+   npm run build
+   ```
+
+## 📋 Available Scripts
+
 ```bash
-yarn
-# or
-npm install
+# Development
+npm run dev              # Start development server with hot reload
+npm run build           # Build for production
+npm run format          # Format code with Prettier
+npm run lint            # Lint code with ESLint
+
+# Firebase (after setup)
+firebase emulators:start # Start Firebase emulators for local development
+firebase deploy         # Deploy to Firebase hosting (optional)
 ```
 
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-```bash
-quasar dev
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# Firebase Configuration
+FIREBASE_API_KEY=your-api-key
+FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+FIREBASE_APP_ID=your-app-id
+
+# Development
+NODE_ENV=development
 ```
 
+### Firebase Setup
 
-### Lint the files
-```bash
-yarn lint
-# or
-npm run lint
+See detailed setup guides:
+
+- `DEV_SETUP.md` - Complete development setup instructions
+- `FIREBASE_SETUP.md` - Firebase project configuration guide
+
+## 🏗️ Project Structure
+
+```
+src/
+├── boot/              # Quasar boot files (Firebase, i18n, etc.)
+├── components/        # Reusable Vue components
+│   ├── events/       # Event-related components
+│   ├── messaging/    # Chat and messaging components
+│   ├── players/      # Player management components
+│   └── qrcode/       # QR code functionality
+├── composables/      # Vue composables (auth guards, etc.)
+├── layouts/          # Page layouts
+├── models/           # TypeScript models (Event, Player, Message, Game)
+├── pages/            # Page components
+├── router/           # Vue Router configuration
+├── services/         # External services (Firebase, Google Calendar)
+├── stores/           # Pinia stores (events, messages, players)
+└── utils/            # Utility functions
 ```
 
+## 🔐 Authentication
 
-### Format the files
-```bash
-yarn format
-# or
-npm run format
+The app uses VueFire for reactive Firebase authentication:
+
+```typescript
+// Using the current user in components
+import { useCurrentUser } from 'vuefire';
+
+const user = useCurrentUser();
+const isAuthenticated = computed(() => !!user.value);
 ```
 
+### Route Protection
 
-### Build the app for production
-```bash
-quasar build
+Routes are protected using authentication guards:
+
+```typescript
+// Protected route example
+{
+  path: '/events',
+  beforeEnter: requireAuth,
+  component: EventsPage
+}
 ```
 
-### Customize the configuration
-See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
+## 🎯 Key Features Deep Dive
+
+### Real-time Event Management
+
+- Create events with game selection
+- Real-time RSVP tracking
+- Google Calendar integration
+- Player limit enforcement
+
+### Messaging System
+
+- Public game comments
+- Private event discussions
+- Direct messaging
+- Real-time updates via Firestore
+
+### Game Integration
+
+- Comprehensive game database
+- Intelligent icon mapping
+- Event creation from game pages
+- Rich game details and artwork
+
+## 🔒 Security
+
+- **Firestore Security Rules**: Row-level security for all collections
+- **Authentication Required**: Protected routes and API calls
+- **Data Validation**: Client and server-side validation
+- **Storage Rules**: Secure file uploads with size limits
+
+## 🚀 Deployment
+
+### Firebase Hosting (Recommended)
+
+```bash
+npm run build
+firebase deploy --only hosting
+```
+
+### Other Platforms
+
+The built `dist/spa` folder can be deployed to any static hosting service.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is private and proprietary.
+
+## 🆘 Support
+
+For setup issues or questions:
+
+1. Check `DEV_SETUP.md` for configuration help
+2. Review `FIREBASE_SETUP.md` for Firebase-specific issues
+3. Check the Firebase Console for backend logs
+4. Verify environment variables are correctly set
+
+---
+
+Built with ❤️ using Vue 3, Quasar, and Firebase

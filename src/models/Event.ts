@@ -29,6 +29,11 @@ export class Event {
   host: Host;
   description: string;
   notes: string;
+  // Firebase-specific fields
+  googleCalendarEventId?: string | undefined;
+  createdBy?: string | undefined;
+  createdAt?: Date | undefined;
+  updatedAt?: Date | undefined;
 
   constructor(eventData: Partial<Event>) {
     this.id = eventData.id || 0;
@@ -46,6 +51,11 @@ export class Event {
     this.host = eventData.host || { name: '', email: '', phone: '' };
     this.description = eventData.description || '';
     this.notes = eventData.notes || '';
+    // Firebase fields
+    this.googleCalendarEventId = eventData.googleCalendarEventId;
+    this.createdBy = eventData.createdBy;
+    this.createdAt = eventData.createdAt;
+    this.updatedAt = eventData.updatedAt;
   }
 
   // Helper methods
