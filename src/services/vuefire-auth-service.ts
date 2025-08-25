@@ -17,12 +17,14 @@ import { Player } from 'src/models/Player';
 export class VueFireAuthService {
   public currentPlayer = ref<Player | null>(null);
   public loading = ref(false);
+  public googleAccessToken = ref<string | null>(null);
 
   private googleProvider = new GoogleAuthProvider();
   private facebookProvider = new FacebookAuthProvider();
 
   constructor() {
-    // Add required scopes for Google
+    // Add required scopes for Google Calendar with write permissions
+    this.googleProvider.addScope('https://www.googleapis.com/auth/calendar.events');
     this.googleProvider.addScope('https://www.googleapis.com/auth/calendar');
     this.googleProvider.addScope('profile');
     this.googleProvider.addScope('email');
@@ -60,9 +62,35 @@ export class VueFireAuthService {
   async signInWithGoogle() {
     this.loading.value = true;
     try {
+      console.log('Signing in with Google Calendar permissions...');
+
       const result = await signInWithPopup(auth, this.googleProvider);
+
+      // Store the Google OAuth access token for Calendar API
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+      console.log('Google OAuth credential:', credential);
+
+      if (credential?.accessToken) {
+        console.log(
+          'Got Google OAuth access token (first 20 chars):',
+          credential.accessToken.substring(0, 20) + '...',
+        );
+        this.googleAccessToken.value = credential.accessToken;
+      } else {
+        console.warn('No access token received from Google OAuth');
+      }
+
+      // Log what scopes were actually granted
+      if (credential) {
+        console.log('OAuth credential details:', {
+          hasAccessToken: !!credential.accessToken,
+          tokenLength: credential.accessToken?.length,
+        });
+      }
+
       return result.user;
     } catch (error) {
+      console.error('Google sign-in error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Google sign-in failed: ${errorMessage}`);
     } finally {
@@ -115,15 +143,38 @@ export class VueFireAuthService {
 
   async signOut() {
     try {
+      // Clear current player immediately to prevent listener errors
+      this.currentPlayer.value = null;
+
       await firebaseSignOut(auth);
+
+      // Clear the stored Google access token
+      this.googleAccessToken.value = null;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+      // Don't throw errors for common sign-out issues like permission errors
+      // as they're expected when signing out with active listeners
+      if (errorMessage.includes('permission-denied') || errorMessage.includes('auth/')) {
+        console.warn('Expected sign-out warning:', errorMessage);
+        // Still clear the tokens even if sign-out had issues
+        this.googleAccessToken.value = null;
+        this.currentPlayer.value = null;
+        return;
+      }
+
       throw new Error(`Sign-out failed: ${errorMessage}`);
     }
   }
 
   private async loadPlayerProfile(user: User) {
     try {
+      // Only proceed if user is properly authenticated
+      if (!user || !user.uid) {
+        console.warn('Cannot load player profile: user not properly authenticated');
+        return;
+      }
+
       const playerDoc = await getDoc(doc(db, 'players', user.uid));
 
       if (playerDoc.exists()) {
@@ -170,6 +221,19 @@ export class VueFireAuthService {
       }
     } catch (error) {
       console.error('Error loading player profile:', error);
+
+      // Handle permission errors gracefully
+      if (error instanceof Error && error.message.includes('permission-denied')) {
+        console.warn(
+          'Permission denied when accessing player profile. User may need to re-authenticate.',
+        );
+        // Clear current player but don't throw to avoid breaking the auth flow
+        this.currentPlayer.value = null;
+        return;
+      }
+
+      // For other errors, still log but don't break auth flow
+      console.error('Failed to load or create player profile:', error);
     }
   }
 

@@ -100,6 +100,18 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/testing',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/TestingDashboard.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
 
   // Always leave this as last one,
   // but you can also remove it
