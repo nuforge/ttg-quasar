@@ -4,9 +4,11 @@ import { useCurrentUser } from 'vuefire';
 import { vueFireAuthService } from 'src/services/vuefire-auth-service';
 import LeftDrawer from "src/components/LeftDrawer.vue";
 import RightDrawer from "src/components/RightDrawer.vue";
+import PlayerAvatar from 'src/components/PlayerAvatar.vue';
 
 const user = useCurrentUser();
 const isAuthenticated = computed(() => !!user.value);
+const currentPlayer = computed(() => vueFireAuthService.currentPlayer.value);
 
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
@@ -32,9 +34,9 @@ const signOut = async () => {
 
         <!-- User menu -->
         <div v-if="isAuthenticated" class="row items-center q-gutter-sm">
-          <q-avatar size="32px">
-            <img v-if="user?.photoURL" :src="user.photoURL" />
-            <q-icon v-else name="person" />
+          <PlayerAvatar v-if="currentPlayer" :player="currentPlayer" size="32px" />
+          <q-avatar v-else size="32px" color="primary" text-color="white">
+            {{ (user?.displayName || 'U').charAt(0).toUpperCase() }}
           </q-avatar>
 
           <q-btn-dropdown flat no-caps :label="user?.displayName || 'User'">

@@ -140,20 +140,31 @@ export class VueFireAuthService {
           id: parseInt(user.uid.slice(-6), 36),
           name: user.displayName || 'New Player',
           email: user.email || '',
-          avatar: user.photoURL || undefined,
+          // Don't store Google photoURL as it has rate limits and auth issues
+          avatar: undefined,
           joinDate: new Date(),
         });
 
-        // Save to Firestore
-        await setDoc(doc(db, 'players', user.uid), {
+        // Save to Firestore - filter out undefined values
+        const playerData: Record<string, unknown> = {
           id: newPlayer.id,
           name: newPlayer.name,
           email: newPlayer.email,
-          avatar: newPlayer.avatar,
           joinDate: new Date(),
-          bio: newPlayer.bio,
-          preferences: newPlayer.preferences,
-        });
+        };
+
+        // Only add optional fields if they have defined values
+        if (newPlayer.avatar !== undefined) {
+          playerData.avatar = newPlayer.avatar;
+        }
+        if (newPlayer.bio !== undefined) {
+          playerData.bio = newPlayer.bio;
+        }
+        if (newPlayer.preferences !== undefined && Object.keys(newPlayer.preferences).length > 0) {
+          playerData.preferences = newPlayer.preferences;
+        }
+
+        await setDoc(doc(db, 'players', user.uid), playerData);
 
         this.currentPlayer.value = newPlayer;
       }
@@ -169,11 +180,19 @@ export class VueFireAuthService {
     }
 
     try {
+      // Filter out undefined values from updates
+      const filteredUpdates: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(updates)) {
+        if (value !== undefined) {
+          filteredUpdates[key] = value;
+        }
+      }
+
       // Update Firestore
       await setDoc(
         doc(db, 'players', user.value.uid),
         {
-          ...updates,
+          ...filteredUpdates,
           updatedAt: new Date(),
         },
         { merge: true },

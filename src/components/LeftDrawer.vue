@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { authService } from 'src/services/auth-service';
 import QRDialog from 'src/components/qrcode/QRDialog.vue';
+import PlayerAvatar from 'src/components/PlayerAvatar.vue';
 
 const leftDrawerOpen = ref(true);
 const qrdialog = ref(false);
@@ -125,8 +126,9 @@ const signOut = async () => {
         </div>
 
         <div v-else class="q-pa-md text-center">
-          <q-avatar size="40px" class="q-mb-sm">
-            <img :src="currentUser?.photoURL || '/default-avatar.png'" />
+          <PlayerAvatar v-if="currentPlayer" :player="currentPlayer" size="40px" class="q-mb-sm" />
+          <q-avatar v-else size="40px" color="primary" text-color="white" class="q-mb-sm">
+            {{ (currentUser?.displayName || 'U').charAt(0).toUpperCase() }}
           </q-avatar>
           <div class="text-caption">{{ currentPlayer?.name || currentUser?.displayName }}</div>
           <q-btn flat dense size="sm" color="negative" label="Sign Out" @click="signOut" class="q-mt-sm" />
