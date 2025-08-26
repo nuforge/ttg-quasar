@@ -3,8 +3,8 @@ import { ref, onMounted, computed } from 'vue';
 import type { Game } from 'src/models/Game';
 import QRCode from './qrcode/QRCode.vue';
 import GameIcon from './GameIcon.vue';
+import { getGameImageUrl } from 'src/composables/useGameImage';
 
-const imageSrc = '/images/games/';
 const showQRCode = ref(false);
 
 const reserved = ref(false);
@@ -21,6 +21,8 @@ const shareData = ref({
 const props = defineProps<{
   game: Game;
 }>();
+
+const gameImageUrl = computed(() => getGameImageUrl(props.game.image));
 
 const mainGameComponents = computed(() => {
   if (!props.game.components || !Array.isArray(props.game.components)) return [];
@@ -104,8 +106,8 @@ onMounted(() => {
       </q-list>
     </q-card-section>
     <q-card-section horizontal class="q-gutter-md q-px-sm justify-between game-card-body">
-      <q-img :src="`${imageSrc}${game.image}`" style=" max-width: 100px; max-height: 110px; align-self: start;"
-        no-spinner fit="scale-down" />
+      <q-img :src="gameImageUrl" style="max-width: 100px; max-height: 110px; align-self: start;" no-spinner
+        fit="scale-down" @error="($event.target as HTMLImageElement).src = '/images/games/default.svg'" />
 
       <div class="game-card-description col text-body2 text-grey ">
         {{ game.description }}

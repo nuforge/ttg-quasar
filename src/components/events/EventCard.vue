@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
-import games from 'src/assets/data/games.json';
 import type { Event } from 'src/models/Event';
 import { usePlayersStore } from 'src/stores/players-store';
 import { useCalendarStore } from 'src/stores/calendar-store';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { Player } from 'src/models/Player';
 import GameIcon from '../GameIcon.vue';
 import PlayerListDialog from 'src/components/players/PlayerListDialog.vue';
@@ -21,15 +21,19 @@ const props = defineProps({
 
 // Players store and dialog
 const playersStore = usePlayersStore();
+const gamesStore = useGamesFirebaseStore();
 
 const calendarStore = useCalendarStore();
 const showPlayersDialog = ref(false);
 const attendingPlayers = ref<Player[]>([]);
 
-// Fetch players on mount
+// Fetch data on mount
 onMounted(async () => {
   if (playersStore.players.length === 0) {
     await playersStore.fetchPlayers();
+  }
+  if (gamesStore.games.length === 0) {
+    await gamesStore.loadGames();
   }
 });
 
@@ -50,7 +54,7 @@ const statusColor = computed(() => {
 
 // Replace gameTitle with full game object
 const game = computed(() => {
-  return games.find(g => g.id === props.event.gameId) || null;
+  return gamesStore.games.find(g => g.legacyId === props.event.gameId) || null;
 });
 
 // Simple time formatter that converts 24h to 12h format
@@ -98,7 +102,7 @@ const selectEventDate = () => {
       <div class="row items-center justify-between">
 
         <router-link :to="`/events/${event.id}`" class="text-h6 text-uppercase no-underline">{{ event.title
-          }}</router-link>
+        }}</router-link>
         <q-badge :color="statusColor">{{ event.status }}</q-badge>
       </div>
     </q-card-section>

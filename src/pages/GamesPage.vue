@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import gamesData from 'src/assets/data/games.json';
 import GameCard from 'src/components/GameCard.vue';
 import GameIcon from 'src/components/GameIcon.vue';
 import QRCode from 'src/components/qrcode/QRCode.vue';
 import { ref, computed, onMounted } from 'vue';
-import { Game } from 'src/models/Game';
+import type { Game } from 'src/models/Game';
 import { useRouter } from 'vue-router';
+import { gamesApiService } from 'src/services/api-service';
+import { getGameImageUrl } from 'src/composables/useGameImage';
 
 // Router
 const router = useRouter();
@@ -47,18 +48,29 @@ const getGameState = (gameId: number) => {
 const isWebShareSupported = ref(false);
 
 // Load games data
-const games: Game[] = gamesData.map(gameData => Game.fromJSON(gameData));
+const games = ref<Game[]>([]);
+const loading = ref(true);
 
-// Extract unique filter options from games data
+// Load games on component mount
+onMounted(async () => {
+  try {
+    games.value = await gamesApiService.getGames();
+  } catch (error) {
+    console.error('Failed to load games:', error);
+  } finally {
+    loading.value = false;
+  }
+});
+
+// Computed properties for filter options
 const availableGenres = computed(() => {
-  const genres = [...new Set(games.map(game => game.genre))];
+  const genres = [...new Set(games.value.map(game => game.genre))];
   return genres.sort();
 });
 
 const availablePlayerCounts = computed(() => {
-  const counts = [...new Set(games.map(game => game.numberOfPlayers))];
-  return counts.sort((a, b) => {
-    // Custom sort for player counts
+  const counts = [...new Set(games.value.map(game => game.numberOfPlayers))];
+  return counts.sort((a: string, b: string) => {
     const aNum = parseInt(a.replace(/\D/g, '')) || 0;
     const bNum = parseInt(b.replace(/\D/g, '')) || 0;
     return aNum - bNum;
@@ -66,8 +78,8 @@ const availablePlayerCounts = computed(() => {
 });
 
 const availableAgeRanges = computed(() => {
-  const ages = [...new Set(games.map(game => game.recommendedAge))];
-  return ages.sort((a, b) => {
+  const ages = [...new Set(games.value.map(game => game.recommendedAge))];
+  return ages.sort((a: string, b: string) => {
     const aNum = parseInt(a.replace(/\D/g, '')) || 0;
     const bNum = parseInt(b.replace(/\D/g, '')) || 0;
     return aNum - bNum;
@@ -75,12 +87,12 @@ const availableAgeRanges = computed(() => {
 });
 
 const availablePlayTimes = computed(() => {
-  const times = [...new Set(games.map(game => game.playTime))];
+  const times = [...new Set(games.value.map(game => game.playTime))];
   return times.sort();
 });
 
 const availableComponents = computed(() => {
-  const components = [...new Set(games.flatMap(game => game.components || []))];
+  const components = [...new Set(games.value.flatMap(game => game.components || []))];
   return components.sort();
 });
 
@@ -95,7 +107,7 @@ const sortOptions = [
 
 // Filter and sort logic
 const filteredAndSortedGames = computed(() => {
-  let filtered = games;
+  let filtered = games.value;
 
   // Apply text search
   if (searchQuery.value) {
@@ -107,7 +119,7 @@ const filteredAndSortedGames = computed(() => {
         game.numberOfPlayers.toLowerCase().includes(query) ||
         game.recommendedAge.toLowerCase().includes(query) ||
         game.playTime.toLowerCase().includes(query) ||
-        (game.components && game.components.some(component => component.toLowerCase().includes(query)));
+        (game.components && game.components.some((component: string) => component.toLowerCase().includes(query)));
     });
   }
 
@@ -209,7 +221,7 @@ const toggleQRCode = (gameId: number) => {
 };
 
 const navigateToGame = (game: Game) => {
-  router.push(`/games/${game.id}`).catch((err) => {
+  router.push(`/games/${game.legacyId}`).catch((err) => {
     console.error('Navigation error:', err);
   });
 };
@@ -220,7 +232,7 @@ const shareGame = async (game: Game) => {
       await navigator.share({
         title: game.title,
         text: `Check out this cool game: ${game.description}`,
-        url: `${window.location.origin}/games/${game.id}`
+        url: `${window.location.origin}/games/${game.legacyId}`
       });
     } catch (err) {
       console.log('Share canceled', err);
@@ -270,7 +282,11 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
 </script>
 
 <template>
-  <div class="games-page">
+  <div v-if="loading" class="flex justify-center q-pa-xl">
+    <q-spinner color="primary" size="3em" />
+  </div>
+
+  <div v-else class="games-page">
     <!-- Header with title and view toggle -->
     <div class="page-header q-mb-md">
       <div class="text-h6 text-uppercase">
@@ -389,8 +405,8 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
           <q-item v-for="game in filteredAndSortedGames" :key="game.title" class="game-list-item">
             <q-item-section avatar class="game-avatar-section">
               <div class="game-image-container">
-                <img :src="`/images/games/${game.image}`" :alt="game.title"
-                  @error="(e) => { (e.target as HTMLImageElement).src = '/images/games/default.webp' }"
+                <img :src="getGameImageUrl(game.image)" :alt="game.title"
+                  @error="(e) => { (e.target as HTMLImageElement).src = '/images/games/default.svg' }"
                   class="game-image" />
               </div>
             </q-item-section>
@@ -439,34 +455,35 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
               <div class="list-actions">
                 <!-- Top row actions -->
                 <div class="action-row">
-                  <q-btn :icon="`mdi-calendar-clock${getGameState(game.id).reserved ? '' : '-outline'}`"
-                    @click="toggleReserved(game.id)" :color="getGameState(game.id).reserved ? 'primary' : 'grey-6'" flat
-                    dense round size="sm">
+                  <q-btn :icon="`mdi-calendar-clock${getGameState(game.legacyId).reserved ? '' : '-outline'}`"
+                    @click="toggleReserved(game.legacyId)"
+                    :color="getGameState(game.legacyId).reserved ? 'primary' : 'grey-6'" flat dense round size="sm">
                     <q-tooltip class="bg-primary">
-                      {{ getGameState(game.id).reserved ? 'Remove reservation' : 'Reserve game' }}
+                      {{ getGameState(game.legacyId).reserved ? 'Remove reservation' : 'Reserve game' }}
                     </q-tooltip>
                   </q-btn>
 
-                  <q-btn :icon="`mdi-bookmark${getGameState(game.id).bookmark ? '' : '-outline'}`"
-                    @click="toggleBookmark(game.id)" :color="getGameState(game.id).bookmark ? 'accent' : 'grey-6'" flat
-                    dense round size="sm">
+                  <q-btn :icon="`mdi-bookmark${getGameState(game.legacyId).bookmark ? '' : '-outline'}`"
+                    @click="toggleBookmark(game.legacyId)"
+                    :color="getGameState(game.legacyId).bookmark ? 'accent' : 'grey-6'" flat dense round size="sm">
                     <q-tooltip class="bg-accent">
-                      {{ getGameState(game.id).bookmark ? 'Remove bookmark' : 'Bookmark game' }}
+                      {{ getGameState(game.legacyId).bookmark ? 'Remove bookmark' : 'Bookmark game' }}
                     </q-tooltip>
                   </q-btn>
 
-                  <q-btn :icon="`mdi-star${getGameState(game.id).favorite ? '' : '-outline'}`"
-                    @click="toggleFavorite(game.id)" :color="getGameState(game.id).favorite ? 'secondary' : 'grey-6'"
-                    flat dense round size="sm">
+                  <q-btn :icon="`mdi-star${getGameState(game.legacyId).favorite ? '' : '-outline'}`"
+                    @click="toggleFavorite(game.legacyId)"
+                    :color="getGameState(game.legacyId).favorite ? 'secondary' : 'grey-6'" flat dense round size="sm">
                     <q-tooltip class="bg-secondary">
-                      {{ getGameState(game.id).favorite ? 'Remove from favorites' : 'Add to favorites' }}
+                      {{ getGameState(game.legacyId).favorite ? 'Remove from favorites' : 'Add to favorites' }}
                     </q-tooltip>
                   </q-btn>
                 </div>
 
                 <!-- Bottom row actions -->
                 <div class="action-row q-mt-xs">
-                  <q-btn icon="mdi-qrcode" @click="toggleQRCode(game.id)" flat dense round size="sm" color="grey-6">
+                  <q-btn icon="mdi-qrcode" @click="toggleQRCode(game.legacyId)" flat dense round size="sm"
+                    color="grey-6">
                     <q-tooltip>Show QR Code</q-tooltip>
                   </q-btn>
 
@@ -483,7 +500,7 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
             </q-item-section>
 
             <!-- QR Code modal for each game -->
-            <QRCode :game="game" v-model:showQR="getGameState(game.id).showQRCode" />
+            <QRCode :game="game" v-model:showQR="getGameState(game.legacyId).showQRCode" />
           </q-item>
         </q-list>
       </div>

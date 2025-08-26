@@ -1,19 +1,24 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import gamesData from 'src/assets/data/games.json';
 import eventsData from 'src/assets/data/events.json';
-import { Game } from 'src/models/Game';
 import { Event } from 'src/models/Event';
 import type { EventStatus } from 'src/models/Event';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import GameCard from 'src/components/GameCard.vue';
 import EventCard from 'src/components/events/EventCard.vue';
 
 const router = useRouter();
+const gamesStore = useGamesFirebaseStore();
 
-// Process games data
-const games = gamesData.map(game => Game.fromJSON(game));
-const featuredGames = computed(() => games.slice(0, 3));
+// Load games on mount
+onMounted(async () => {
+  if (gamesStore.games.length === 0) {
+    await gamesStore.loadGames();
+  }
+});
+// Featured content
+const featuredGames = computed(() => gamesStore.approvedGames.slice(0, 3));
 
 // Process events data - convert status strings to proper type
 const processedEventsData = eventsData.map(event => ({
@@ -181,7 +186,7 @@ const steps = [
     <section class="stats-section q-pa-md q-mb-xl text-center">
       <div class="row q-col-gutter-md">
         <div class="col-xs-12 col-sm-4">
-          <div class="text-h3 text-primary">{{ games.length }}+</div>
+          <div class="text-h3 text-primary">{{ gamesStore.approvedGames.length }}+</div>
           <div class="text-subtitle1">Games Available</div>
         </div>
         <div class="col-xs-12 col-sm-4">

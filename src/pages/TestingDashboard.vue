@@ -134,29 +134,19 @@
                     <div class="text-caption text-weight-bold text-blue q-mb-sm">🔑 Google OAuth Token Status</div>
 
                     <div class="row items-center q-gutter-sm q-mb-sm">
-                      <q-chip
-                        :color="vueFireAuthService.isGoogleTokenValid() ? 'green' : 'red'"
-                        text-color="white"
-                        :icon="vueFireAuthService.isGoogleTokenValid() ? 'verified' : 'error'"
-                        size="sm">
+                      <q-chip :color="vueFireAuthService.isGoogleTokenValid() ? 'green' : 'red'" text-color="white"
+                        :icon="vueFireAuthService.isGoogleTokenValid() ? 'verified' : 'error'" size="sm">
                         {{ vueFireAuthService.isGoogleTokenValid() ? 'Valid' : 'Expired/Missing' }}
                       </q-chip>
 
-                      <q-btn
-                        v-if="!vueFireAuthService.isGoogleTokenValid()"
-                        color="primary"
-                        icon="refresh"
-                        label="Refresh Token"
-                        @click="refreshGoogleAuth"
-                        :loading="authLoading"
-                        size="sm"
-                        dense />
+                      <q-btn v-if="!vueFireAuthService.isGoogleTokenValid()" color="primary" icon="refresh"
+                        label="Refresh Token" @click="refreshGoogleAuth" :loading="authLoading" size="sm" dense />
                     </div>
 
                     <div class="text-caption text-grey-6">
                       {{ vueFireAuthService.googleAccessToken.value ?
-                          'Token available, expires automatically in ~1 hour' :
-                          'No token available. Sign in with Google to obtain calendar access.' }}
+                        'Token available, expires automatically in ~1 hour' :
+                        'No token available. Sign in with Google to obtain calendar access.' }}
                     </div>
                   </q-card-section>
                 </q-card>
@@ -268,7 +258,7 @@
                     <!-- Event Submissions List -->
                     <div v-if="eventSubmissions.length > 0" class="q-mt-md">
                       <div class="text-caption text-weight-bold q-mb-sm">Event Submissions ({{ eventSubmissions.length
-                      }}):</div>
+                        }}):</div>
                       <q-list dense bordered class="rounded-borders">
                         <q-item v-for="submission in eventSubmissions" :key="submission.id || 'unknown'"
                           class="q-pa-sm">
@@ -414,6 +404,49 @@
         </q-card>
       </div>
 
+      <!-- Games Migration -->
+      <div class="col-12">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">🎮 Games Data Migration</div>
+            <div class="q-mt-md">
+              <div class="text-body2 q-mb-md">
+                Migrate games data from local JSON to Firebase with image storage support.
+              </div>
+
+              <div class="q-gutter-sm">
+                <q-btn color="primary" icon="cloud_upload" label="Migrate Games to Firebase" @click="runGamesMigration"
+                  :loading="migrationLoading" />
+                <q-btn color="negative" icon="delete_forever" label="Clear All Games" @click="clearAllGames"
+                  :loading="migrationLoading" />
+              </div>
+
+              <div v-if="migrationResult" class="q-mt-md">
+                <q-card flat bordered :class="migrationResult.errors.length > 0 ? 'bg-orange-1' : 'bg-green-1'">
+                  <q-card-section class="q-pa-sm">
+                    <div class="text-subtitle2">Migration Results:</div>
+                    <div class="text-body2">
+                      Total: {{ migrationResult.total }}<br>
+                      Successful: {{ migrationResult.successful }}<br>
+                      Errors: {{ migrationResult.errors.length }}
+                    </div>
+                    <div v-if="migrationResult.errors.length > 0" class="q-mt-sm">
+                      <div class="text-caption text-weight-bold">Errors:</div>
+                      <div v-for="error in migrationResult.errors.slice(0, 3)" :key="error.gameId" class="text-caption">
+                        • Game ID {{ error.gameId }}: {{ error.error }}
+                      </div>
+                      <div v-if="migrationResult.errors.length > 3" class="text-caption">
+                        ... and {{ migrationResult.errors.length - 3 }} more
+                      </div>
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
       <!-- Activity Log -->
       <div class="col-12">
         <q-card>
@@ -472,6 +505,7 @@ import { apiTestingService, type APITestResult } from 'src/services/api-testing-
 import { eventSubmissionService } from 'src/services/event-submission-service';
 import { type EventSubmission } from 'src/models/EventSubmission';
 import EventSubmissionDialog from 'src/components/events/EventSubmissionDialog.vue';
+import { gameMigrationService, type MigrationResult } from 'src/services/game-migration-service';
 
 const $q = useQuasar();
 
@@ -502,6 +536,10 @@ const calendarLoading = ref(false);
 const eventsLoading = ref(false);
 const messagesLoading = ref(false);
 const allTestsLoading = ref(false);
+const migrationLoading = ref(false);
+
+// Migration results
+const migrationResult = ref<MigrationResult | null>(null);
 
 // Event submission system
 const showEventSubmissionDialog = ref(false);
@@ -1465,6 +1503,71 @@ const setupRealtimeListeners = () => {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error occurred';
     addLog(`Failed to setup real-time listener: ${message}`, 'red', 'error');
+  }
+};
+
+// Games Migration Functions
+const runGamesMigration = () => {
+  migrationLoading.value = true;
+  migrationResult.value = null;
+
+  try {
+    addLog('🎮 Starting games migration to Firebase...', 'blue', 'cloud_upload');
+    const result = gameMigrationService.migrateGamesToFirebase($q);
+    migrationResult.value = result;
+
+    if (result.errors.length === 0) {
+      addLog(`✅ Games migration completed successfully! ${result.successful} games migrated.`, 'green', 'check_circle');
+      showNotification({
+        type: 'positive',
+        message: `Successfully migrated ${result.successful} games to Firebase with image support!`,
+        position: 'top'
+      });
+    } else {
+      addLog(`⚠️ Games migration completed with ${result.errors.length} errors. ${result.successful} games migrated successfully.`, 'orange', 'warning');
+      showNotification({
+        type: 'warning',
+        message: `Migration completed with some errors. ${result.successful} games migrated successfully.`,
+        position: 'top'
+      });
+    }
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    addLog(`❌ Games migration failed: ${message}`, 'red', 'error');
+    showNotification({
+      type: 'negative',
+      message: 'Games migration failed. Check activity log for details.',
+      position: 'top'
+    });
+  } finally {
+    migrationLoading.value = false;
+  }
+};
+
+const clearAllGames = () => {
+  migrationLoading.value = true;
+
+  try {
+    addLog('🗑️ Clearing all games from Firebase...', 'orange', 'delete_forever');
+    gameMigrationService.clearAllGames($q);
+    migrationResult.value = null;
+
+    addLog('✅ All games cleared from Firebase successfully!', 'green', 'check_circle');
+    showNotification({
+      type: 'positive',
+      message: 'All games cleared from Firebase successfully!',
+      position: 'top'
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    addLog(`❌ Failed to clear games: ${message}`, 'red', 'error');
+    showNotification({
+      type: 'negative',
+      message: 'Failed to clear games. Check activity log for details.',
+      position: 'top'
+    });
+  } finally {
+    migrationLoading.value = false;
   }
 };
 

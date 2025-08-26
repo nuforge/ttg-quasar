@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import eventsData from 'src/assets/data/events.json';
-import games from 'src/assets/data/games.json';
 import { Event } from 'src/models/Event';
 import type { EventStatus } from 'src/models/Event';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import EventCard from 'src/components/events/EventCard.vue';
 
 // Preprocess the JSON data to convert string status to EventStatus enum
@@ -19,6 +19,16 @@ const processedEventsData = eventsData.map(event => ({
 
 // Convert the JSON data to Event objects
 const events = Event.fromJSON(processedEventsData);
+
+// Games store
+const gamesStore = useGamesFirebaseStore();
+
+// Load games on mount
+onMounted(async () => {
+  if (gamesStore.games.length === 0) {
+    await gamesStore.loadGames();
+  }
+});
 
 // Filter and sorting options
 const search = ref('');
@@ -37,9 +47,9 @@ const statuses = [
 
 // Filter options for game selection
 const gameOptions = computed(() => {
-  return games.map(game => ({
+  return gamesStore.games.map(game => ({
     label: game.title,
-    value: game.id
+    value: game.legacyId // Use legacyId to match with event.gameId
   }));
 });
 

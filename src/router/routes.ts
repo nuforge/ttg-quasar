@@ -59,6 +59,28 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/GamePage.vue') }],
   },
   {
+    path: '/admin/games',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/AdminGames.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
+    ],
+  },
+  {
+    path: '/test/migration',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/MigrationTest.vue'),
+      },
+    ],
+  },
+  {
     path: '/players/',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/PlayersPage.vue') }],

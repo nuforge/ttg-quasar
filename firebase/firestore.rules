@@ -66,6 +66,47 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
 
+    // Games collection
+    match /games/{gameId} {
+      // Anyone can read games
+      allow read: if true;
+      
+      // Only admins can create, update, or delete games
+      // For testing: temporarily allow any authenticated user during development
+      allow create, update, delete: if request.auth != null;
+      // Production: use email allowlist instead:
+      // allow create, update, delete: if request.auth != null &&
+      //   request.auth.token.email in ['admin@ttgaming.com', 'your-email@example.com'];
+    }
+
+    // Game submissions collection (for user-submitted games pending approval)
+    match /gameSubmissions/{submissionId} {
+      // Users can read their own submissions, admins can read all
+      // For testing: allow any authenticated user
+      allow read: if request.auth != null;
+      // Production: restrict to submitter and admins:
+      // allow read: if request.auth != null && (
+      //   request.auth.uid == resource.data.submittedBy.userId ||
+      //   request.auth.token.email in ['admin@ttgaming.com', 'your-email@example.com']
+      // );
+      
+      // Only authenticated users can create submissions
+      allow create: if request.auth != null &&
+        request.auth.uid == request.resource.data.submittedBy.userId &&
+        request.resource.data.status == 'pending';
+      
+      // For testing: allow any authenticated user to update
+      allow update: if request.auth != null;
+      // Production: only admins:
+      // allow update: if request.auth != null &&
+      //   request.auth.token.email in ['admin@ttgaming.com', 'your-email@example.com'];
+      
+      // Only the submitter can delete their own pending submissions
+      allow delete: if request.auth != null &&
+        request.auth.uid == resource.data.submittedBy.userId &&
+        resource.data.status == 'pending';
+    }
+
     // Event submissions collection
     match /eventSubmissions/{submissionId} {
       // Users can read their own submissions, admins can read all

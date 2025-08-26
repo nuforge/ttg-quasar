@@ -67,6 +67,16 @@ const signOut = async () => {
           </q-item-section>
         </q-item>
 
+        <q-item clickable v-ripple to="/test/migration" class="text-caption">
+          <q-item-section avatar>
+            <q-icon name="mdi-database-sync" size="sm" />
+          </q-item-section>
+
+          <q-item-section>
+            Migration Test
+          </q-item-section>
+        </q-item>
+
         <q-item clickable v-ripple to="/players">
           <q-item-section avatar>
             <q-icon name="mdi-account-group" />

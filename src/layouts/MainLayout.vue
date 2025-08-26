@@ -59,6 +59,16 @@ const signOut = async () => {
                 </q-item-section>
               </q-item>
 
+              <!-- Admin link (TODO: Add proper admin role check) -->
+              <q-item clickable v-close-popup to="/admin/games">
+                <q-item-section avatar>
+                  <q-icon name="mdi-shield-crown" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Admin</q-item-label>
+                </q-item-section>
+              </q-item>
+
               <q-separator />
 
               <q-item clickable v-close-popup @click="signOut">

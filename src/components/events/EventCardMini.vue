@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
-import games from 'src/assets/data/games.json';
 import type { Event } from 'src/models/Event';
 import { useCalendarStore } from 'src/stores/calendar-store';
 import { usePlayersStore } from 'src/stores/players-store';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { Player } from 'src/models/Player';
 import EventQRCode from 'src/components/qrcode/EventQRCode.vue';
 import PlayerListDialog from 'src/components/players/PlayerListDialog.vue';
@@ -26,12 +26,16 @@ const showPlayersDialog = ref(false);
 
 // Players store
 const playersStore = usePlayersStore();
+const gamesStore = useGamesFirebaseStore();
 const attendingPlayers = ref<Player[]>([]);
 
-// Fetch players on mount
+// Fetch data on mount
 onMounted(async () => {
   if (playersStore.players.length === 0) {
     await playersStore.fetchPlayers();
+  }
+  if (gamesStore.games.length === 0) {
+    await gamesStore.loadGames();
   }
 });
 
@@ -77,7 +81,7 @@ const isEventFull = computed(() => {
 
 // Replace gameTitle with full game object
 const game = computed(() => {
-  return games.find(g => g.id === props.event.gameId) || null;
+  return gamesStore.games.find(g => g.legacyId === props.event.gameId) || null;
 });
 
 // Simple time formatter that converts 24h to 12h format

@@ -4,9 +4,9 @@ import { useRoute } from 'vue-router';
 import { useEventsStore } from 'src/stores/events-store';
 import { usePlayersStore } from 'src/stores/players-store';
 import { useMessagesStore } from 'src/stores/messages-store';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { Event } from 'src/models/Event';
 import type { Player } from 'src/models/Player';
-import games from 'src/assets/data/games.json';
 import PlayerDetails from 'src/components/players/PlayerDetails.vue';
 import PlayersList from 'src/components/players/PlayersList.vue';
 import MessageList from 'src/components/messaging/MessageList.vue';
@@ -16,6 +16,7 @@ const route = useRoute();
 const eventsStore = useEventsStore();
 const playersStore = usePlayersStore();
 const messagesStore = useMessagesStore();
+const gamesStore = useGamesFirebaseStore();
 
 const eventId = ref(route.params.id ? route.params.id.toString().split('/')[0] : '');
 const event = ref<Event | null>(null);
@@ -27,7 +28,7 @@ const showPlayerDetailsDialog = ref(false);
 const game = computed(() => {
   if (!event.value) return null;
   // Add explicit null check to satisfy TypeScript
-  return games.find(g => g.id === event.value?.gameId) || null;
+  return gamesStore.games.find(g => g.legacyId === event.value?.gameId) || null;
 });
 
 // Get players for this event
@@ -47,6 +48,11 @@ const eventComments = computed(() => {
 onMounted(async () => {
   try {
     if (eventId.value) {
+      // Load games data
+      if (gamesStore.games.length === 0) {
+        await gamesStore.loadGames();
+      }
+
       // Load players data
       if (playersStore.players.length === 0) {
         await playersStore.fetchPlayers();
