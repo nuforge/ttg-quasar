@@ -128,6 +128,39 @@
                   <q-input v-model="testEvent.endTime" label="End Time" type="time" outlined dense class="col" />
                 </div>
 
+                <!-- Token Status -->
+                <q-card class="q-mt-md" v-if="currentUser">
+                  <q-card-section class="q-pb-sm">
+                    <div class="text-caption text-weight-bold text-blue q-mb-sm">🔑 Google OAuth Token Status</div>
+
+                    <div class="row items-center q-gutter-sm q-mb-sm">
+                      <q-chip
+                        :color="vueFireAuthService.isGoogleTokenValid() ? 'green' : 'red'"
+                        text-color="white"
+                        :icon="vueFireAuthService.isGoogleTokenValid() ? 'verified' : 'error'"
+                        size="sm">
+                        {{ vueFireAuthService.isGoogleTokenValid() ? 'Valid' : 'Expired/Missing' }}
+                      </q-chip>
+
+                      <q-btn
+                        v-if="!vueFireAuthService.isGoogleTokenValid()"
+                        color="primary"
+                        icon="refresh"
+                        label="Refresh Token"
+                        @click="refreshGoogleAuth"
+                        :loading="authLoading"
+                        size="sm"
+                        dense />
+                    </div>
+
+                    <div class="text-caption text-grey-6">
+                      {{ vueFireAuthService.googleAccessToken.value ?
+                          'Token available, expires automatically in ~1 hour' :
+                          'No token available. Sign in with Google to obtain calendar access.' }}
+                    </div>
+                  </q-card-section>
+                </q-card>
+
                 <!-- Calendar Selection -->
                 <q-card class="q-mt-md">
                   <q-card-section class="q-pb-none">
@@ -576,7 +609,14 @@ const calendarStatus = computed(() => {
   }
 
   if (currentUser.value) {
-    return { color: 'orange', icon: 'warning', text: 'Not Tested' };
+    // Check Google token status
+    if (vueFireAuthService.isGoogleTokenValid()) {
+      return { color: 'green', icon: 'verified', text: 'Token Valid' };
+    } else if (vueFireAuthService.googleAccessToken.value) {
+      return { color: 'orange', icon: 'schedule', text: 'Token Expired' };
+    } else {
+      return { color: 'orange', icon: 'warning', text: 'No Token' };
+    }
   }
   return { color: 'red', icon: 'error', text: 'Auth Required' };
 });

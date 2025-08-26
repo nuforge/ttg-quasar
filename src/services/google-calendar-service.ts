@@ -72,7 +72,13 @@ export class GoogleCalendarService {
       throw new Error('User not authenticated');
     }
 
-    // Check if we have a stored Google OAuth access token
+    // Check if we have a valid Google OAuth access token
+    if (!vueFireAuthService.isGoogleTokenValid()) {
+      throw new Error(
+        'Google Calendar access token is expired or invalid. Please sign in with Google again to refresh your permissions.',
+      );
+    }
+
     const accessToken = vueFireAuthService.googleAccessToken.value;
     if (!accessToken) {
       throw new Error('No Google OAuth access token available. Please sign in with Google again.');

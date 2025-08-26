@@ -18,9 +18,15 @@ export class VueFireAuthService {
   public currentPlayer = ref<Player | null>(null);
   public loading = ref(false);
   public googleAccessToken = ref<string | null>(null);
+  private googleAccessTokenExpiry = ref<number | null>(null);
+  private refreshTokenInterval: NodeJS.Timeout | null = null;
 
   private googleProvider = new GoogleAuthProvider();
   private facebookProvider = new FacebookAuthProvider();
+
+  // Storage keys for persisting tokens
+  private readonly GOOGLE_TOKEN_KEY = 'ttg_google_access_token';
+  private readonly GOOGLE_TOKEN_EXPIRY_KEY = 'ttg_google_token_expiry';
 
   constructor() {
     // Add required scopes for Google Calendar with write permissions
@@ -28,6 +34,18 @@ export class VueFireAuthService {
     this.googleProvider.addScope('https://www.googleapis.com/auth/calendar');
     this.googleProvider.addScope('profile');
     this.googleProvider.addScope('email');
+
+    // Set up force approval prompt to ensure we get refresh tokens
+    this.googleProvider.setCustomParameters({
+      prompt: 'consent',
+      access_type: 'offline',
+    });
+
+    // Initialize token from storage
+    this.loadTokenFromStorage();
+
+    // Set up token refresh checking
+    this.setupTokenRefresh();
 
     // Watch for user changes and load player profile
     const user = useCurrentUser();
@@ -59,6 +77,98 @@ export class VueFireAuthService {
     return computed(() => user.value?.uid || null);
   }
 
+  // Token storage methods
+  private loadTokenFromStorage() {
+    try {
+      const token = localStorage.getItem(this.GOOGLE_TOKEN_KEY);
+      const expiryStr = localStorage.getItem(this.GOOGLE_TOKEN_EXPIRY_KEY);
+
+      if (token && expiryStr) {
+        const expiry = parseInt(expiryStr, 10);
+        const now = Date.now();
+
+        // Check if token is still valid (with 5 minute buffer)
+        if (expiry > now + 5 * 60 * 1000) {
+          this.googleAccessToken.value = token;
+          this.googleAccessTokenExpiry.value = expiry;
+          console.log('Loaded Google access token from storage');
+        } else {
+          console.log('Stored Google access token expired, clearing storage');
+          this.clearTokenFromStorage();
+        }
+      }
+    } catch (error) {
+      console.error('Error loading Google access token from storage:', error);
+      this.clearTokenFromStorage();
+    }
+  }
+
+  private saveTokenToStorage(token: string, expiresIn?: number) {
+    try {
+      // Calculate expiry time (default 1 hour if not provided)
+      const expiryTime = Date.now() + (expiresIn || 3600) * 1000;
+
+      localStorage.setItem(this.GOOGLE_TOKEN_KEY, token);
+      localStorage.setItem(this.GOOGLE_TOKEN_EXPIRY_KEY, expiryTime.toString());
+
+      this.googleAccessToken.value = token;
+      this.googleAccessTokenExpiry.value = expiryTime;
+
+      console.log('Saved Google access token to storage');
+    } catch (error) {
+      console.error('Error saving Google access token to storage:', error);
+    }
+  }
+
+  private clearTokenFromStorage() {
+    try {
+      localStorage.removeItem(this.GOOGLE_TOKEN_KEY);
+      localStorage.removeItem(this.GOOGLE_TOKEN_EXPIRY_KEY);
+      this.googleAccessToken.value = null;
+      this.googleAccessTokenExpiry.value = null;
+    } catch (error) {
+      console.error('Error clearing Google access token from storage:', error);
+    }
+  }
+
+  private setupTokenRefresh() {
+    // Check token expiry every 5 minutes
+    this.refreshTokenInterval = setInterval(
+      () => {
+        this.checkTokenExpiry();
+      },
+      5 * 60 * 1000,
+    );
+  }
+
+  private checkTokenExpiry() {
+    if (!this.googleAccessTokenExpiry.value) {
+      return;
+    }
+
+    const now = Date.now();
+    const expiry = this.googleAccessTokenExpiry.value;
+
+    // If token expires in less than 10 minutes, we should refresh
+    if (expiry - now < 10 * 60 * 1000) {
+      console.log('Google access token expiring soon, user will need to re-authenticate');
+      this.clearTokenFromStorage();
+    }
+  }
+
+  // Check if Google access token is valid
+  public isGoogleTokenValid(): boolean {
+    if (!this.googleAccessToken.value || !this.googleAccessTokenExpiry.value) {
+      return false;
+    }
+
+    const now = Date.now();
+    const expiry = this.googleAccessTokenExpiry.value;
+
+    // Consider valid if expires in more than 5 minutes
+    return expiry > now + 5 * 60 * 1000;
+  }
+
   async signInWithGoogle() {
     this.loading.value = true;
     try {
@@ -75,7 +185,9 @@ export class VueFireAuthService {
           'Got Google OAuth access token (first 20 chars):',
           credential.accessToken.substring(0, 20) + '...',
         );
-        this.googleAccessToken.value = credential.accessToken;
+
+        // Save token to storage with persistence (default 1 hour expiry)
+        this.saveTokenToStorage(credential.accessToken);
       } else {
         console.warn('No access token received from Google OAuth');
       }
@@ -148,8 +260,14 @@ export class VueFireAuthService {
 
       await firebaseSignOut(auth);
 
-      // Clear the stored Google access token
-      this.googleAccessToken.value = null;
+      // Clear the stored Google access token and storage
+      this.clearTokenFromStorage();
+
+      // Clean up refresh interval
+      if (this.refreshTokenInterval) {
+        clearInterval(this.refreshTokenInterval);
+        this.refreshTokenInterval = null;
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
 
@@ -158,7 +276,7 @@ export class VueFireAuthService {
       if (errorMessage.includes('permission-denied') || errorMessage.includes('auth/')) {
         console.warn('Expected sign-out warning:', errorMessage);
         // Still clear the tokens even if sign-out had issues
-        this.googleAccessToken.value = null;
+        this.clearTokenFromStorage();
         this.currentPlayer.value = null;
         return;
       }
