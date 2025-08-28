@@ -6,13 +6,17 @@ service cloud.firestore {
       // Anyone can read events
       allow read: if true;
       
-      // Only authenticated users can create events
-      allow create: if request.auth != null && 
-        request.auth.uid == resource.data.createdBy;
+      // Authenticated users can create events, admins can create any event
+      allow create: if request.auth != null && (
+        request.auth.uid == request.resource.data.createdBy ||
+        request.auth.token.email in ['admin@ttgaming.com', 'nuforge@gmail.com']
+      );
       
-      // Only the event creator can update or delete
-      allow update, delete: if request.auth != null && 
-        request.auth.uid == resource.data.createdBy;
+      // Event creator or admins can update/delete
+      allow update, delete: if request.auth != null && (
+        request.auth.uid == resource.data.createdBy ||
+        request.auth.token.email in ['admin@ttgaming.com', 'nuforge@gmail.com']
+      );
     }
     
     // Messages collection
@@ -38,12 +42,15 @@ service cloud.firestore {
       // Anyone can read player profiles (for public info)
       allow read: if true;
       
-      // Users can only create/update their own profile
-      allow create, update: if request.auth != null &&
-        request.auth.uid == playerId;
+      // Users can create/update their own profile, admins can create/update any profile
+      allow create, update: if request.auth != null && (
+        request.auth.uid == playerId ||
+        request.auth.token.email in ['admin@ttgaming.com', 'nuforge@gmail.com']
+      );
       
-      // Prevent deletion of player profiles
-      allow delete: if false;
+      // Prevent deletion of player profiles (except by admins)
+      allow delete: if request.auth != null &&
+        request.auth.token.email in ['admin@ttgaming.com', 'nuforge@gmail.com'];
     }
     
     // Friendships collection (for future use)
@@ -128,6 +135,32 @@ service cloud.firestore {
       allow delete: if request.auth != null &&
         request.auth.uid == resource.data.submittedBy.userId &&
         resource.data.status == 'pending';
+    }
+
+    // User roles collection (for role-based access control)
+    match /userRoles/{userId} {
+      // Users can read their own role, admins can read all roles
+      allow read: if request.auth != null && (
+        request.auth.uid == userId ||
+        request.auth.token.email in ['admin@ttgaming.com', 'nuforge@gmail.com']
+      );
+      
+      // Only admins can create, update, or delete user roles
+      allow create, update, delete: if request.auth != null &&
+        request.auth.token.email in ['admin@ttgaming.com', 'nuforge@gmail.com'];
+    }
+
+    // User statuses collection (for user status tracking)
+    match /userStatuses/{userId} {
+      // Users can read their own status, admins can read all statuses
+      allow read: if request.auth != null && (
+        request.auth.uid == userId ||
+        request.auth.token.email in ['admin@ttgaming.com', 'nuforge@gmail.com']
+      );
+      
+      // Only admins can create, update, or delete user statuses
+      allow create, update, delete: if request.auth != null &&
+        request.auth.token.email in ['admin@ttgaming.com', 'nuforge@gmail.com'];
     }
   }
 }

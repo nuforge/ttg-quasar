@@ -66,7 +66,7 @@ export class GoogleCalendarService {
     return this.currentCalendarId || this.getCalendarId();
   }
 
-  private getAccessToken(): string {
+  private async getAccessToken(): Promise<string> {
     const user = vueFireAuthService.currentUser.value;
     if (!user) {
       throw new Error('User not authenticated');
@@ -74,9 +74,20 @@ export class GoogleCalendarService {
 
     // Check if we have a valid Google OAuth access token
     if (!vueFireAuthService.isGoogleTokenValid()) {
-      throw new Error(
-        'Google Calendar access token is expired or invalid. Please sign in with Google again to refresh your permissions.',
-      );
+      console.log('Google Calendar token expired, attempting auto-refresh...');
+      try {
+        const refreshed = await vueFireAuthService.refreshGoogleTokenIfNeeded();
+        if (refreshed) {
+          console.log('✅ Google Calendar token refreshed successfully');
+        } else {
+          throw new Error('Token refresh failed');
+        }
+      } catch (error) {
+        console.error('Failed to refresh Google Calendar token:', error);
+        throw new Error(
+          'Google Calendar access token is expired and could not be refreshed. Please sign in with Google again to refresh your permissions.',
+        );
+      }
     }
 
     const accessToken = vueFireAuthService.googleAccessToken.value;
@@ -89,7 +100,7 @@ export class GoogleCalendarService {
 
   async createEvent(eventData: CalendarEvent): Promise<CalendarEvent> {
     try {
-      const token = this.getAccessToken();
+      const token = await this.getAccessToken();
       const calendarId = this.getCurrentCalendarId();
 
       console.log('Creating calendar event with data:', JSON.stringify(eventData, null, 2));
@@ -156,7 +167,7 @@ export class GoogleCalendarService {
 
   async updateEvent(eventId: string, eventData: Partial<CalendarEvent>): Promise<CalendarEvent> {
     try {
-      const token = this.getAccessToken();
+      const token = await this.getAccessToken();
 
       const response = await fetch(`${this.CALENDAR_API_URL}/calendars/primary/events/${eventId}`, {
         method: 'PUT',
@@ -180,7 +191,7 @@ export class GoogleCalendarService {
 
   async deleteEvent(eventId: string): Promise<void> {
     try {
-      const token = this.getAccessToken();
+      const token = await this.getAccessToken();
 
       const response = await fetch(`${this.CALENDAR_API_URL}/calendars/primary/events/${eventId}`, {
         method: 'DELETE',
@@ -200,7 +211,7 @@ export class GoogleCalendarService {
 
   async getEvent(eventId: string): Promise<CalendarEvent> {
     try {
-      const token = this.getAccessToken();
+      const token = await this.getAccessToken();
 
       const response = await fetch(`${this.CALENDAR_API_URL}/calendars/primary/events/${eventId}`, {
         method: 'GET',
@@ -226,7 +237,7 @@ export class GoogleCalendarService {
     maxResults: number = 250,
   ): Promise<{ items: CalendarEvent[] }> {
     try {
-      const token = this.getAccessToken();
+      const token = await this.getAccessToken();
       const calendarId = this.getCurrentCalendarId();
 
       const params = new URLSearchParams({
@@ -266,7 +277,7 @@ export class GoogleCalendarService {
     items: Array<{ id: string; summary: string; primary?: boolean; accessRole: string }>;
   }> {
     try {
-      const token = this.getAccessToken();
+      const token = await this.getAccessToken();
 
       const response = await fetch(`${this.CALENDAR_API_URL}/users/me/calendarList`, {
         method: 'GET',

@@ -52,6 +52,13 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
 
   const isCurrentUserAdmin = computed(() => {
     if (!authService.currentUser.value) return false;
+
+    // Development override: Allow admin access for authenticated users if no admin roles exist
+    if (process.env.NODE_ENV === 'development' && userRoles.value.size === 0) {
+      console.warn('🔧 Development Mode: Granting admin access due to no admin roles configured');
+      return true;
+    }
+
     const role = userRoles.value.get(authService.currentUser.value.uid);
     return role?.permissions.includes('admin') || false;
   });
@@ -95,43 +102,56 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
   };
 
   const fetchPlayerRoles = async () => {
-    if (!isCurrentUserAdmin.value) return;
-
+    // Remove the admin check here to avoid circular dependency
+    // We need to load roles first to determine admin status
     try {
+      console.log('🔍 Fetching user roles from Firebase...');
       const rolesSnapshot = await getDocs(collection(db, 'userRoles'));
       const rolesMap = new Map<string, PlayerRole>();
 
       rolesSnapshot.forEach((doc) => {
-        rolesMap.set(doc.id, { id: doc.id, ...doc.data() } as PlayerRole);
+        const roleData = { id: doc.id, ...doc.data() } as PlayerRole;
+        rolesMap.set(doc.id, roleData);
+        console.log('📋 Loaded role for user:', doc.id, roleData);
       });
 
       userRoles.value = rolesMap;
+      console.log('✅ Total roles loaded:', rolesMap.size);
+
+      // Log current user's role if available
+      if (authService.currentUser.value) {
+        const currentUserRole = rolesMap.get(authService.currentUser.value.uid);
+        console.log('👤 Current user role:', currentUserRole || 'No role found');
+      }
     } catch (err) {
-      console.error('Error fetching user roles:', err);
+      console.error('❌ Error fetching user roles:', err);
     }
   };
 
   const fetchUserStatuses = async () => {
-    if (!isCurrentUserAdmin.value) return;
-
+    // Remove admin check to avoid circular dependency
     try {
+      console.log('🔍 Fetching user statuses from Firebase...');
       const statusesSnapshot = await getDocs(collection(db, 'userStatuses'));
       const statusesMap = new Map<string, UserStatus>();
 
       statusesSnapshot.forEach((doc) => {
         const data = doc.data();
-        statusesMap.set(doc.id, {
+        const statusData = {
           id: doc.id,
           status: data.status,
           reason: data.reason,
           updatedAt: data.updatedAt?.toDate() || new Date(),
           updatedBy: data.updatedBy,
-        });
+        };
+        statusesMap.set(doc.id, statusData);
+        console.log('📊 Loaded status for user:', doc.id, statusData);
       });
 
       userStatuses.value = statusesMap;
+      console.log('✅ Total statuses loaded:', statusesMap.size);
     } catch (err) {
-      console.error('Error fetching user statuses:', err);
+      console.error('❌ Error fetching user statuses:', err);
     }
   };
 
@@ -264,6 +284,21 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
     return userStatuses.value.get(firebaseId) || null;
   };
 
+  // Get current user's permissions for debugging
+  const getCurrentUserPermissions = computed(() => {
+    if (!authService.currentUser.value) return null;
+    const role = userRoles.value.get(authService.currentUser.value.uid);
+    return {
+      uid: authService.currentUser.value.uid,
+      email: authService.currentUser.value.email,
+      role: role,
+      permissions: role?.permissions || [],
+      isAdmin: role?.permissions.includes('admin') || false,
+      rolesLoaded: userRoles.value.size > 0,
+      totalRolesInSystem: userRoles.value.size,
+    };
+  });
+
   const subscribeToPlayerUpdates = (callback?: () => void) => {
     const playersRef = collection(db, 'players');
     return onSnapshot(playersRef, (snapshot) => {
@@ -288,9 +323,10 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
 
   // Initialize admin data when needed
   const initializeAdminData = async () => {
-    if (isCurrentUserAdmin.value) {
-      await Promise.all([fetchPlayerRoles(), fetchUserStatuses()]);
-    }
+    console.log('🚀 Initializing admin data...');
+    // Always fetch roles and statuses to determine admin status
+    await Promise.all([fetchPlayerRoles(), fetchUserStatuses()]);
+    console.log('✅ Admin data initialization complete');
   };
 
   return {
@@ -308,6 +344,7 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
     isCurrentUserAdmin,
     getUserRole,
     getUserStatus,
+    getCurrentUserPermissions,
 
     // Actions
     fetchAllPlayers,

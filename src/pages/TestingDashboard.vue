@@ -258,7 +258,7 @@
                     <!-- Event Submissions List -->
                     <div v-if="eventSubmissions.length > 0" class="q-mt-md">
                       <div class="text-caption text-weight-bold q-mb-sm">Event Submissions ({{ eventSubmissions.length
-                        }}):</div>
+                      }}):</div>
                       <q-list dense bordered class="rounded-borders">
                         <q-item v-for="submission in eventSubmissions" :key="submission.id || 'unknown'"
                           class="q-pa-sm">
@@ -447,6 +447,64 @@
         </q-card>
       </div>
 
+      <!-- Events Migration -->
+      <div class="col-12 col-md-6">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">📅 Events & Calendar Migration</div>
+            <div class="text-caption text-grey-6 q-mb-md">
+              Migrate event data from JSON to Firebase and sync with Google Calendar
+            </div>
+            <div class="q-gutter-sm">
+              <div class="row q-gutter-sm">
+                <q-btn color="primary" icon="event" label="Test Event Migration" @click="testEventMigration"
+                  :loading="eventMigrationLoading" />
+                <q-btn color="accent" icon="preview" label="Preview Calendar Events" @click="previewCalendarEvents"
+                  :loading="eventMigrationLoading" />
+              </div>
+              <div class="row q-gutter-sm q-mt-sm">
+                <q-btn color="positive" icon="sync" label="Run Migration" @click="runEventMigration"
+                  :loading="eventMigrationLoading" />
+                <q-btn color="secondary" icon="calendar_today" label="Sync to Calendar" @click="syncEventsToCalendar"
+                  :loading="eventMigrationLoading" />
+              </div>
+            </div>
+
+            <div v-if="eventMigrationResult" class="q-mt-md">
+              <q-card flat bordered :class="eventMigrationResult.errors.length > 0 ? 'bg-orange-1' : 'bg-green-1'">
+                <q-card-section>
+                  <div class="text-subtitle2">Event Migration Results:</div>
+                  <div class="text-body2">
+                    Total: {{ eventMigrationResult.total }}<br>
+                    Successful: {{ eventMigrationResult.successful }}<br>
+                    Skipped: {{ eventMigrationResult.skipped }}<br>
+                    Calendar Synced: {{ eventMigrationResult.calendarSynced }}<br>
+                    Errors: {{ eventMigrationResult.errors.length }}<br>
+                    Warnings: {{ eventMigrationResult.warnings?.length || 0 }}
+                  </div>
+                  <div v-if="eventMigrationResult.errors.length > 0" class="q-mt-sm">
+                    <div class="text-caption text-weight-bold">Errors:</div>
+                    <div v-for="error in eventMigrationResult.errors.slice(0, 3)" :key="error" class="text-caption">
+                      • {{ error }}
+                    </div>
+                    <div v-if="eventMigrationResult.errors.length > 3" class="text-caption">
+                      ... and {{ eventMigrationResult.errors.length - 3 }} more
+                    </div>
+                  </div>
+                  <div v-if="eventMigrationResult.warnings && eventMigrationResult.warnings.length > 0" class="q-mt-sm">
+                    <div class="text-caption text-weight-bold">Warnings:</div>
+                    <div v-for="warning in eventMigrationResult.warnings.slice(0, 2)" :key="warning"
+                      class="text-caption">
+                      • {{ warning }}
+                    </div>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
       <!-- Activity Log -->
       <div class="col-12">
         <q-card>
@@ -506,6 +564,8 @@ import { eventSubmissionService } from 'src/services/event-submission-service';
 import { type EventSubmission } from 'src/models/EventSubmission';
 import EventSubmissionDialog from 'src/components/events/EventSubmissionDialog.vue';
 import { gameMigrationService, type MigrationResult } from 'src/services/game-migration-service';
+import { eventMigrationService, type EventMigrationResult } from 'src/services/event-migration-service';
+import { MigrationTestRunner } from 'src/utils/migration-test-runner';
 
 const $q = useQuasar();
 
@@ -537,9 +597,11 @@ const eventsLoading = ref(false);
 const messagesLoading = ref(false);
 const allTestsLoading = ref(false);
 const migrationLoading = ref(false);
+const eventMigrationLoading = ref(false);
 
 // Migration results
 const migrationResult = ref<MigrationResult | null>(null);
+const eventMigrationResult = ref<EventMigrationResult | null>(null);
 
 // Event submission system
 const showEventSubmissionDialog = ref(false);
@@ -1568,6 +1630,148 @@ const clearAllGames = () => {
     });
   } finally {
     migrationLoading.value = false;
+  }
+};
+
+// Event Migration Functions
+const testEventMigration = async () => {
+  eventMigrationLoading.value = true;
+  eventMigrationResult.value = null;
+
+  try {
+    addLog('🧪 Running event migration test (dry run)...', 'blue', 'science');
+
+    const result = await MigrationTestRunner.testEventMigration();
+
+    if (result.success && result.results) {
+      eventMigrationResult.value = result.results;
+      addLog(`✅ Event migration test completed! Would migrate ${result.results.successful}/${result.results.total} events.`, 'green', 'check_circle');
+      showNotification({
+        type: 'positive',
+        message: `Migration test completed successfully! ${result.results.successful} events ready to migrate.`,
+        position: 'top'
+      });
+    } else {
+      const errorMessage = result.error instanceof Error ? result.error.message : 'Test failed';
+      throw new Error(errorMessage);
+    }
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    addLog(`❌ Event migration test failed: ${message}`, 'red', 'error');
+    showNotification({
+      type: 'negative',
+      message: 'Event migration test failed. Check activity log for details.',
+      position: 'top'
+    });
+  } finally {
+    eventMigrationLoading.value = false;
+  }
+};
+
+const previewCalendarEvents = () => {
+  eventMigrationLoading.value = true;
+
+  try {
+    addLog('📅 Previewing calendar events...', 'blue', 'preview');
+    MigrationTestRunner.previewCalendarEvents(5);
+    addLog('✅ Calendar events preview completed! Check browser console for details.', 'green', 'visibility');
+    showNotification({
+      type: 'info',
+      message: 'Calendar events preview generated. Check browser console for details.',
+      position: 'top'
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    addLog(`❌ Calendar preview failed: ${message}`, 'red', 'error');
+    showNotification({
+      type: 'negative',
+      message: 'Calendar preview failed.',
+      position: 'top'
+    });
+  } finally {
+    eventMigrationLoading.value = false;
+  }
+};
+
+const runEventMigration = async () => {
+  eventMigrationLoading.value = true;
+  eventMigrationResult.value = null;
+
+  try {
+    addLog('📅 Starting events migration to Firebase...', 'blue', 'cloud_upload');
+
+    const result = await eventMigrationService.migrateEvents({
+      syncToGoogleCalendar: true,
+      skipExisting: true,
+      dryRun: false,
+      appBaseUrl: 'https://your-app-domain.com' // Update this
+    });
+
+    eventMigrationResult.value = result;
+
+    if (result.errors.length === 0) {
+      addLog(`✅ Events migration completed successfully! ${result.successful} events migrated, ${result.calendarSynced} synced to calendar.`, 'green', 'check_circle');
+      showNotification({
+        type: 'positive',
+        message: `Successfully migrated ${result.successful} events with ${result.calendarSynced} synced to Google Calendar!`,
+        position: 'top'
+      });
+    } else {
+      addLog(`⚠️ Events migration completed with ${result.errors.length} errors. ${result.successful} events migrated successfully.`, 'orange', 'warning');
+      showNotification({
+        type: 'warning',
+        message: `Migration completed with some errors. ${result.successful} events migrated successfully.`,
+        position: 'top'
+      });
+    }
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    addLog(`❌ Events migration failed: ${message}`, 'red', 'error');
+    showNotification({
+      type: 'negative',
+      message: 'Events migration failed. Check activity log for details.',
+      position: 'top'
+    });
+  } finally {
+    eventMigrationLoading.value = false;
+  }
+};
+
+const syncEventsToCalendar = async () => {
+  eventMigrationLoading.value = true;
+  eventMigrationResult.value = null;
+
+  try {
+    addLog('📅 Syncing existing events to Google Calendar...', 'blue', 'sync');
+
+    const result = await eventMigrationService.syncExistingEventsToCalendar('https://your-app-domain.com');
+    eventMigrationResult.value = result;
+
+    if (result.errors.length === 0) {
+      addLog(`✅ Calendar sync completed! ${result.calendarSynced} events synced to Google Calendar.`, 'green', 'check_circle');
+      showNotification({
+        type: 'positive',
+        message: `Successfully synced ${result.calendarSynced} events to Google Calendar!`,
+        position: 'top'
+      });
+    } else {
+      addLog(`⚠️ Calendar sync completed with ${result.errors.length} errors. ${result.successful} events processed.`, 'orange', 'warning');
+      showNotification({
+        type: 'warning',
+        message: `Calendar sync completed with some errors. ${result.successful} events processed.`,
+        position: 'top'
+      });
+    }
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Unknown error occurred';
+    addLog(`❌ Calendar sync failed: ${message}`, 'red', 'error');
+    showNotification({
+      type: 'negative',
+      message: 'Calendar sync failed. Check activity log for details.',
+      position: 'top'
+    });
+  } finally {
+    eventMigrationLoading.value = false;
   }
 };
 

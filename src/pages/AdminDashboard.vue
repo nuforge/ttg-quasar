@@ -1,5 +1,18 @@
 <template>
   <q-page padding class="admin-dashboard">
+    <!-- Development Mode Warning -->
+    <q-banner v-if="showDevModeWarning" class="bg-orange-2 text-orange-8 q-mb-md">
+      <template v-slot:avatar>
+        <q-icon name="warning" color="orange" />
+      </template>
+      <div class="text-weight-bold">Development Mode: Admin Access Override Active</div>
+      <div class="text-body2">
+        You're accessing admin functions without proper admin roles configured.
+        Please visit <router-link to="/admin/setup" class="text-orange-9 text-weight-bold">/admin/setup</router-link>
+        to create your first admin user for production security.
+      </div>
+    </q-banner>
+
     <div class="page-header q-mb-md">
       <div class="text-h4">Admin Dashboard</div>
       <div class="text-body1 text-grey-6">System overview and quick actions</div>
@@ -159,38 +172,15 @@
           </q-card-section>
           <q-card-section class="q-pt-none">
             <div class="row q-gutter-md">
-              <q-btn
-                color="primary"
-                icon="group_add"
-                label="Add User"
-                @click="$router.push('/admin/users')"
-              />
-              <q-btn
-                color="secondary"
-                icon="mdi-dice-plus"
-                label="Add Game"
-                @click="$router.push('/admin/games')"
-              />
-              <q-btn
-                color="positive"
-                icon="event_note"
-                label="Create Event"
-                @click="$router.push('/events')"
-              />
-              <q-btn
-                color="info"
-                icon="backup"
-                label="Backup Data"
-                @click="backupData"
-                :loading="backupLoading"
-              />
-              <q-btn
-                color="warning"
-                icon="refresh"
-                label="Refresh Cache"
-                @click="refreshCache"
-                :loading="refreshLoading"
-              />
+              <q-btn color="primary" icon="group_add" label="Add User" @click="$router.push('/admin/users')" />
+              <q-btn color="secondary" icon="mdi-dice-plus" label="Add Game" @click="$router.push('/admin/games')" />
+              <q-btn color="positive" icon="event_note" label="Create Event" @click="$router.push('/events')" />
+              <q-btn color="accent" icon="sync" label="Event Migration" @click="$router.push('/admin/migration')" />
+              <q-btn color="info" icon="backup" label="Backup Data" @click="backupData" :loading="backupLoading" />
+              <q-btn color="warning" icon="refresh" label="Refresh Cache" @click="refreshCache"
+                :loading="refreshLoading" />
+              <q-btn v-if="isDevelopment" color="purple" icon="bug_report" label="Debug Permissions"
+                @click="debugPermissions" />
             </div>
           </q-card-section>
         </q-card>
@@ -214,11 +204,19 @@ const eventsStore = useEventsFirebaseStore();
 const backupLoading = ref(false);
 const refreshLoading = ref(false);
 
+// Development mode check
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 // Stats
 const totalUsers = computed(() => playersStore.players.length);
 const totalGames = computed(() => gamesStore.games.length);
 const totalEvents = computed(() => eventsStore.events.length);
 const totalMessages = computed(() => 0); // Placeholder
+
+// Development mode warning
+const showDevModeWarning = computed(() => {
+  return isDevelopment && playersStore.userRoles.size === 0;
+});
 
 // System status
 const firebaseStatus = computed(() => ({
@@ -309,6 +307,36 @@ const refreshCache = async () => {
     });
   } finally {
     refreshLoading.value = false;
+  }
+};
+
+// Debug permissions function
+const debugPermissions = async () => {
+  console.log('🔍 Debug Permissions Called');
+
+  try {
+    // Refresh permissions data
+    await playersStore.initializeAdminData();
+
+    const permissionsInfo = playersStore.getCurrentUserPermissions;
+    console.log('👤 Current User Permissions:', permissionsInfo);
+
+    // Log all roles in system
+    console.log('👥 All User Roles:', playersStore.userRoles);
+    console.log('📊 All User Statuses:', playersStore.userStatuses);
+
+    $q.notify({
+      type: 'info',
+      message: 'Debug info logged to console. Check browser dev tools.',
+      position: 'top'
+    });
+  } catch (error) {
+    console.error('Debug permissions error:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Debug failed. Check console for details.',
+      position: 'top'
+    });
   }
 };
 

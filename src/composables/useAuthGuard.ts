@@ -86,6 +86,15 @@ const checkAdminAccess = async (
       await playersStore.initializeAdminData();
     }
 
+    // Development override: Allow admin access if no admin users exist
+    if (process.env.NODE_ENV === 'development' && playersStore.userRoles.size === 0) {
+      console.warn(
+        '🔧 Development Mode: Granting admin access - no admin roles configured. Please visit /admin/setup to create an admin user.',
+      );
+      next();
+      return;
+    }
+
     // Check if user has admin permissions
     const userRole = playersStore.getUserRole(user.value.uid);
     const hasAdminAccess = userRole?.permissions.includes('admin') || false;

@@ -15,8 +15,20 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 
 - **Create Events**: Organize gaming sessions with real-time RSVP tracking
 - **Google Calendar Sync**: Optional integration with personal calendars
+- **Custom Calendar Selection**: Choose specific Google Calendars for event migration
+- **Auto-Authentication**: Seamless Google Calendar token refresh without manual re-auth
+- **Event Migration**: Import existing event data with Firebase sync
 - **Player Limits**: Set minimum and maximum player counts
 - **Real-time Updates**: Live event updates across all users
+
+### 🔄 Data Migration & Integration
+
+- **Event Migration Dashboard**: Interactive UI for migrating JSON data to Firebase
+- **Google Calendar Integration**: Automatic sync with configurable target calendars
+- **Auto-Token Refresh**: Eliminates manual Google re-authentication requirements
+- **Progress Tracking**: Real-time migration progress with error reporting
+- **Dry Run Mode**: Test migrations before applying changes
+- **Admin Controls**: Secure admin-only access to migration tools
 
 ### 💬 Real-time Messaging
 
@@ -38,6 +50,30 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Avatar Support**: Profile pictures and customization
 - **Game History**: Track events and participation
 - **Social Features**: Connect with other players
+
+### 🛡️ Admin Features
+
+- **Role-Based Access**: Secure admin permissions and user management
+- **Admin Dashboard**: Comprehensive system overview and statistics
+- **Event Migration Tools**: Import and sync event data to Firebase and Google Calendar
+- **User Management**: Admin controls for user roles and permissions
+- **Game Library Management**: Add, edit, and manage the game database
+- **Development Mode**: Override admin access for initial setup and development
+
+## 🔑 Admin Access
+
+### Initial Setup
+
+1. Visit `/admin/setup` for first-time admin user creation
+2. Development mode allows temporary admin override
+3. Production requires proper admin roles in Firebase
+
+### Admin Features Access
+
+- **Dashboard**: `/admin` - System overview and quick actions
+- **User Management**: `/admin/users` - Manage user roles and permissions
+- **Game Management**: `/admin/games` - Manage game library
+- **Data Migration**: `/admin/migration` - Event migration and Google Calendar sync
 
 ## 🛠️ Technology Stack
 

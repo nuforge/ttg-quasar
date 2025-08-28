@@ -124,15 +124,27 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
           const startDateTime = new Date(`${eventData.date}T${eventData.time}`);
           const endDateTime = new Date(`${eventData.date}T${eventData.endTime}`);
 
+          // Create deep link to event (update this with your actual domain)
+          const eventUrl = `https://your-app-domain.com/events/${docRef.id}`;
+
           const calendarEvent: CalendarEvent = {
             summary: eventData.title,
-            description: `${eventData.description}\n\nLocation: ${eventData.location}\nPlayers: ${eventData.minPlayers}-${eventData.maxPlayers}`,
+            description: `🎮 ${eventData.title}\n\n📝 ${eventData.description}\n\n📍 Location: ${eventData.location}\n👥 Players: ${eventData.minPlayers}-${eventData.maxPlayers}\n\n🔗 View Event Details: ${eventUrl}\n📱 Manage your RSVP in the TTG app`,
             location: eventData.location,
             start: {
               dateTime: startDateTime.toISOString(),
+              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             },
             end: {
               dateTime: endDateTime.toISOString(),
+              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            },
+            reminders: {
+              useDefault: false,
+              overrides: [
+                { method: 'email', minutes: 24 * 60 }, // 1 day before
+                { method: 'popup', minutes: 60 }, // 1 hour before
+              ],
             },
           };
 

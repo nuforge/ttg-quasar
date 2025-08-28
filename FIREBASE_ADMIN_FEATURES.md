@@ -1,21 +1,31 @@
-# Firebase Integration & Admin Features
+# Firebase Integration, Admin Features & Event Migration
 
-This document outlines the Firebase integration and admin features that have been added to the TTG Quasar application.
+This document outlines the Firebase integration, admin features, and comprehensive event migration system that have been added to the TTG Quasar application.
 
 ## Overview
 
-The application has been refactored to support Firebase authentication and live data instead of hardcoded JSON files. The system maintains backward compatibility with the existing data structure while providing enhanced user management capabilities.
+The application has been enhanced with a complete Firebase backend, advanced admin features, and a powerful event migration system that syncs with Google Calendar. The system maintains backward compatibility while providing enterprise-level user management and data migration capabilities.
 
 ## Key Features
 
 ### 🔐 Firebase Authentication
 
 - Email/password authentication
-- Google OAuth integration
+- Google OAuth integration with **auto-token refresh**
 - Facebook OAuth integration
 - User profile management
-- Session management
+- Session management with **automatic token renewal**
 - **TypeScript-first authentication guards**
+
+### 🔄 Event Migration System
+
+- **Interactive Migration Dashboard**: Web-based UI for data migration
+- **Google Calendar Integration**: Automatic sync with selectable target calendars
+- **Auto-Authentication**: Eliminates manual Google re-authentication requirements
+- **Progress Tracking**: Real-time migration status with error reporting
+- **Dry Run Mode**: Test migrations before applying changes
+- **Calendar Selection**: Choose specific Google Calendars for event sync
+- **Token Management**: Proactive token refresh 15 minutes before expiration
 
 ### 👥 User Management System
 
@@ -27,34 +37,50 @@ The application has been refactored to support Firebase authentication and live 
 
 ### 🛡️ Admin Panel
 
-- Comprehensive admin dashboard
+- Comprehensive admin dashboard with **system statistics**
 - User management interface with **proper TypeScript interfaces**
 - Role and permission assignment
+- **Event Migration Dashboard**: Interactive data import and Google Calendar sync
 - System monitoring and statistics
 - Bulk operations for user management
+- **Calendar Management**: Select target calendars for event migration
+- **Migration Controls**: Dry run, progress tracking, and error reporting
 - **Readonly store object compatibility**
 
 ### 📊 Data Management
 
-- Migration from JSON to Firebase
-- Live data synchronization
+- **Complete Migration System**: JSON to Firebase with Google Calendar sync
+- Live data synchronization with **real-time updates**
 - Backward compatibility with existing data
+- **Calendar-specific targeting**: Choose destination calendars for events
 - Audit logging for admin actions
+- **Automatic token management**: Seamless Google authentication
 - **Strict TypeScript validation throughout**
 
 ## File Structure
 
 ### New Pages
 
-- `src/pages/AdminDashboard.vue` - Main admin dashboard
+- `src/pages/AdminDashboard.vue` - Main admin dashboard with migration controls
 - `src/pages/AdminUsers.vue` - User management interface
 - `src/pages/AdminSetup.vue` - First-time admin setup
+- `src/pages/MigrationPage.vue` - Complete event migration interface
 
 ### New Services
 
 - `src/services/user-management-service.ts` - Core user management operations
 - `src/services/data-migration-service.ts` - Data migration utilities
+- `src/services/event-migration-service.ts` - **Event migration with Google Calendar sync**
+- `src/services/google-calendar-service.ts` - **Google Calendar API integration**
+- `src/services/vuefire-auth-service.ts` - **Enhanced authentication with auto-token refresh**
 - `src/services/config-service.ts` - Application configuration management
+
+### New Components
+
+- `src/components/events/EventMigrationDashboard.vue` - **Interactive migration interface**
+- Calendar selection dropdown with real-time loading
+- Progress tracking with error reporting
+- Dry run mode for safe testing
 
 ### New Stores
 
@@ -229,6 +255,49 @@ await playersStore.deleteUser(firebaseId);
 - Graceful degradation when Firebase is unavailable
 - Fallback to local data for read operations
 - User-friendly error messages for admin operations
+
+## Google Calendar Integration
+
+### 🗓️ Features
+
+- **Automatic Event Sync**: Migrated events automatically sync to Google Calendar
+- **Calendar Selection**: Choose specific target calendars (not just primary)
+- **Auto-Authentication**: No manual re-authentication required after page refresh
+- **Token Management**: Proactive refresh 15 minutes before expiration
+- **Deep Links**: Calendar events include links back to your app
+- **Error Recovery**: Graceful handling of authentication failures
+
+### Setup Requirements
+
+1. **Google Cloud Console Setup**:
+   - Enable Google Calendar API
+   - Configure OAuth 2.0 credentials
+   - Add authorized domains
+
+2. **Firebase Configuration**:
+   - Enable Google Authentication provider
+   - Configure OAuth scopes for Calendar access
+
+3. **Application Configuration**:
+   - Set `appBaseUrl` in migration options for deep links
+   - Configure default target calendar ID if needed
+
+### Usage
+
+1. **Admin Access**: Navigate to `/admin/migration`
+2. **Google Sign-In**: Authenticate with Google (includes Calendar permissions)
+3. **Calendar Selection**:
+   - Click on "Target Google Calendar" dropdown
+   - Choose from your available calendars
+   - System defaults to your specified calendar ID
+4. **Migration**: Run migration with Google Calendar sync enabled
+
+### Technical Details
+
+- **Token Refresh**: Every 2 minutes check, 15-minute proactive refresh
+- **Calendar API**: Direct integration with Google Calendar v3 API
+- **Error Handling**: Automatic retry with user-friendly error messages
+- **Security**: Popup-based re-authentication maintains security standards
 
 ## Next Steps
 
