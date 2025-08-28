@@ -282,239 +282,235 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
 </script>
 
 <template>
-  <div v-if="loading" class="flex justify-center q-pa-xl">
-    <q-spinner color="primary" size="3em" />
-  </div>
-
-  <div v-else class="games-page">
-    <!-- Header with title and view toggle -->
-    <div class="page-header q-mb-md">
-      <div class="text-h6 text-uppercase">
-        <q-icon name="mdi-book-multiple" /> {{ $t('game', 2) }}
-        <q-chip v-if="filteredAndSortedGames.length !== games.length"
-          :label="filteredAndSortedGames.length + ' / ' + games.length" color="primary" text-color="white" size="sm"
-          class="q-ml-sm" />
-      </div>
-
-      <div class="header-actions">
-        <!-- View mode toggle -->
-        <q-btn-toggle v-model="viewMode" toggle-color="primary" :options="[
-          { label: '', value: 'cards', icon: 'mdi-view-grid' },
-          { label: '', value: 'list', icon: 'mdi-view-list' }
-        ]" flat dense class="q-mr-sm" />
-
-        <!-- Filter toggle -->
-        <q-btn @click="showFilters = !showFilters" :color="hasActiveFilters ? 'primary' : 'grey-6'"
-          :icon="showFilters ? 'mdi-filter-off' : 'mdi-filter'" flat dense round>
-          <q-badge v-if="activeFilterCount > 0" :label="activeFilterCount" color="red" floating />
-        </q-btn>
-      </div>
+  <q-page>
+    <div v-if="loading" class="flex justify-center q-pa-xl">
+      <q-spinner color="primary" size="3em" />
     </div>
 
-    <!-- Search input -->
-    <div class="search-section q-mb-md">
-      <q-input v-model="searchQuery" outlined dense clearable :placeholder="$t('searchGames')" class="game-search">
-        <template v-slot:prepend>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-    </div>
+    <div v-else class="games-page">
+      <!-- Header with title and view toggle -->
+      <div class="page-header q-mb-md">
+        <div class="text-h6 text-uppercase">
+          <q-icon name="mdi-book-multiple" /> {{ $t('game', 2) }}
+          <q-chip v-if="filteredAndSortedGames.length !== games.length"
+            :label="filteredAndSortedGames.length + ' / ' + games.length" color="primary" text-color="white" size="sm"
+            class="q-ml-sm" />
+        </div>
 
-    <!-- Filters panel -->
-    <q-slide-transition>
-      <div v-show="showFilters" class="filters-panel q-mb-md">
-        <q-card flat bordered class="q-pa-md">
-          <div class="filter-header q-mb-md">
-            <div class="text-subtitle2 text-weight-medium">Filters</div>
-            <q-btn v-if="hasActiveFilters" @click="clearAllFilters" label="Clear All" color="negative" flat dense
-              size="sm" />
-          </div>
+        <div class="header-actions">
+          <!-- View mode toggle -->
+          <q-btn-toggle v-model="viewMode" toggle-color="primary" :options="[
+            { label: '', value: 'cards', icon: 'mdi-view-grid' },
+            { label: '', value: 'list', icon: 'mdi-view-list' }
+          ]" flat dense class="q-mr-sm" />
 
-          <div class="filters-grid">
-            <!-- Genre Filter -->
-            <div class="filter-group">
-              <div class="filter-label">Genre</div>
-              <q-select v-model="selectedGenres" :options="availableGenres" multiple outlined dense emit-value
-                map-options use-chips placeholder="All genres" class="filter-select"
-                popup-content-class="filter-popup" />
-            </div>
-
-            <!-- Player Count Filter -->
-            <div class="filter-group">
-              <div class="filter-label">Players</div>
-              <q-select v-model="selectedPlayerCounts" :options="availablePlayerCounts" multiple outlined dense
-                emit-value map-options use-chips placeholder="Any count" class="filter-select" />
-            </div>
-
-            <!-- Age Range Filter -->
-            <div class="filter-group">
-              <div class="filter-label">Age</div>
-              <q-select v-model="selectedAgeRanges" :options="availableAgeRanges" multiple outlined dense emit-value
-                map-options use-chips placeholder="Any age" class="filter-select" />
-            </div>
-
-            <!-- Play Time Filter -->
-            <div class="filter-group">
-              <div class="filter-label">Play Time</div>
-              <q-select v-model="selectedPlayTimes" :options="availablePlayTimes" multiple outlined dense emit-value
-                map-options use-chips placeholder="Any duration" class="filter-select" />
-            </div>
-
-            <!-- Components Filter -->
-            <div class="filter-group">
-              <div class="filter-label">Components</div>
-              <q-select v-model="selectedComponents" :options="availableComponents" multiple outlined dense emit-value
-                map-options use-chips placeholder="Any components" class="filter-select" />
-            </div>
-          </div>
-        </q-card>
-      </div>
-    </q-slide-transition>
-
-    <!-- Sort controls -->
-    <div class="sort-section q-mb-md">
-      <div class="sort-controls">
-        <q-select v-model="sortBy" :options="sortOptions" outlined dense emit-value map-options label="Sort by"
-          class="sort-select" />
-
-        <q-btn @click="sortDirection = sortDirection === 'asc' ? 'desc' : 'asc'"
-          :icon="sortDirection === 'asc' ? 'mdi-sort-ascending' : 'mdi-sort-descending'" flat dense round
-          color="primary" class="q-ml-sm" />
-      </div>
-    </div>
-
-    <!-- Results -->
-    <div class="results-section">
-      <!-- No results message -->
-      <div v-if="filteredAndSortedGames.length === 0" class="no-results text-center q-py-xl">
-        <q-icon name="mdi-gamepad-variant-outline" size="4rem" color="grey-4" />
-        <div class="text-h6 text-grey-6 q-mt-md">No games found</div>
-        <div class="text-body2 text-grey-5">Try adjusting your search or filters</div>
-        <q-btn v-if="hasActiveFilters" @click="clearAllFilters" label="Clear Filters" color="primary" flat
-          class="q-mt-md" />
+          <!-- Filter toggle -->
+          <q-btn @click="showFilters = !showFilters" :color="hasActiveFilters ? 'primary' : 'grey-6'"
+            :icon="showFilters ? 'mdi-filter-off' : 'mdi-filter'" flat dense round>
+            <q-badge v-if="activeFilterCount > 0" :label="activeFilterCount" color="red" floating />
+          </q-btn>
+        </div>
       </div>
 
-      <!-- Games grid view -->
-      <div v-else-if="viewMode === 'cards'" class="games-grid">
-        <game-card v-for="game in filteredAndSortedGames" :key="game.title" :game="game" />
+      <!-- Search input -->
+      <div class="search-section q-mb-md">
+        <q-input v-model="searchQuery" outlined dense clearable :placeholder="$t('searchGames')" class="game-search">
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
       </div>
 
-      <!-- Games list view -->
-      <div v-else class="games-list">
-        <q-list bordered separator>
-          <q-item v-for="game in filteredAndSortedGames" :key="game.title" class="game-list-item">
-            <q-item-section avatar class="game-avatar-section">
-              <div class="game-image-container">
-                <img :src="getGameImageUrl(game.image)" :alt="game.title"
-                  @error="(e) => { (e.target as HTMLImageElement).src = '/images/games/default.svg' }"
-                  class="game-image" />
+      <!-- Filters panel -->
+      <q-slide-transition>
+        <div v-show="showFilters" class="filters-panel q-mb-md">
+          <q-card flat bordered class="q-pa-md">
+            <div class="filter-header q-mb-md">
+              <div class="text-subtitle2 text-weight-medium">Filters</div>
+              <q-btn v-if="hasActiveFilters" @click="clearAllFilters" label="Clear All" color="negative" flat dense
+                size="sm" />
+            </div>
+
+            <div class="filters-grid">
+              <!-- Genre Filter -->
+              <div class="filter-group">
+                <div class="filter-label">Genre</div>
+                <q-select v-model="selectedGenres" :options="availableGenres" multiple outlined dense emit-value
+                  map-options use-chips placeholder="All genres" class="filter-select"
+                  popup-content-class="filter-popup" />
               </div>
-            </q-item-section>
 
-            <q-item-section @click="navigateToGame(game)" clickable class="game-content-section">
-              <q-item-label class="text-weight-medium game-title-link">{{ game.title }}</q-item-label>
-              <q-item-label caption lines="2" class="game-description">{{ game.description }}</q-item-label>
+              <!-- Player Count Filter -->
+              <div class="filter-group">
+                <div class="filter-label">Players</div>
+                <q-select v-model="selectedPlayerCounts" :options="availablePlayerCounts" multiple outlined dense
+                  emit-value map-options use-chips placeholder="Any count" class="filter-select" />
+              </div>
 
-              <!-- Game attributes with icons -->
-              <q-item-label caption class="game-meta-with-icons q-mt-sm">
-                <div class="meta-row">
-                  <q-chip :label="game.genre" size="sm" color="primary" text-color="white" class="q-mr-sm" />
+              <!-- Age Range Filter -->
+              <div class="filter-group">
+                <div class="filter-label">Age</div>
+                <q-select v-model="selectedAgeRanges" :options="availableAgeRanges" multiple outlined dense emit-value
+                  map-options use-chips placeholder="Any age" class="filter-select" />
+              </div>
+
+              <!-- Play Time Filter -->
+              <div class="filter-group">
+                <div class="filter-label">Play Time</div>
+                <q-select v-model="selectedPlayTimes" :options="availablePlayTimes" multiple outlined dense emit-value
+                  map-options use-chips placeholder="Any duration" class="filter-select" />
+              </div>
+
+              <!-- Components Filter -->
+              <div class="filter-group">
+                <div class="filter-label">Components</div>
+                <q-select v-model="selectedComponents" :options="availableComponents" multiple outlined dense emit-value
+                  map-options use-chips placeholder="Any components" class="filter-select" />
+              </div>
+            </div>
+          </q-card>
+        </div>
+      </q-slide-transition>
+
+      <!-- Sort controls -->
+      <div class="sort-section q-mb-md">
+        <div class="sort-controls">
+          <q-select v-model="sortBy" :options="sortOptions" outlined dense emit-value map-options label="Sort by"
+            class="sort-select" />
+
+          <q-btn @click="sortDirection = sortDirection === 'asc' ? 'desc' : 'asc'"
+            :icon="sortDirection === 'asc' ? 'mdi-sort-ascending' : 'mdi-sort-descending'" flat dense round
+            color="primary" class="q-ml-sm" />
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-section">
+        <!-- No results message -->
+        <div v-if="filteredAndSortedGames.length === 0" class="no-results text-center q-py-xl">
+          <q-icon name="mdi-gamepad-variant-outline" size="4rem" color="grey-4" />
+          <div class="text-h6 text-grey-6 q-mt-md">No games found</div>
+          <div class="text-body2 text-grey-5">Try adjusting your search or filters</div>
+          <q-btn v-if="hasActiveFilters" @click="clearAllFilters" label="Clear Filters" color="primary" flat
+            class="q-mt-md" />
+        </div>
+
+        <!-- Games grid view -->
+        <div v-else-if="viewMode === 'cards'" class="games-grid">
+          <game-card v-for="game in filteredAndSortedGames" :key="game.title" :game="game" />
+        </div>
+
+        <!-- Games list view -->
+        <div v-else class="games-list">
+          <q-list bordered separator>
+            <q-item v-for="game in filteredAndSortedGames" :key="game.title" class="game-list-item">
+              <q-item-section avatar class="game-avatar-section">
+                <div class="game-image-container">
+                  <img :src="getGameImageUrl(game.image)" :alt="game.title"
+                    @error="(e) => { (e.target as HTMLImageElement).src = '/images/games/default.svg' }"
+                    class="game-image" />
                 </div>
+              </q-item-section>
 
-                <div class="meta-row q-mt-xs">
-                  <div class="meta-item">
-                    <game-icon category="players" :value="game.numberOfPlayers" size="xs"
-                      class="text-secondary q-mr-xs" />
-                    <span class="text-grey-6">{{ game.numberOfPlayers }} players</span>
+              <q-item-section @click="navigateToGame(game)" clickable class="game-content-section">
+                <q-item-label class="text-weight-medium game-title-link">{{ game.title }}</q-item-label>
+                <q-item-label caption lines="2" class="game-description">{{ game.description }}</q-item-label>
+
+                <!-- Game attributes with icons -->
+                <q-item-label caption class="game-meta-with-icons q-mt-sm">
+                  <div class="meta-row">
+                    <q-chip :label="game.genre" size="sm" color="primary" text-color="white" class="q-mr-sm" />
                   </div>
 
-                  <div class="meta-item">
-                    <q-icon name="mdi-clock-outline" size="xs" class="text-accent q-mr-xs" />
-                    <span class="text-grey-6">{{ game.playTime }}</span>
-                  </div>
+                  <div class="meta-row q-mt-xs">
+                    <div class="meta-item">
+                      <game-icon category="players" :value="game.numberOfPlayers" size="xs"
+                        class="text-secondary q-mr-xs" />
+                      <span class="text-grey-6">{{ game.numberOfPlayers }} players</span>
+                    </div>
 
-                  <div class="meta-item">
-                    <span class="age-badge">{{ game.recommendedAge }}</span>
-                  </div>
-                </div>
+                    <div class="meta-item">
+                      <q-icon name="mdi-clock-outline" size="xs" class="text-accent q-mr-xs" />
+                      <span class="text-grey-6">{{ game.playTime }}</span>
+                    </div>
 
-                <!-- Components -->
-                <div v-if="game.components && game.components.length > 0" class="meta-row q-mt-xs">
-                  <div class="components-container">
-                    <div v-for="(component, index) in mainGameComponents(game)" :key="index" class="component-item">
-                      <game-icon category="components" :value="component.category" size="xs"
-                        class="text-grey-5 q-mr-xs" />
-                      <span class="text-grey-5 component-text">{{ component.original }}</span>
+                    <div class="meta-item">
+                      <span class="age-badge">{{ game.recommendedAge }}</span>
                     </div>
                   </div>
+
+                  <!-- Components -->
+                  <div v-if="game.components && game.components.length > 0" class="meta-row q-mt-xs">
+                    <div class="components-container">
+                      <div v-for="(component, index) in mainGameComponents(game)" :key="index" class="component-item">
+                        <game-icon category="components" :value="component.category" size="xs"
+                          class="text-grey-5 q-mr-xs" />
+                        <span class="text-grey-5 component-text">{{ component.original }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </q-item-label>
+              </q-item-section>
+
+              <q-item-section side class="list-actions-section">
+                <div class="list-actions">
+                  <!-- Top row actions -->
+                  <div class="action-row">
+                    <q-btn :icon="`mdi-calendar-clock${getGameState(game.legacyId).reserved ? '' : '-outline'}`"
+                      @click="toggleReserved(game.legacyId)"
+                      :color="getGameState(game.legacyId).reserved ? 'primary' : 'grey-6'" flat dense round size="sm">
+                      <q-tooltip class="bg-primary">
+                        {{ getGameState(game.legacyId).reserved ? 'Remove reservation' : 'Reserve game' }}
+                      </q-tooltip>
+                    </q-btn>
+
+                    <q-btn :icon="`mdi-bookmark${getGameState(game.legacyId).bookmark ? '' : '-outline'}`"
+                      @click="toggleBookmark(game.legacyId)"
+                      :color="getGameState(game.legacyId).bookmark ? 'accent' : 'grey-6'" flat dense round size="sm">
+                      <q-tooltip class="bg-accent">
+                        {{ getGameState(game.legacyId).bookmark ? 'Remove bookmark' : 'Bookmark game' }}
+                      </q-tooltip>
+                    </q-btn>
+
+                    <q-btn :icon="`mdi-star${getGameState(game.legacyId).favorite ? '' : '-outline'}`"
+                      @click="toggleFavorite(game.legacyId)"
+                      :color="getGameState(game.legacyId).favorite ? 'secondary' : 'grey-6'" flat dense round size="sm">
+                      <q-tooltip class="bg-secondary">
+                        {{ getGameState(game.legacyId).favorite ? 'Remove from favorites' : 'Add to favorites' }}
+                      </q-tooltip>
+                    </q-btn>
+                  </div>
+
+                  <!-- Bottom row actions -->
+                  <div class="action-row q-mt-xs">
+                    <q-btn icon="mdi-qrcode" @click="toggleQRCode(game.legacyId)" flat dense round size="sm"
+                      color="grey-6">
+                      <q-tooltip>Show QR Code</q-tooltip>
+                    </q-btn>
+
+                    <q-btn icon="mdi-share" @click="shareGame(game)" flat dense round size="sm" color="grey-6">
+                      <q-tooltip>Share game</q-tooltip>
+                    </q-btn>
+
+                    <q-btn v-if="game.link" icon="mdi-open-in-new" :href="game.link" target="_blank" flat dense round
+                      size="sm" color="grey-6">
+                      <q-tooltip>Open external link</q-tooltip>
+                    </q-btn>
+                  </div>
                 </div>
-              </q-item-label>
-            </q-item-section>
+              </q-item-section>
 
-            <q-item-section side class="list-actions-section">
-              <div class="list-actions">
-                <!-- Top row actions -->
-                <div class="action-row">
-                  <q-btn :icon="`mdi-calendar-clock${getGameState(game.legacyId).reserved ? '' : '-outline'}`"
-                    @click="toggleReserved(game.legacyId)"
-                    :color="getGameState(game.legacyId).reserved ? 'primary' : 'grey-6'" flat dense round size="sm">
-                    <q-tooltip class="bg-primary">
-                      {{ getGameState(game.legacyId).reserved ? 'Remove reservation' : 'Reserve game' }}
-                    </q-tooltip>
-                  </q-btn>
-
-                  <q-btn :icon="`mdi-bookmark${getGameState(game.legacyId).bookmark ? '' : '-outline'}`"
-                    @click="toggleBookmark(game.legacyId)"
-                    :color="getGameState(game.legacyId).bookmark ? 'accent' : 'grey-6'" flat dense round size="sm">
-                    <q-tooltip class="bg-accent">
-                      {{ getGameState(game.legacyId).bookmark ? 'Remove bookmark' : 'Bookmark game' }}
-                    </q-tooltip>
-                  </q-btn>
-
-                  <q-btn :icon="`mdi-star${getGameState(game.legacyId).favorite ? '' : '-outline'}`"
-                    @click="toggleFavorite(game.legacyId)"
-                    :color="getGameState(game.legacyId).favorite ? 'secondary' : 'grey-6'" flat dense round size="sm">
-                    <q-tooltip class="bg-secondary">
-                      {{ getGameState(game.legacyId).favorite ? 'Remove from favorites' : 'Add to favorites' }}
-                    </q-tooltip>
-                  </q-btn>
-                </div>
-
-                <!-- Bottom row actions -->
-                <div class="action-row q-mt-xs">
-                  <q-btn icon="mdi-qrcode" @click="toggleQRCode(game.legacyId)" flat dense round size="sm"
-                    color="grey-6">
-                    <q-tooltip>Show QR Code</q-tooltip>
-                  </q-btn>
-
-                  <q-btn icon="mdi-share" @click="shareGame(game)" flat dense round size="sm" color="grey-6">
-                    <q-tooltip>Share game</q-tooltip>
-                  </q-btn>
-
-                  <q-btn v-if="game.link" icon="mdi-open-in-new" :href="game.link" target="_blank" flat dense round
-                    size="sm" color="grey-6">
-                    <q-tooltip>Open external link</q-tooltip>
-                  </q-btn>
-                </div>
-              </div>
-            </q-item-section>
-
-            <!-- QR Code modal for each game -->
-            <QRCode :game="game" v-model:showQR="getGameState(game.legacyId).showQRCode" />
-          </q-item>
-        </q-list>
+              <!-- QR Code modal for each game -->
+              <QRCode :game="game" v-model:showQR="getGameState(game.legacyId).showQRCode" />
+            </q-item>
+          </q-list>
+        </div>
       </div>
     </div>
-  </div>
+  </q-page>
 </template>
 
 <style scoped>
-.games-page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem;
-}
-
 .page-header {
   display: flex;
   justify-content: space-between;
