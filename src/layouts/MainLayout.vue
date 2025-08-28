@@ -1,17 +1,26 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useCurrentUser } from 'vuefire';
 import { vueFireAuthService } from 'src/services/vuefire-auth-service';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import LeftDrawer from "src/components/LeftDrawer.vue";
 import RightDrawer from "src/components/RightDrawer.vue";
 import PlayerAvatar from 'src/components/PlayerAvatar.vue';
 
 const user = useCurrentUser();
+const playersStore = usePlayersFirebaseStore();
 const isAuthenticated = computed(() => !!user.value);
 const currentPlayer = computed(() => vueFireAuthService.currentPlayer.value);
 
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
+
+// Check if current user is admin
+const isAdmin = computed(() => {
+  if (!user.value) return false;
+  const userRole = playersStore.getUserRole(user.value.uid);
+  return userRole?.permissions.includes('admin') || false;
+});
 
 const signOut = async () => {
   try {
@@ -20,6 +29,13 @@ const signOut = async () => {
     console.error('Sign out error:', error);
   }
 };
+
+// Initialize admin data on mount if user is authenticated
+onMounted(async () => {
+  if (isAuthenticated.value) {
+    await playersStore.initializeAdminData();
+  }
+});
 </script>
 
 <template>
@@ -59,17 +75,46 @@ const signOut = async () => {
                 </q-item-section>
               </q-item>
 
-              <!-- Admin link (TODO: Add proper admin role check) -->
-              <q-item clickable v-close-popup to="/admin/games">
+              <!-- Admin section (only show if user is admin) -->
+              <q-item v-if="isAdmin" clickable v-close-popup>
                 <q-item-section avatar>
                   <q-icon name="mdi-shield-crown" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>Admin</q-item-label>
                 </q-item-section>
-              </q-item>
 
-              <q-separator />
+                <q-menu anchor="top right" self="top left">
+                  <q-list>
+                    <q-item clickable v-close-popup to="/admin">
+                      <q-item-section avatar>
+                        <q-icon name="dashboard" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>Dashboard</q-item-label>
+                      </q-item-section>
+                    </q-item>
+
+                    <q-item clickable v-close-popup to="/admin/games">
+                      <q-item-section avatar>
+                        <q-icon name="mdi-dice-6" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>Games</q-item-label>
+                      </q-item-section>
+                    </q-item>
+
+                    <q-item clickable v-close-popup to="/admin/users">
+                      <q-item-section avatar>
+                        <q-icon name="group" />
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>Users</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </q-list>
+                </q-menu>
+              </q-item>              <q-separator />
 
               <q-item clickable v-close-popup @click="signOut">
                 <q-item-section avatar>

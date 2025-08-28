@@ -58,6 +58,30 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/GamePage.vue') }],
   },
+
+  // Admin routes
+  {
+    path: '/admin/setup',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/AdminSetup.vue'),
+      },
+    ],
+  },
+  {
+    path: '/admin',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/AdminDashboard.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
+    ],
+  },
   {
     path: '/admin/games',
     component: () => import('layouts/MainLayout.vue'),
@@ -70,6 +94,20 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/admin/users',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/AdminUsers.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
+    ],
+  },
+
+  // Other routes
   {
     path: '/test/migration',
     component: () => import('layouts/MainLayout.vue'),
@@ -85,7 +123,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/PlayersPage.vue') }],
   },
-
   {
     path: '/account',
     component: () => import('layouts/MainLayout.vue'),

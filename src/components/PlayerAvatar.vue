@@ -10,7 +10,7 @@
         <img :src="generatedAvatarUrl" />
       </template>
       <div v-else class="bg-primary text-black flex flex-center full-height">
-        {{ player.getInitials() }}
+        {{ player.getInitials ? player.getInitials() : getInitials(player.name) }}
       </div>
     </template>
   </q-avatar>
@@ -18,11 +18,21 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import type { Player } from 'src/models/Player';
+
+interface PlayerLike {
+  readonly id?: string | number;
+  readonly name: string;
+  readonly email: string;
+  readonly avatarUrl?: string | undefined;
+  readonly avatar?: string | undefined;
+  readonly bio?: string | undefined;
+  readonly firebaseId?: string | undefined;
+  readonly getInitials?: () => string;
+}
 
 const props = defineProps({
   player: {
-    type: Object as () => Player,
+    type: Object as () => PlayerLike,
     required: true
   },
   size: {
@@ -37,6 +47,15 @@ const props = defineProps({
 
 // Track avatar load failures
 const avatarFailed = ref(false);
+
+// Get initials from name
+const getInitials = (name: string): string => {
+  return name
+    .split(' ')
+    .map(part => part.charAt(0).toUpperCase())
+    .slice(0, 2)
+    .join('');
+};
 
 // Handle avatar image load error
 const handleAvatarError = () => {

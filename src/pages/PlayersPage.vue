@@ -1,46 +1,81 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useEventsStore } from 'src/stores/events-store';
-import type { Player } from 'src/models/Player';
 import PlayerCard from 'src/components/players/PlayerCard.vue';
 import PlayerDetails from 'src/components/players/PlayerDetails.vue';
 
+// Type for readonly player objects from the store with additional Firebase fields
+type ReadonlyPlayerWithFirebase = {
+  readonly id: number;
+  readonly name: string;
+  readonly email: string;
+  readonly avatar?: string | undefined;
+  readonly joinDate: Date;
+  readonly bio?: string | undefined;
+  readonly preferences?: {
+    readonly favoriteGames?: readonly number[];
+    readonly preferredGenres?: readonly string[];
+  } | undefined;
+  readonly firebaseId?: string | undefined;
+  readonly role?: readonly string[] | undefined;
+  readonly status?: 'active' | 'blocked' | 'pending' | undefined;
+  readonly isActive?: () => boolean;
+};
+
 // Stores
 const playersStore = usePlayersStore();
+const playersFirebaseStore = usePlayersFirebaseStore();
 const eventsStore = useEventsStore();
 
 // State
 const loading = ref(true);
 const search = ref('');
-const selectedPlayer = ref<Player | null>(null);
+const selectedPlayer = ref<ReadonlyPlayerWithFirebase | null>(null);
 const showPlayerDetails = ref(false);
+const useFirebaseData = ref(true); // Toggle for Firebase vs local data
 
 // Fetch data
 onMounted(async () => {
-  if (playersStore.players.length === 0) {
-    await playersStore.fetchPlayers();
+  if (useFirebaseData.value) {
+    // Use Firebase data
+    if (playersFirebaseStore.players.length === 0) {
+      await playersFirebaseStore.fetchAllPlayers();
+    }
+  } else {
+    // Use legacy local data
+    if (playersStore.players.length === 0) {
+      await playersStore.fetchPlayers();
+    }
   }
+
   if (eventsStore.events.length === 0) {
     await eventsStore.fetchEvents();
   }
   loading.value = false;
 });
 
+// Get current players list based on data source
+const currentPlayers = computed(() => {
+  return useFirebaseData.value ? playersFirebaseStore.players : playersStore.players;
+});
+
 // Filtered players based on search
 const filteredPlayers = computed(() => {
-  if (!search.value) return playersStore.players;
+  if (!search.value) return currentPlayers.value;
 
   const searchLower = search.value.toLowerCase();
-  return playersStore.players.filter(player =>
-    player.name.toLowerCase().includes(searchLower) ||
-    player.email.toLowerCase().includes(searchLower) ||
+  // Using ReadonlyPlayerWithFirebase type for proper typing of store objects
+  return currentPlayers.value.filter((player: ReadonlyPlayerWithFirebase) =>
+    player.name?.toLowerCase().includes(searchLower) ||
+    player.email?.toLowerCase().includes(searchLower) ||
     (player.bio && player.bio.toLowerCase().includes(searchLower))
   );
 });
 
-// Get events for a specific player
-const getPlayerEvents = (player: Player) => {
+// Get events for a specific player - using proper typing
+const getPlayerEvents = (player: ReadonlyPlayerWithFirebase) => {
   return eventsStore.events.filter(event =>
     event.rsvps.some(rsvp =>
       rsvp.playerId === player.id && rsvp.status === 'confirmed'
@@ -48,8 +83,8 @@ const getPlayerEvents = (player: Player) => {
   );
 };
 
-// Show player details
-const showDetails = (player: Player) => {
+// Handle showing player details - using proper typing
+const showDetails = (player: ReadonlyPlayerWithFirebase) => {
   selectedPlayer.value = player;
   showPlayerDetails.value = true;
 };

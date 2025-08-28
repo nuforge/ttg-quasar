@@ -1,5 +1,34 @@
 # Development Setup Instructions
 
+## Prerequisites
+
+Before starting, ensure you have:
+
+- **Node.js 18+** and npm installed
+- **TypeScript knowledge** for effective development
+- **Firebase account** for backend services
+- **Java** (automatically installed via setup-java.ps1 for Firebase emulators)
+
+## TypeScript Configuration
+
+This project uses **strict TypeScript** with advanced type safety:
+
+```json
+{
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": true,
+    "strict": true,
+    "noImplicitAny": true
+  }
+}
+```
+
+### ESLint Configuration
+
+- **@typescript-eslint/no-explicit-any**: Prevents any type usage
+- **Strict type checking**: Enforces proper TypeScript patterns
+- **Vue-specific rules**: TypeScript integration with Vue components
+
 ## Firebase Project Setup
 
 ### 1. Create Firebase Project
@@ -123,20 +152,62 @@ USE_FIREBASE_EMULATOR=false
 ## Development Commands
 
 ```bash
-# Development server
+# Development server with hot reload
 npm run dev
+
+# TypeScript compilation check
+npm run type-check
+# OR use Vue's TypeScript compiler
+npx vue-tsc --noEmit
+
+# Code quality checks
+npm run lint              # ESLint with TypeScript rules
+npm run format           # Prettier formatting
 
 # Build for production
 npm run build
 
-# Start Firebase emulators (requires Java)
+# Firebase emulators (requires Java)
 firebase emulators:start --only auth,firestore,storage
 
 # Deploy security rules (after setting up project)
 firebase deploy --only firestore:rules,storage:rules
 ```
 
+## TypeScript Development Tips
+
+### Working with Store Types
+
+```typescript
+// Use proper typing for store objects
+type ReadonlyPlayerWithFirebase = {
+  readonly id: number;
+  readonly name: string;
+  readonly email: string;
+  readonly firebaseId?: string | undefined;
+  // ... other properties
+};
+```
+
+### Component Interface Definitions
+
+```typescript
+// Flexible component interfaces with readonly support
+interface PlayerLike {
+  readonly id?: string | number;
+  readonly name: string;
+  readonly email: string;
+  readonly avatar?: string | undefined;
+}
+```
+
 ## Troubleshooting
+
+### TypeScript Issues
+
+- **exactOptionalPropertyTypes errors**: Ensure optional properties include `| undefined`
+- **readonly array issues**: Use `readonly` arrays in type definitions
+- **ESLint any errors**: Replace with specific types or document exceptions
 
 ### Java Issues
 

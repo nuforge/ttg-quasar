@@ -1,6 +1,23 @@
 <script setup lang="ts">
-import type { Player } from 'src/models/Player';
 import PlayerAvatar from 'src/components/PlayerAvatar.vue';
+
+interface PlayerLike {
+  readonly id?: string | number;
+  readonly name: string;
+  readonly email: string;
+  readonly bio?: string | undefined;
+  readonly avatarUrl?: string | undefined;
+  readonly avatar?: string | undefined;
+  readonly firebaseId?: string | undefined;
+  readonly joinDate?: string | Date;
+  readonly preferences?: {
+    readonly favoriteGames?: readonly string[] | readonly number[];
+    readonly preferredGenres?: readonly string[];
+  } | undefined;
+  readonly role?: readonly string[] | undefined;
+  readonly status?: 'active' | 'blocked' | 'pending' | undefined;
+  readonly isActive?: () => boolean;
+}
 
 defineOptions({
   name: 'PlayerCard',
@@ -8,7 +25,7 @@ defineOptions({
 
 const props = defineProps({
   player: {
-    type: Object as () => Player,
+    type: Object as () => PlayerLike,
     required: true
   },
   playerEvents: {

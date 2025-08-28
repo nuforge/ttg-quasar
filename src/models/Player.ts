@@ -9,6 +9,10 @@ export class Player {
     favoriteGames?: number[];
     preferredGenres?: string[];
   };
+  // Firebase fields (optional for backward compatibility)
+  firebaseId?: string | undefined;
+  role?: string[] | undefined;
+  status?: 'active' | 'blocked' | 'pending';
 
   constructor(playerData: Partial<Omit<Player, 'joinDate'> & { joinDate?: string | Date }>) {
     this.id = playerData.id || 0;
@@ -28,6 +32,11 @@ export class Player {
 
     this.bio = playerData.bio || undefined;
     this.preferences = playerData.preferences || {};
+
+    // Optional Firebase fields
+    this.firebaseId = playerData.firebaseId || undefined;
+    this.role = playerData.role || undefined;
+    this.status = playerData.status || 'active';
   }
 
   // Helper methods
@@ -42,6 +51,16 @@ export class Player {
   // Format join date for display
   getFormattedJoinDate(): string {
     return this.joinDate.toLocaleDateString();
+  }
+
+  // Check if user has admin privileges
+  isAdmin(): boolean {
+    return this.role?.includes('admin') || false;
+  }
+
+  // Check if user is active
+  isActive(): boolean {
+    return this.status === 'active';
   }
 
   // Define type for JSON player data

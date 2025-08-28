@@ -42,13 +42,31 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 ## 🛠️ Technology Stack
 
 - **Framework**: Vue 3 + Quasar v2.18.2
-- **Language**: TypeScript
+- **Language**: TypeScript with strict type checking
 - **Backend**: Firebase v12.1.0 (Firestore, Authentication, Storage)
 - **State Management**: Pinia + VueFire v3.2.2
 - **Routing**: Vue Router with authentication guards
 - **Styling**: SCSS + Quasar components
 - **Icons**: Material Design Icons + Material Design Icons (mdi-v7)
 - **Build Tool**: Vite
+- **Code Quality**: ESLint with TypeScript strict rules, Prettier
+
+## 🎯 TypeScript Integration
+
+This project uses **strict TypeScript** with advanced type safety features:
+
+- **Exact Optional Property Types**: Ensures complete type accuracy
+- **Strict Type Checking**: Eliminates `any` types for better code safety
+- **Firebase Type Integration**: Proper typing for Firestore operations
+- **Reactive Store Types**: Full TypeScript support for Pinia stores
+- **Component Prop Types**: Strongly typed Vue component interfaces
+
+### Type Safety Features
+
+- **ReadonlyPlayerWithFirebase**: Handles readonly store objects with Firebase fields
+- **Strict ESLint Rules**: Enforces TypeScript best practices
+- **Interface Definitions**: Comprehensive type definitions for all data models
+- **Generic Type Support**: Flexible typing for dynamic data structures
 
 ## 🚀 Quick Start
 
@@ -95,7 +113,8 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 npm run dev              # Start development server with hot reload
 npm run build           # Build for production
 npm run format          # Format code with Prettier
-npm run lint            # Lint code with ESLint
+npm run lint            # Lint code with ESLint (TypeScript strict)
+npm run type-check      # TypeScript compilation check
 
 # Firebase (after setup)
 firebase emulators:start # Start Firebase emulators for local development
