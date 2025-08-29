@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
@@ -45,9 +45,35 @@ const eventComments = computed(() => {
   return messagesStore.eventMessages(eventId.value);
 });
 
+// Watch for events to be loaded and find our event
+watch(
+  () => eventsStore.events,
+  (newEvents) => {
+    if (newEvents.length > 0 && eventId.value && !event.value) {
+      console.log('Events loaded, looking for event ID:', eventId.value);
+      console.log('Available events:', newEvents.map(e => ({ id: e.id, title: e.title })));
+
+      const foundEvent = newEvents.find(e =>
+        e.id.toString() === eventId.value ||
+        (e.legacyId && e.legacyId.toString() === eventId.value)
+      );
+      if (foundEvent) {
+        console.log('Found event:', foundEvent.title);
+        event.value = foundEvent;
+      } else {
+        console.warn(`Event with ID ${eventId.value} not found in ${newEvents.length} available events`);
+      }
+      loading.value = false;
+    }
+  },
+  { immediate: true }
+);
+
 onMounted(async () => {
   try {
     if (eventId.value) {
+      console.log('Loading event with ID:', eventId.value);
+
       // Load games data
       if (gamesStore.games.length === 0) {
         await gamesStore.loadGames();
@@ -58,23 +84,14 @@ onMounted(async () => {
         await playersStore.fetchAllPlayers();
       }
 
-      // Subscribe to events if not already subscribed
+      // Subscribe to events - the watcher will handle finding the event
       eventsStore.subscribeToEvents();
 
-      // Find the event data using the ID from the route
-      const foundEvent = eventsStore.events.find(e => e.id.toString() === eventId.value);
-      if (foundEvent) {
-        event.value = foundEvent;
-      }
-
       // Subscribe to messages for this event
-      if (eventId.value) {
-        messagesStore.subscribeToEventMessages(eventId.value);
-      }
+      messagesStore.subscribeToEventMessages(eventId.value);
     }
   } catch (error) {
     console.error('Error fetching event:', error);
-  } finally {
     loading.value = false;
   }
 });
@@ -256,8 +273,31 @@ const sendEventComment = (message: string) => {
           </div>
         </div>
       </div>
-      <div v-else class="text-h5 text-center q-pa-xl">
-        Event not found
+      <div v-else class="text-center q-pa-xl">
+        <div class="text-h5 q-mb-md">Event not found</div>
+        <div class="text-body1 q-mb-md">
+          Looking for event ID: <strong>{{ eventId }}</strong>
+        </div>
+        <div v-if="eventsStore.events.length > 0" class="q-mt-lg">
+          <div class="text-h6 q-mb-md">Available Events:</div>
+          <q-list bordered class="rounded-borders">
+            <q-item v-for="availableEvent in eventsStore.events" :key="availableEvent.id" clickable
+              :to="`/events/${availableEvent.id}`">
+              <q-item-section>
+                <q-item-label>{{ availableEvent.title }}</q-item-label>
+                <q-item-label caption>ID: {{ availableEvent.id }} | Date: {{ availableEvent.getFormattedDate()
+                }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
+        <div v-else-if="!loading" class="text-body2 text-grey">
+          No events found in database. Try creating some events first.
+        </div>
+        <div v-if="loading" class="q-mt-lg">
+          <q-spinner-dots size="2em" />
+          <div class="q-mt-sm">Loading events...</div>
+        </div>
       </div>
     </div>
 

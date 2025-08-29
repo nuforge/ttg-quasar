@@ -15,6 +15,7 @@ export type EventStatus = 'upcoming' | 'completed' | 'cancelled';
 
 export class Event {
   id: number;
+  legacyId?: number; // For migrated events from JSON
   gameId: number;
   title: string;
   date: string;
@@ -37,6 +38,9 @@ export class Event {
 
   constructor(eventData: Partial<Event>) {
     this.id = eventData.id || 0;
+    if (eventData.legacyId !== undefined) {
+      this.legacyId = eventData.legacyId;
+    }
     this.gameId = eventData.gameId || 0;
     this.title = eventData.title || '';
     this.date = eventData.date || '';
