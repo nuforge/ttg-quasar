@@ -106,6 +106,19 @@ export default defineConfig((ctx) => {
     framework: {
       config: {
         dark: 'auto', // or Boolean true/false
+        brand: {
+          // primary: '#e46262',
+          // ... or all other brand colors
+        },
+        notify: {
+          /* look at QuasarConfOptions from the API card */
+        },
+        loading: {
+          /* look at QuasarConfOptions from the API card */
+        },
+        loadingBar: {
+          /* look at QuasarConfOptions from the API card */
+        },
       },
 
       iconSet: 'material-icons', // Quasar icon set

@@ -42,7 +42,7 @@
         <!-- Filters -->
         <q-slide-transition>
             <div v-show="showFilters">
-                <q-card flat bordered class="q-mb-md">
+                <q-card bordered class="q-mb-md">
                     <q-card-section>
                         <div class="filters-grid">
                             <!-- Genre Filter -->

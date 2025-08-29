@@ -97,7 +97,7 @@ const selectEventDate = () => {
 </script>
 
 <template>
-  <q-card class="event-card " flat dark>
+  <q-card class="event-card "  dark>
     <q-card-section class="q-pb-xs">
       <div class="row items-center justify-between">
 

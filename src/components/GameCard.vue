@@ -67,17 +67,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <q-card class="game-card q-px-sm" flat dark>
+  <q-card class="game-card q-px-sm"  dark>
     <q-card-section class="q-pa-sm justify-between row ">
       <router-link :to="`/games/${game.id}`" class="game-card-title text-h5 text-uppercase no-underline ">
         {{ game.title }}
       </router-link>
       <div>
-        <q-btn flat :icon="`mdi-calendar-clock${reserved ? '' : '-outline'}`" @click="toggleReserved()"
+        <q-btn  :icon="`mdi-calendar-clock${reserved ? '' : '-outline'}`" @click="toggleReserved()"
           :color="reserved ? 'primary' : 'grey-9'" round />
-        <q-btn flat :icon="`mdi-bookmark${bookmark ? '' : '-outline'}`" @click="toggleBookmark()"
+        <q-btn  :icon="`mdi-bookmark${bookmark ? '' : '-outline'}`" @click="toggleBookmark()"
           :color="bookmark ? 'accent' : 'grey-9'" round />
-        <q-btn flat :icon="`mdi-star${favorite ? '' : '-outline'}`" @click="toggleFavorite()"
+        <q-btn  :icon="`mdi-star${favorite ? '' : '-outline'}`" @click="toggleFavorite()"
           :color="favorite ? 'secondary' : 'grey-9'" round />
       </div>
     </q-card-section>
@@ -116,9 +116,9 @@ onMounted(() => {
     </q-card-section>
 
     <q-card-actions class="justify-between">
-      <q-btn flat icon="mdi-qrcode" @click="toggleQR()" size="md" color="grey-9" />
-      <q-btn flat icon="mdi-share" @click="nativeShare(game)" size="md" color="grey-9" />
-      <q-btn v-if="game.link" flat icon="mdi-open-in-new" :href="game.link" target="_blank" size="md" color="grey-9" />
+      <q-btn  icon="mdi-qrcode" @click="toggleQR()" size="md" color="grey-9" />
+      <q-btn  icon="mdi-share" @click="nativeShare(game)" size="md" color="grey-9" />
+      <q-btn v-if="game.link"  icon="mdi-open-in-new" :href="game.link" target="_blank" size="md" color="grey-9" />
     </q-card-actions>
 
     <QRCode :game="game" v-model:showQR="showQRCode" />

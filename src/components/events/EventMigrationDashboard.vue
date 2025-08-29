@@ -16,7 +16,7 @@
 
         <div class="row q-gutter-md">
           <div class="col-md-5 col-xs-12">
-            <q-card flat bordered>
+            <q-card bordered>
               <q-card-section>
                 <div class="text-subtitle1">📅 Events</div>
                 <div v-if="migrationStatus">
@@ -37,7 +37,7 @@
           </div>
 
           <div class="col-md-5 col-xs-12">
-            <q-card flat bordered>
+            <q-card bordered>
               <q-card-section>
                 <div class="text-subtitle1">👥 Players</div>
                 <div v-if="migrationStatus">

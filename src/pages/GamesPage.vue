@@ -324,7 +324,7 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
       <!-- Filters panel -->
       <q-slide-transition>
         <div v-show="showFilters" class="filters-panel q-mb-md">
-          <q-card flat bordered class="q-pa-md">
+          <q-card bordered class="q-pa-md">
             <div class="filter-header q-mb-md">
               <div class="text-subtitle2 text-weight-medium">Filters</div>
               <q-btn v-if="hasActiveFilters" @click="clearAllFilters" label="Clear All" color="negative" flat dense

@@ -8,40 +8,19 @@
     <!-- Search and Filters -->
     <div class="row q-gutter-md q-mb-md">
       <div class="col-12 col-md-8">
-        <q-input
-          v-model="searchTerm"
-          placeholder="Search users by name or email..."
-          outlined
-          dense
-          @keyup.enter="searchUsers"
-          clearable
-        >
+        <q-input v-model="searchTerm" placeholder="Search users by name or email..." outlined dense
+          @keyup.enter="searchUsers" clearable>
           <template v-slot:prepend>
             <q-icon name="search" />
           </template>
           <template v-slot:append>
-            <q-btn
-              flat
-              round
-              dense
-              icon="search"
-              @click="searchUsers"
-              :loading="searching"
-            />
+            <q-btn flat round dense icon="search" @click="searchUsers" :loading="searching" />
           </template>
         </q-input>
       </div>
       <div class="col-12 col-md-4">
-        <q-select
-          v-model="statusFilter"
-          :options="statusOptions"
-          placeholder="Filter by status"
-          outlined
-          dense
-          clearable
-          emit-value
-          map-options
-        />
+        <q-select v-model="statusFilter" :options="statusOptions" placeholder="Filter by status" outlined dense
+          clearable emit-value map-options />
       </div>
     </div>
 
@@ -104,43 +83,18 @@
     <!-- Users Table -->
     <q-card>
       <q-card-section>
-        <q-table
-          :rows="filteredUsers"
-          :columns="columns"
-          :loading="playersStore.loading"
-          :pagination="pagination"
-          row-key="firebaseId"
-          selection="multiple"
-          v-model:selected="selected"
-          @request="onRequest"
-        >
+        <q-table flat :rows="filteredUsers" :columns="columns" :loading="playersStore.loading" :pagination="pagination"
+          row-key="firebaseId" selection="multiple" v-model:selected="selected" @request="onRequest">
           <template v-slot:top>
             <div class="full-width flex justify-between items-center">
               <div class="text-h6">Users</div>
               <div class="q-gutter-sm">
-                <q-btn
-                  v-if="selected.length > 0"
-                  color="negative"
-                  icon="block"
-                  label="Block Selected"
-                  @click="bulkUpdateStatus('blocked')"
-                  outline
-                />
-                <q-btn
-                  v-if="selected.length > 0"
-                  color="positive"
-                  icon="check_circle"
-                  label="Activate Selected"
-                  @click="bulkUpdateStatus('active')"
-                  outline
-                />
-                <q-btn
-                  color="primary"
-                  icon="refresh"
-                  label="Refresh"
-                  @click="refreshUsers"
-                  :loading="playersStore.loading"
-                />
+                <q-btn v-if="selected.length > 0" color="negative" icon="block" label="Block Selected"
+                  @click="bulkUpdateStatus('blocked')" outline />
+                <q-btn v-if="selected.length > 0" color="positive" icon="check_circle" label="Activate Selected"
+                  @click="bulkUpdateStatus('active')" outline />
+                <q-btn color="primary" icon="refresh" label="Refresh" @click="refreshUsers"
+                  :loading="playersStore.loading" />
               </div>
             </div>
           </template>
@@ -156,27 +110,15 @@
 
           <template v-slot:body-cell-status="props">
             <q-td :props="props">
-              <q-chip
-                :color="getStatusColor(props.row)"
-                :icon="getStatusIcon(props.row)"
-                text-color="white"
-                :label="getDisplayStatus(props.row)"
-                size="sm"
-              />
+              <q-chip :color="getStatusColor(props.row)" :icon="getStatusIcon(props.row)" text-color="white"
+                :label="getDisplayStatus(props.row)" size="sm" />
             </q-td>
           </template>
 
           <template v-slot:body-cell-role="props">
             <q-td :props="props">
-              <q-chip
-                v-for="role in getUserRoles(props.row)"
-                :key="role"
-                :color="getRoleColor(role)"
-                text-color="white"
-                :label="role"
-                size="sm"
-                class="q-mr-xs"
-              />
+              <q-chip v-for="role in getUserRoles(props.row)" :key="role" :color="getRoleColor(role)" text-color="white"
+                :label="role" size="sm" class="q-mr-xs" />
               <span v-if="!getUserRoles(props.row).length" class="text-grey-6">User</span>
             </q-td>
           </template>
@@ -190,59 +132,21 @@
           <template v-slot:body-cell-actions="props">
             <q-td :props="props">
               <q-btn-group flat>
-                <q-btn
-                  flat
-                  round
-                  dense
-                  icon="edit"
-                  size="sm"
-                  @click="editUser(props.row)"
-                >
+                <q-btn flat round dense icon="edit" size="sm" @click="editUser(props.row)">
                   <q-tooltip>Edit User</q-tooltip>
                 </q-btn>
-                <q-btn
-                  flat
-                  round
-                  dense
-                  icon="security"
-                  size="sm"
-                  @click="manageRoles(props.row)"
-                >
+                <q-btn flat round dense icon="security" size="sm" @click="manageRoles(props.row)">
                   <q-tooltip>Manage Roles</q-tooltip>
                 </q-btn>
-                <q-btn
-                  v-if="getDisplayStatus(props.row) === 'active'"
-                  flat
-                  round
-                  dense
-                  icon="block"
-                  size="sm"
-                  color="negative"
-                  @click="blockUser(props.row)"
-                >
+                <q-btn v-if="getDisplayStatus(props.row) === 'active'" flat round dense icon="block" size="sm"
+                  color="negative" @click="blockUser(props.row)">
                   <q-tooltip>Block User</q-tooltip>
                 </q-btn>
-                <q-btn
-                  v-else-if="getDisplayStatus(props.row) === 'blocked'"
-                  flat
-                  round
-                  dense
-                  icon="check_circle"
-                  size="sm"
-                  color="positive"
-                  @click="unblockUser(props.row)"
-                >
+                <q-btn v-else-if="getDisplayStatus(props.row) === 'blocked'" flat round dense icon="check_circle"
+                  size="sm" color="positive" @click="unblockUser(props.row)">
                   <q-tooltip>Unblock User</q-tooltip>
                 </q-btn>
-                <q-btn
-                  flat
-                  round
-                  dense
-                  icon="delete"
-                  size="sm"
-                  color="negative"
-                  @click="deleteUser(props.row)"
-                >
+                <q-btn flat round dense icon="delete" size="sm" color="negative" @click="deleteUser(props.row)">
                   <q-tooltip>Delete User</q-tooltip>
                 </q-btn>
               </q-btn-group>
@@ -260,30 +164,10 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <q-input
-            v-model="editForm.name"
-            label="Name"
-            outlined
-            dense
-            :rules="[val => !!val || 'Name is required']"
-          />
-          <q-input
-            v-model="editForm.email"
-            label="Email"
-            outlined
-            dense
-            type="email"
-            class="q-mt-md"
-            :rules="[val => !!val || 'Email is required']"
-          />
-          <q-input
-            v-model="editForm.bio"
-            label="Bio"
-            outlined
-            dense
-            type="textarea"
-            class="q-mt-md"
-          />
+          <q-input v-model="editForm.name" label="Name" outlined dense :rules="[val => !!val || 'Name is required']" />
+          <q-input v-model="editForm.email" label="Email" outlined dense type="email" class="q-mt-md"
+            :rules="[val => !!val || 'Email is required']" />
+          <q-input v-model="editForm.bio" label="Bio" outlined dense type="textarea" class="q-mt-md" />
         </q-card-section>
 
         <q-card-actions align="right">
@@ -302,12 +186,7 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <q-option-group
-            v-model="selectedRoles"
-            :options="roleOptions"
-            color="primary"
-            type="checkbox"
-          />
+          <q-option-group v-model="selectedRoles" :options="roleOptions" color="primary" type="checkbox" />
         </q-card-section>
 
         <q-card-actions align="right">
@@ -327,12 +206,9 @@
 
         <q-card-actions align="right">
           <q-btn flat label="Cancel" @click="confirmDialog = false" />
-          <q-btn
-            :color="confirmAction === 'delete' ? 'negative' : 'primary'"
-            :label="confirmAction === 'delete' ? 'Delete' : 'Confirm'"
-            @click="executeConfirmAction"
-            :loading="saving"
-          />
+          <q-btn :color="confirmAction === 'delete' ? 'negative' : 'primary'"
+            :label="confirmAction === 'delete' ? 'Delete' : 'Confirm'" @click="executeConfirmAction"
+            :loading="saving" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -379,7 +255,7 @@ const saving = ref(false);
 const selectedUser = ref<Player | null>(null);
 const confirmMessage = ref('');
 const confirmAction = ref<'delete' | 'block' | 'unblock' | 'activate'>('delete');
-const confirmCallback = ref<() => void | Promise<void>>(() => {});
+const confirmCallback = ref<() => void | Promise<void>>(() => { });
 
 // Form data
 const editForm = ref({

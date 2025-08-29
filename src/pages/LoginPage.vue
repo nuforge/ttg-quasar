@@ -23,7 +23,7 @@
                 {{ error }}
             </q-banner>
 
-            <q-card flat bordered class="q-pa-lg">
+            <q-card bordered class="q-pa-lg">
                 <q-card-section>
                     <!-- Social Sign In -->
                     <div class="q-gutter-sm q-mb-lg">

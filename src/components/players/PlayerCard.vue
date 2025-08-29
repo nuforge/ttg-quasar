@@ -42,7 +42,7 @@ const showDetails = () => {
 </script>
 
 <template>
-  <q-card class="player-card" clickable @click="showDetails" flat>
+  <q-card class="player-card" clickable @click="showDetails">
     <q-card-section class="row items-center">
       <PlayerAvatar :player="player" size="32px" class="q-mr-md" />
       <div>

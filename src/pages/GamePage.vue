@@ -128,7 +128,7 @@ onUnmounted(() => {
 
       <!-- Game Comments Section -->
       <div class="q-pa-md">
-        <q-card flat bordered>
+        <q-card bordered>
           <q-card-section>
             <div class="text-h6">
               <q-icon name="mdi-comment-multiple" /> Game Discussion

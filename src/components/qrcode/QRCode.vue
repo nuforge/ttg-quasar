@@ -47,7 +47,7 @@ watch(() => dialogVisible.value, (newVal) => {
 
 <template>
   <q-dialog v-model="dialogVisible" backdrop-filter="blur(4px) saturate(150%)">
-    <q-card flat>
+    <q-card>
       <q-card-section align="center">
         <div class="text-h6">{{ game.title }}</div>
         <qrcode-vue :value="`/games/${game.id}/${game.title}`" :size="size" level="H" class="qrcode-image" :margin="2"

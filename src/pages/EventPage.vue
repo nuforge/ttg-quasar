@@ -126,7 +126,7 @@ const sendEventComment = (message: string) => {
         <div class="row q-col-gutter-md">
           <!-- Left column - Event info -->
           <div class="col-12 col-md-8">
-            <q-card flat>
+            <q-card>
               <q-card-section>
                 <div class="text-h6">Event Details</div>
                 <q-list>
@@ -212,7 +212,7 @@ const sendEventComment = (message: string) => {
           <!-- Right column - Players & game info -->
           <div class="col-12 col-md-4">
             <!-- Players section -->
-            <q-card flat class="q-mb-md">
+            <q-card class="q-mb-md">
               <q-card-section>
                 <div class="text-h6">Players ({{ eventPlayers.length }})</div>
                 <PlayersList :players="eventPlayers" @show-player="showPlayerDetails" />
@@ -235,7 +235,7 @@ const sendEventComment = (message: string) => {
         <!-- Event Comments Section -->
         <div class="row q-col-gutter-md q-mt-md">
           <div class="col-12">
-            <q-card flat bordered>
+            <q-card bordered>
               <q-card-section>
                 <div class="text-h6">
                   <q-icon name="mdi-comment-multiple" /> Event Discussion

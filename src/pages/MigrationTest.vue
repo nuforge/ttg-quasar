@@ -96,7 +96,7 @@
         </div>
 
         <div v-else class="games-grid">
-          <q-card v-for="game in displayedGames.slice(0, 12)" :key="game.id" class="game-card" flat bordered>
+          <q-card v-for="game in displayedGames.slice(0, 12)" :key="game.id" class="game-card"  bordered>
             <q-card-section class="q-pa-sm">
               <div class="text-weight-bold">{{ game.title }}</div>
               <div class="text-caption text-grey-6">{{ game.genre }}</div>

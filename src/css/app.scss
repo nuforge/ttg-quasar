@@ -2,6 +2,11 @@
 @use './reset' as *;
 @use './typography' as *;
 
+// Global override to make all q-card components flat by default
+.q-card {
+  box-shadow: none !important;
+}
+
 a {
   color: var(--q-primary);
   text-decoration: none;

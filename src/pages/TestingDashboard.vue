@@ -258,7 +258,7 @@
                     <!-- Event Submissions List -->
                     <div v-if="eventSubmissions.length > 0" class="q-mt-md">
                       <div class="text-caption text-weight-bold q-mb-sm">Event Submissions ({{ eventSubmissions.length
-                      }}):</div>
+                        }}):</div>
                       <q-list dense bordered class="rounded-borders">
                         <q-item v-for="submission in eventSubmissions" :key="submission.id || 'unknown'"
                           class="q-pa-sm">
@@ -320,7 +320,7 @@
             <div class="text-h6">📊 Real-time Data Flow Monitor</div>
             <div class="row q-gutter-md q-mt-md">
               <div class="col-12 col-md-4">
-                <q-card flat bordered>
+                <q-card bordered>
                   <q-card-section>
                     <div class="text-subtitle2 text-center">Events Store</div>
                     <div class="text-h4 text-center text-primary">{{ eventsCount }}</div>
@@ -331,7 +331,7 @@
                 </q-card>
               </div>
               <div class="col-12 col-md-4">
-                <q-card flat bordered>
+                <q-card bordered>
                   <q-card-section>
                     <div class="text-subtitle2 text-center">Messages Store</div>
                     <div class="text-h4 text-center text-secondary">{{ messagesCount }}</div>
@@ -342,7 +342,7 @@
                 </q-card>
               </div>
               <div class="col-12 col-md-4">
-                <q-card flat bordered>
+                <q-card bordered>
                   <q-card-section>
                     <div class="text-subtitle2 text-center">Test Documents</div>
                     <div class="text-h4 text-center text-accent">{{ testDocuments.length }}</div>
@@ -422,7 +422,7 @@
               </div>
 
               <div v-if="migrationResult" class="q-mt-md">
-                <q-card flat bordered :class="migrationResult.errors.length > 0 ? 'bg-orange-1' : 'bg-green-1'">
+                <q-card bordered :class="migrationResult.errors.length > 0 ? 'bg-orange-1' : 'bg-green-1'">
                   <q-card-section class="q-pa-sm">
                     <div class="text-subtitle2">Migration Results:</div>
                     <div class="text-body2">
@@ -471,7 +471,7 @@
             </div>
 
             <div v-if="eventMigrationResult" class="q-mt-md">
-              <q-card flat bordered :class="eventMigrationResult.errors.length > 0 ? 'bg-orange-1' : 'bg-green-1'">
+              <q-card bordered :class="eventMigrationResult.errors.length > 0 ? 'bg-orange-1' : 'bg-green-1'">
                 <q-card-section>
                   <div class="text-subtitle2">Event Migration Results:</div>
                   <div class="text-body2">

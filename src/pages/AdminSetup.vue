@@ -15,70 +15,30 @@
 
           <q-card-section>
             <q-form @submit="setupAdmin" ref="formRef">
-              <q-input
-                v-model="adminData.email"
-                label="Admin Email"
-                type="email"
-                outlined
-                :rules="[
-                  val => !!val || 'Email is required',
-                  val => /.+@.+\..+/.test(val) || 'Email must be valid'
-                ]"
-                class="q-mb-md"
-              />
+              <q-input v-model="adminData.email" label="Admin Email" type="email" outlined :rules="[
+                val => !!val || 'Email is required',
+                val => /.+@.+\..+/.test(val) || 'Email must be valid'
+              ]" class="q-mb-md" />
 
-              <q-input
-                v-model="adminData.name"
-                label="Full Name"
-                outlined
-                :rules="[val => !!val || 'Name is required']"
-                class="q-mb-md"
-              />
+              <q-input v-model="adminData.name" label="Full Name" outlined :rules="[val => !!val || 'Name is required']"
+                class="q-mb-md" />
 
-              <q-input
-                v-model="adminData.password"
-                label="Password"
-                type="password"
-                outlined
-                :rules="[
-                  val => !!val || 'Password is required',
-                  val => val.length >= 6 || 'Password must be at least 6 characters'
-                ]"
-                class="q-mb-md"
-              />
+              <q-input v-model="adminData.password" label="Password" type="password" outlined :rules="[
+                val => !!val || 'Password is required',
+                val => val.length >= 6 || 'Password must be at least 6 characters'
+              ]" class="q-mb-md" />
 
-              <q-input
-                v-model="adminData.confirmPassword"
-                label="Confirm Password"
-                type="password"
-                outlined
-                :rules="[
-                  val => !!val || 'Please confirm password',
-                  val => val === adminData.password || 'Passwords do not match'
-                ]"
-                class="q-mb-md"
-              />
+              <q-input v-model="adminData.confirmPassword" label="Confirm Password" type="password" outlined :rules="[
+                val => !!val || 'Please confirm password',
+                val => val === adminData.password || 'Passwords do not match'
+              ]" class="q-mb-md" />
 
-              <q-input
-                v-model="adminData.bio"
-                label="Bio (Optional)"
-                type="textarea"
-                outlined
-                rows="3"
-                class="q-mb-md"
-              />
+              <q-input v-model="adminData.bio" label="Bio (Optional)" type="textarea" outlined rows="3"
+                class="q-mb-md" />
 
               <div class="text-center">
-                <q-btn
-                  type="submit"
-                  color="primary"
-                  :loading="creating"
-                  :disable="creating"
-                  size="lg"
-                  label="Create Admin Account"
-                  icon="mdi-account-plus"
-                  class="full-width"
-                />
+                <q-btn type="submit" color="primary" :loading="creating" :disable="creating" size="lg"
+                  label="Create Admin Account" icon="mdi-account-plus" class="full-width" />
               </div>
             </q-form>
           </q-card-section>
@@ -91,10 +51,11 @@
             <q-list>
               <q-item v-for="step in setupSteps" :key="step.name">
                 <q-item-section avatar>
-                  <q-avatar :color="step.status === 'completed' ? 'positive' : step.status === 'error' ? 'negative' : 'grey'" text-color="white">
+                  <q-avatar
+                    :color="step.status === 'completed' ? 'positive' : step.status === 'error' ? 'negative' : 'grey'"
+                    text-color="white">
                     <q-icon
-                      :name="step.status === 'completed' ? 'check' : step.status === 'error' ? 'error' : 'hourglass_empty'"
-                    />
+                      :name="step.status === 'completed' ? 'check' : step.status === 'error' ? 'error' : 'hourglass_empty'" />
                   </q-avatar>
                 </q-item-section>
                 <q-item-section>

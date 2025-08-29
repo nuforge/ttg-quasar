@@ -1,34 +1,9 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { authService } from 'src/services/auth-service';
+import { ref } from 'vue';
 import QRDialog from 'src/components/qrcode/QRDialog.vue';
-import PlayerAvatar from 'src/components/PlayerAvatar.vue';
 
 const leftDrawerOpen = ref(true);
 const qrdialog = ref(false);
-const isAuthenticated = computed(() => authService.isAuthenticated.value);
-const currentUser = computed(() => authService.currentUser.value);
-const currentPlayer = computed(() => authService.currentPlayer.value);
-
-const signIn = async (provider: 'google' | 'facebook') => {
-  try {
-    if (provider === 'google') {
-      await authService.signInWithGoogle();
-    } else {
-      await authService.signInWithFacebook();
-    }
-  } catch (error) {
-    console.error('Sign in error:', error);
-  }
-};
-
-const signOut = async () => {
-  try {
-    await authService.signOut();
-  } catch (error) {
-    console.error('Sign out error:', error);
-  }
-};
 </script>
 
 <template>
@@ -64,16 +39,6 @@ const signOut = async () => {
 
           <q-item-section>
             {{ $t('game', 2) }}
-          </q-item-section>
-        </q-item>
-
-        <q-item clickable v-ripple to="/test/migration" class="text-caption">
-          <q-item-section avatar>
-            <q-icon name="mdi-database-sync" size="sm" />
-          </q-item-section>
-
-          <q-item-section>
-            Migration Test
           </q-item-section>
         </q-item>
 
@@ -114,14 +79,6 @@ const signOut = async () => {
             {{ $t('setting') }}
           </q-item-section>
         </q-item>
-        <q-item clickable v-ripple to="/testing">
-          <q-item-section avatar>
-            <q-icon name="science" />
-          </q-item-section>
-          <q-item-section>
-            Testing Dashboard
-          </q-item-section>
-        </q-item>
         <q-item clickable v-ripple @click="qrdialog = true">
           <q-item-section avatar>
             <q-icon name="mdi-qrcode-scan" />
@@ -130,27 +87,6 @@ const signOut = async () => {
             {{ $t('scan') }}
           </q-item-section>
         </q-item>
-
-        <!-- Authentication Section -->
-        <q-separator class="q-my-md" />
-
-        <div v-if="!isAuthenticated" class="q-pa-md text-center">
-          <q-btn-group vertical class="full-width">
-            <q-btn dense color="primary" icon="mdi-google" label="Google" size="sm" @click="signIn('google')"
-              :loading="authService.loading.value" />
-            <q-btn dense color="blue-9" icon="mdi-facebook" label="Facebook" size="sm" @click="signIn('facebook')"
-              :loading="authService.loading.value" />
-          </q-btn-group>
-        </div>
-
-        <div v-else class="q-pa-md text-center">
-          <PlayerAvatar v-if="currentPlayer" :player="currentPlayer" size="40px" class="q-mb-sm" />
-          <q-avatar v-else size="40px" color="primary" text-color="white" class="q-mb-sm">
-            {{ (currentUser?.displayName || 'U').charAt(0).toUpperCase() }}
-          </q-avatar>
-          <div class="text-caption">{{ currentPlayer?.name || currentUser?.displayName }}</div>
-          <q-btn flat dense size="sm" color="negative" label="Sign Out" @click="signOut" class="q-mt-sm" />
-        </div>
       </q-list>
     </div>
   </q-drawer>

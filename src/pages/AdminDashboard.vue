@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="admin-dashboard">
+  <q-page class="admin-dashboard">
     <!-- Development Mode Warning -->
     <q-banner v-if="showDevModeWarning" class="bg-orange-2 text-orange-8 q-mb-md">
       <template v-slot:avatar>
@@ -19,7 +19,7 @@
     </div>
 
     <!-- Quick Stats -->
-    <div class="row q-gutter-md q-mb-xl">
+    <div class="row q-gutter-sm q-mb-xl">
       <div class="col-12 col-sm-6 col-md-3">
         <q-card class="stat-card">
           <q-card-section>
