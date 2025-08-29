@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import { useMessagesFirebaseStore } from 'src/stores/messages-firebase-store';
-import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { authService } from 'src/services/auth-service';
 import type { Game } from 'src/models/Game';
 import GameCard from 'src/components/GameCard.vue';
@@ -13,7 +13,7 @@ import MessageComposer from 'src/components/messaging/MessageComposer.vue';
 const route = useRoute();
 const gamesStore = useGamesFirebaseStore();
 const messagesStore = useMessagesFirebaseStore();
-const playersStore = usePlayersStore();
+const playersStore = usePlayersFirebaseStore();
 
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -91,7 +91,7 @@ let unsubscribe: (() => void) | undefined;
 onMounted(async () => {
     // Load players if needed
     if (playersStore.players.length === 0) {
-        await playersStore.fetchPlayers();
+        await playersStore.fetchAllPlayers();
     }
 
     // Find the game

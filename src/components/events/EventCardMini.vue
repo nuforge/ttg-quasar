@@ -2,7 +2,7 @@
 import { computed, ref, onMounted } from 'vue';
 import type { Event } from 'src/models/Event';
 import { useCalendarStore } from 'src/stores/calendar-store';
-import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { Player } from 'src/models/Player';
 import EventQRCode from 'src/components/qrcode/EventQRCode.vue';
@@ -25,14 +25,14 @@ const showQRCode = ref(false);
 const showPlayersDialog = ref(false);
 
 // Players store
-const playersStore = usePlayersStore();
+const playersStore = usePlayersFirebaseStore();
 const gamesStore = useGamesFirebaseStore();
 const attendingPlayers = ref<Player[]>([]);
 
 // Fetch data on mount
 onMounted(async () => {
   if (playersStore.players.length === 0) {
-    await playersStore.fetchPlayers();
+    await playersStore.fetchAllPlayers();
   }
   if (gamesStore.games.length === 0) {
     await gamesStore.loadGames();

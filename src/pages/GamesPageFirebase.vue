@@ -15,7 +15,7 @@
             <div class="header-actions">
                 <!-- Submit Game Button -->
                 <q-btn v-if="authService.isAuthenticated.value" color="positive" icon="mdi-plus" label="Submit Game"
-                    @click="showGameSubmission = true" class="q-mr-sm" />
+                    @click="showGameSubmission = true" flat class="q-mr-sm" />
 
                 <!-- View mode toggle -->
                 <q-btn-toggle v-model="viewMode" :options="[

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useEventsStore } from 'src/stores/events-store';
-import { usePlayersStore } from 'src/stores/players-store';
-import { useMessagesStore } from 'src/stores/messages-store';
+import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
+import { useMessagesFirebaseStore } from 'src/stores/messages-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { Event } from 'src/models/Event';
 import type { Player } from 'src/models/Player';
@@ -13,9 +13,9 @@ import MessageList from 'src/components/messaging/MessageList.vue';
 import MessageComposer from 'src/components/messaging/MessageComposer.vue';
 
 const route = useRoute();
-const eventsStore = useEventsStore();
-const playersStore = usePlayersStore();
-const messagesStore = useMessagesStore();
+const eventsStore = useEventsFirebaseStore();
+const playersStore = usePlayersFirebaseStore();
+const messagesStore = useMessagesFirebaseStore();
 const gamesStore = useGamesFirebaseStore();
 
 const eventId = ref(route.params.id ? route.params.id.toString().split('/')[0] : '');
@@ -42,7 +42,7 @@ const eventPlayers = computed<Player[]>(() => {
 // Get event comments
 const eventComments = computed(() => {
   if (!eventId.value) return [];
-  return messagesStore.eventComments(parseInt(eventId.value));
+  return messagesStore.eventMessages(eventId.value);
 });
 
 onMounted(async () => {
@@ -55,15 +55,21 @@ onMounted(async () => {
 
       // Load players data
       if (playersStore.players.length === 0) {
-        await playersStore.fetchPlayers();
+        await playersStore.fetchAllPlayers();
       }
 
-      // Fetch the event data using the ID from the route
-      event.value = await eventsStore.getEventById(eventId.value);
+      // Subscribe to events if not already subscribed
+      eventsStore.subscribeToEvents();
 
-      // Load messages data
-      if (messagesStore.messages.length === 0) {
-        await messagesStore.fetchMessages();
+      // Find the event data using the ID from the route
+      const foundEvent = eventsStore.events.find(e => e.id.toString() === eventId.value);
+      if (foundEvent) {
+        event.value = foundEvent;
+      }
+
+      // Subscribe to messages for this event
+      if (eventId.value) {
+        messagesStore.subscribeToEventMessages(eventId.value);
       }
     }
   } catch (error) {
@@ -94,7 +100,6 @@ const sendEventComment = (message: string) => {
   void messagesStore.sendMessage({
     type: 'event',
     eventId: event.value.id,
-    sender: messagesStore.currentUserId,
     content: message,
     recipients: [], // Add required recipients array
   });

@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router';
 import GameCard from 'src/components/GameCard.vue';
 import type { Game } from 'src/models/Game';
 import { useMessagesFirebaseStore } from 'src/stores/messages-firebase-store';
-import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import { authService } from 'src/services/auth-service';
 import MessageList from 'src/components/messaging/MessageList.vue';
@@ -12,7 +12,7 @@ import MessageComposer from 'src/components/messaging/MessageComposer.vue';
 
 const route = useRoute();
 const messagesStore = useMessagesFirebaseStore();
-const playersStore = usePlayersStore();
+const playersStore = usePlayersFirebaseStore();
 const gamesStore = useGamesFirebaseStore();
 
 const loading = ref(false);
@@ -88,7 +88,7 @@ onMounted(async () => {
   loadGame();
 
   if (playersStore.players.length === 0) {
-    await playersStore.fetchPlayers();
+    await playersStore.fetchAllPlayers();
   }
 
   // Subscribe to game messages if we have a game

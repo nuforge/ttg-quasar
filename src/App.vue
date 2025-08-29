@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 
 // Initialize Firebase stores on app startup
 onMounted(async () => {
   try {
-    const playersStore = usePlayersStore();
-    // Enable Firebase mode for players
-    await playersStore.enableFirebase();
+    const playersStore = usePlayersFirebaseStore();
+    // Firebase store is automatically connected - just ensure data is loaded
+    await playersStore.fetchAllPlayers();
   } catch (error) {
     console.error('Error initializing Firebase stores:', error);
-    // Fallback to local data if Firebase fails
+    // Firebase stores handle their own fallback behavior
   }
 });
 </script>

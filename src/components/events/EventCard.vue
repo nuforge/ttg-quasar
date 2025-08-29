@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import type { Event } from 'src/models/Event';
-import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useCalendarStore } from 'src/stores/calendar-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { Player } from 'src/models/Player';
@@ -20,7 +20,7 @@ const props = defineProps({
 });
 
 // Players store and dialog
-const playersStore = usePlayersStore();
+const playersStore = usePlayersFirebaseStore();
 const gamesStore = useGamesFirebaseStore();
 
 const calendarStore = useCalendarStore();
@@ -30,7 +30,7 @@ const attendingPlayers = ref<Player[]>([]);
 // Fetch data on mount
 onMounted(async () => {
   if (playersStore.players.length === 0) {
-    await playersStore.fetchPlayers();
+    await playersStore.fetchAllPlayers();
   }
   if (gamesStore.games.length === 0) {
     await gamesStore.loadGames();
@@ -97,12 +97,12 @@ const selectEventDate = () => {
 </script>
 
 <template>
-  <q-card class="event-card "  dark>
+  <q-card class="event-card " dark>
     <q-card-section class="q-pb-xs">
       <div class="row items-center justify-between">
 
         <router-link :to="`/events/${event.id}`" class="text-h6 text-uppercase no-underline">{{ event.title
-        }}</router-link>
+          }}</router-link>
         <q-badge :color="statusColor">{{ event.status }}</q-badge>
       </div>
     </q-card-section>

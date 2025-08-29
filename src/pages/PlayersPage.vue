@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { usePlayersStore } from 'src/stores/players-store';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
-import { useEventsStore } from 'src/stores/events-store';
+import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import PlayerCard from 'src/components/players/PlayerCard.vue';
 import PlayerDetails from 'src/components/players/PlayerDetails.vue';
 
@@ -25,40 +24,31 @@ type ReadonlyPlayerWithFirebase = {
 };
 
 // Stores
-const playersStore = usePlayersStore();
 const playersFirebaseStore = usePlayersFirebaseStore();
-const eventsStore = useEventsStore();
+const eventsStore = useEventsFirebaseStore();
 
 // State
 const loading = ref(true);
 const search = ref('');
 const selectedPlayer = ref<ReadonlyPlayerWithFirebase | null>(null);
 const showPlayerDetails = ref(false);
-const useFirebaseData = ref(true); // Toggle for Firebase vs local data
 
 // Fetch data
 onMounted(async () => {
-  if (useFirebaseData.value) {
-    // Use Firebase data
-    if (playersFirebaseStore.players.length === 0) {
-      await playersFirebaseStore.fetchAllPlayers();
-    }
-  } else {
-    // Use legacy local data
-    if (playersStore.players.length === 0) {
-      await playersStore.fetchPlayers();
-    }
+  // Use Firebase data
+  if (playersFirebaseStore.players.length === 0) {
+    await playersFirebaseStore.fetchAllPlayers();
   }
 
-  if (eventsStore.events.length === 0) {
-    await eventsStore.fetchEvents();
-  }
+  // Subscribe to events
+  eventsStore.subscribeToEvents();
+
   loading.value = false;
 });
 
-// Get current players list based on data source
+// Get current players list from Firebase store
 const currentPlayers = computed(() => {
-  return useFirebaseData.value ? playersFirebaseStore.players : playersStore.players;
+  return playersFirebaseStore.players;
 });
 
 // Filtered players based on search
