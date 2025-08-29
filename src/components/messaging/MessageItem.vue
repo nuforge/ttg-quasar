@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import type { Message } from 'src/models/Message';
 
 const props = defineProps<{
@@ -9,7 +9,7 @@ const props = defineProps<{
   showSender?: boolean | undefined;
 }>();
 
-const playersStore = usePlayersStore();
+const playersStore = usePlayersFirebaseStore();
 
 // Get sender information
 const sender = computed(() => {

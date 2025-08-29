@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useMessagesStore } from 'src/stores/messages-store';
+import { useMessagesFirebaseStore } from 'src/stores/messages-firebase-store';
 import type { Message } from 'src/models/Message';
 
 const props = defineProps<{
@@ -16,34 +16,32 @@ const emit = defineEmits<{
     (e: 'cancelReply'): void;
 }>();
 
-const messagesStore = useMessagesStore();
+const messagesStore = useMessagesFirebaseStore();
 const messageContent = ref('');
 const sending = ref(false);
 
-const sendMessage = () => {
+const sendMessage = async () => {
     if (!messageContent.value.trim()) return;
 
     sending.value = true;
     try {
         if (props.recipientId !== undefined) {
-            messagesStore.sendDirectMessage(props.recipientId, messageContent.value);
+            await messagesStore.sendDirectMessage(props.recipientId, messageContent.value);
         } else if (props.groupName) {
-            messagesStore.sendGroupMessage(props.groupName, messageContent.value);
+            await messagesStore.sendGroupMessage(props.groupName, messageContent.value);
         } else if (props.gameId !== undefined) {
-            messagesStore.sendMessage({
+            await messagesStore.sendMessage({
                 type: 'game',
                 gameId: props.gameId,
                 content: messageContent.value,
-                sender: messagesStore.currentUserId,
                 replyTo: typeof props.replyTo?.id === 'number' ? props.replyTo.id : undefined,
                 recipients: []
             });
         } else if (props.eventId !== undefined) {
-            messagesStore.sendMessage({
+            await messagesStore.sendMessage({
                 type: 'event',
                 eventId: props.eventId,
                 content: messageContent.value,
-                sender: messagesStore.currentUserId,
                 replyTo: typeof props.replyTo?.id === 'number' ? props.replyTo.id : undefined,
                 recipients: []
             });
@@ -52,6 +50,8 @@ const sendMessage = () => {
         const content = messageContent.value;
         messageContent.value = '';
         emit('messageSent', content);
+    } catch (error) {
+        console.error('Error sending message:', error);
     } finally {
         sending.value = false;
     }

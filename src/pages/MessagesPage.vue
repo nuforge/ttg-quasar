@@ -1,25 +1,23 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import { useMessagesStore } from 'src/stores/messages-store';
+import { useMessagesFirebaseStore } from 'src/stores/messages-firebase-store';
 import type { Message } from 'src/models/Message';
-import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import ConversationList from 'src/components/messaging/ConversationList.vue';
 import MessagePanel from 'src/components/messaging/MessagePanel.vue';
 
-const messagesStore = useMessagesStore();
-const playersStore = usePlayersStore();
+const messagesStore = useMessagesFirebaseStore();
+const playersStore = usePlayersFirebaseStore();
 const tab = ref('direct');
 const selectedConversation = ref<number>(0);
 const selectedGroup = ref<string>('');
 
 // Initialize stores
-onMounted(async () => {
-  if (messagesStore.messages.length === 0) {
-    await messagesStore.fetchMessages();
-  }
-  if (playersStore.players.length === 0) {
-    await playersStore.fetchPlayers();
-  }
+onMounted(() => {
+  // Firebase stores automatically handle real-time subscriptions
+  // Start subscriptions for direct and group messages
+  messagesStore.subscribeToDirectMessages();
+  messagesStore.subscribeToGroupMessages();
 });
 
 // Get messages for selected conversation

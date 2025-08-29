@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import ConversationItem from './ConversationItem.vue';
 import type {
   DirectConversation,
@@ -10,7 +10,7 @@ import type {
 
 type StoreConversation = DirectConversation | GroupConversation;
 
-const playersStore = usePlayersStore();
+const playersStore = usePlayersFirebaseStore();
 
 const props = defineProps({
   items: {

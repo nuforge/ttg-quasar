@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db } from 'src/boot/firebase';
 import { Message, type MessageData } from 'src/models/Message';
+import type { GroupConversation, DirectConversation } from 'src/models/Conversation';
 import { authService } from 'src/services/auth-service';
 
 type SendMessageData = Omit<MessageData, 'id' | 'timestamp' | 'isRead' | 'sender'>;
@@ -78,6 +79,144 @@ export const useMessagesFirebaseStore = defineStore('messagesFirebase', () => {
           msg.type === 'event'),
     ).length;
   });
+
+  // Add currentUserId getter for compatibility with legacy components
+  const currentUserId = computed(() => {
+    const userId = authService.currentUserId.value;
+    return userId ? parseInt(userId) : null;
+  });
+
+  // Conversation and group management for legacy component compatibility
+  const conversations = computed((): DirectConversation[] => {
+    const currentUserId = authService.currentUserId.value;
+    if (!currentUserId) return [];
+
+    // Create conversation objects from direct messages
+    const directMsgs = directMessages.value;
+    const conversationMap = new Map<number, DirectConversation>();
+
+    directMsgs.forEach((msg) => {
+      const otherId =
+        msg.sender.toString() === currentUserId
+          ? msg.getRecipientId(parseInt(currentUserId))
+          : msg.sender;
+
+      if (otherId && !conversationMap.has(otherId)) {
+        const conversationMessages = directMsgs
+          .filter(
+            (m) =>
+              (m.sender === otherId &&
+                m.getRecipientId(parseInt(currentUserId)) === parseInt(currentUserId)) ||
+              (m.sender === parseInt(currentUserId) &&
+                m.getRecipientId(parseInt(currentUserId)) === otherId),
+          )
+          .sort((a, b) => {
+            const aTime = a.timestamp instanceof Date ? a.timestamp : new Date(a.timestamp);
+            const bTime = b.timestamp instanceof Date ? b.timestamp : new Date(b.timestamp);
+            return aTime.getTime() - bTime.getTime();
+          });
+
+        conversationMap.set(otherId, {
+          partnerId: otherId,
+          messages: conversationMessages,
+          latestMessage: conversationMessages[conversationMessages.length - 1] || undefined,
+          unreadCount: conversationMessages.filter((m) => !m.isRead && m.sender === otherId).length,
+        });
+      }
+    });
+
+    return Array.from(conversationMap.values());
+  });
+
+  const messageGroups = computed((): GroupConversation[] => {
+    // Get unique group names from group messages
+    const groups = new Set<string>();
+    groupMessages.value.forEach((msg) => {
+      if (msg.groupName) groups.add(msg.groupName);
+    });
+
+    return Array.from(groups).map((groupName) => {
+      const groupMsgs = groupMessages.value.filter((msg) => msg.groupName === groupName);
+      const sortedMsgs = groupMsgs.sort((a, b) => {
+        const aTime = a.timestamp instanceof Date ? a.timestamp : new Date(a.timestamp);
+        const bTime = b.timestamp instanceof Date ? b.timestamp : new Date(b.timestamp);
+        return aTime.getTime() - bTime.getTime();
+      });
+
+      const participants = new Set<number>();
+      let unreadCount = 0;
+
+      groupMsgs.forEach((msg) => {
+        participants.add(msg.sender);
+        if (msg.recipients) {
+          msg.recipients.forEach((r) => participants.add(r));
+        }
+        if (!msg.isRead) unreadCount++;
+      });
+
+      return {
+        groupName,
+        messages: sortedMsgs,
+        latestMessage: sortedMsgs[sortedMsgs.length - 1] || undefined,
+        participants: Array.from(participants),
+        unreadCount,
+      };
+    });
+  });
+
+  // Methods for legacy component compatibility
+  const getConversationWith = (userId: number) => {
+    const currentUserId = authService.currentUserId.value;
+    if (!currentUserId) return [];
+
+    return directMessages.value.filter(
+      (msg) => msg.sender === userId || msg.getRecipientId(parseInt(currentUserId)) === userId,
+    );
+  };
+
+  const getGroupMessages = (groupName: string) => {
+    return groupMessages.value.filter((msg) => msg.groupName === groupName);
+  };
+
+  const markConversationAsRead = (userId: number) => {
+    // This would typically update Firestore documents to mark messages as read
+    // For now, we'll just update local state
+    const currentUserId = authService.currentUserId.value;
+    if (!currentUserId) return;
+
+    messages.value.forEach((msg) => {
+      if (msg.sender === userId || msg.getRecipientId(parseInt(currentUserId)) === userId) {
+        msg.isRead = true;
+      }
+    });
+  };
+
+  const markGroupAsRead = (groupName: string) => {
+    // Similar to conversation marking
+    messages.value.forEach((msg) => {
+      if (msg.groupName === groupName) {
+        msg.isRead = true;
+      }
+    });
+  };
+
+  // Convenience methods for different message types
+  const sendDirectMessage = async (recipientId: number, content: string) => {
+    return sendMessage({
+      type: 'direct',
+      content,
+      recipients: [recipientId],
+    });
+  };
+
+  const sendGroupMessage = async (groupName: string, content: string) => {
+    return sendMessage({
+      type: 'group',
+      groupName,
+      content,
+      recipients: [], // Will be populated based on group membership
+    });
+  };
 
   // Actions
   const sendMessage = async (messageData: SendMessageData) => {
@@ -322,13 +461,22 @@ export const useMessagesFirebaseStore = defineStore('messagesFirebase', () => {
     gameComments,
     eventMessages,
     unreadCount,
+    currentUserId,
+    conversations,
+    messageGroups,
 
     // Actions
     sendMessage,
+    sendDirectMessage,
+    sendGroupMessage,
     subscribeToGameMessages,
     subscribeToEventMessages,
     subscribeToDirectMessages,
     subscribeToGroupMessages,
+    getConversationWith,
+    getGroupMessages,
+    markConversationAsRead,
+    markGroupAsRead,
     cleanup,
   };
 });

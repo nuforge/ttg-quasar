@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { useMessagesStore } from 'src/stores/messages-store';
+import { useMessagesFirebaseStore } from 'src/stores/messages-firebase-store';
 import { usePlayersStore } from 'src/stores/players-store';
 import type { Message } from 'src/models/Message';
 import MessageItem from './MessageItem.vue';
@@ -10,7 +10,7 @@ const props = defineProps<{
   showSender?: boolean;
 }>();
 
-const messagesStore = useMessagesStore();
+const messagesStore = useMessagesFirebaseStore();
 const playersStore = usePlayersStore();
 
 // Initialize stores if needed
