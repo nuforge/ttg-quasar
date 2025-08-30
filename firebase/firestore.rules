@@ -60,18 +60,6 @@ service cloud.firestore {
         request.auth.uid == resource.data.receiverId
       );
     }
-    
-    // Test documents collection (for development/testing)
-    match /testDocuments/{documentId} {
-      // Allow authenticated users to read, create, update, delete test documents
-      allow read, write: if request.auth != null;
-    }
-    
-    // Connectivity test collection (for API testing)
-    match /connectivity-test/{documentId} {
-      // Allow authenticated users to test Firestore connectivity
-      allow read, write: if request.auth != null;
-    }
 
     // Games collection
     match /games/{gameId} {

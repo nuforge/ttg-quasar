@@ -92,16 +92,11 @@ The migration system now supports selecting specific Google Calendars:
 
 ### Testing & Validation
 
-#### `MigrationTestRunner` (`src/utils/migration-test-runner.ts`)
-
-- Dry-run testing capabilities
-- Data validation functions
-- Preview calendar event generation
-- Browser console utilities
+✅ **Production Ready**: All testing utilities have been removed for security. The migration system is accessible through the admin dashboard at `/admin/migration`.
 
 ### 🔥 Firebase Store Migration
 
-The application is actively transitioning from legacy local stores to Firebase-based real-time stores:
+The application has **completed migration** from legacy local stores to Firebase-based real-time stores:
 
 #### ✅ **Migrated Pages** (Firebase)
 
@@ -397,18 +392,16 @@ The Testing Dashboard provides real-time activity logging for all operations.
 
 #### Browser Console
 
-Use the MigrationTestRunner in browser console:
+## Testing & Validation (Production)
 
-```javascript
-// Test migration without making changes
-MigrationTestRunner.testEventMigration();
+### Admin Migration Dashboard
 
-// Preview calendar events
-MigrationTestRunner.previewCalendarEvents(10);
+Access the migration tools through the admin panel:
 
-// Test full migration workflow
-MigrationTestRunner.testFullMigration();
-```
+1. **Navigate to**: `/admin/migration`
+2. **Use the Interactive Dashboard**: Real-time migration with progress tracking
+3. **Google Calendar Sync**: Select target calendars and migrate events
+4. **Dry Run Mode**: Test migrations before applying changes
 
 #### Firebase Console
 

@@ -105,24 +105,16 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
     // Remove the admin check here to avoid circular dependency
     // We need to load roles first to determine admin status
     try {
-      console.log('🔍 Fetching user roles from Firebase...');
       const rolesSnapshot = await getDocs(collection(db, 'userRoles'));
       const rolesMap = new Map<string, PlayerRole>();
 
       rolesSnapshot.forEach((doc) => {
         const roleData = { id: doc.id, ...doc.data() } as PlayerRole;
         rolesMap.set(doc.id, roleData);
-        console.log('📋 Loaded role for user:', doc.id, roleData);
       });
 
       userRoles.value = rolesMap;
-      console.log('✅ Total roles loaded:', rolesMap.size);
-
-      // Log current user's role if available
-      if (authService.currentUser.value) {
-        const currentUserRole = rolesMap.get(authService.currentUser.value.uid);
-        console.log('👤 Current user role:', currentUserRole || 'No role found');
-      }
+      console.log('✅ Loaded', rolesMap.size, 'user roles');
     } catch (err) {
       console.error('❌ Error fetching user roles:', err);
     }
@@ -145,11 +137,10 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
           updatedBy: data.updatedBy,
         };
         statusesMap.set(doc.id, statusData);
-        console.log('📊 Loaded status for user:', doc.id, statusData);
       });
 
       userStatuses.value = statusesMap;
-      console.log('✅ Total statuses loaded:', statusesMap.size);
+      console.log('✅ Loaded', statusesMap.size, 'user statuses');
     } catch (err) {
       console.error('❌ Error fetching user statuses:', err);
     }
@@ -323,10 +314,8 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
 
   // Initialize admin data when needed
   const initializeAdminData = async () => {
-    console.log('🚀 Initializing admin data...');
     // Always fetch roles and statuses to determine admin status
     await Promise.all([fetchPlayerRoles(), fetchUserStatuses()]);
-    console.log('✅ Admin data initialization complete');
   };
 
   return {

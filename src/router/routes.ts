@@ -121,16 +121,6 @@ const routes: RouteRecordRaw[] = [
 
   // Other routes
   {
-    path: '/test/migration',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        component: () => import('pages/MigrationTest.vue'),
-      },
-    ],
-  },
-  {
     path: '/players/',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/PlayersPage.vue') }],
@@ -167,18 +157,6 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         component: () => import('pages/SettingsPage.vue'),
-        meta: { requiresAuth: true },
-      },
-    ],
-  },
-  {
-    path: '/testing',
-    component: () => import('layouts/MainLayout.vue'),
-    beforeEnter: requireAuth,
-    children: [
-      {
-        path: '',
-        component: () => import('pages/TestingDashboard.vue'),
         meta: { requiresAuth: true },
       },
     ],
