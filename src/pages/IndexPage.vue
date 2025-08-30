@@ -114,7 +114,7 @@ const steps = [
       <div class="text-h2 text-center q-mb-lg">What We Offer</div>
       <div class="row q-col-gutter-md justify-center">
         <div v-for="feature in features" :key="feature.title" class="col-xs-12 col-sm-6 col-md-3">
-          <q-card class="feature-card"  bordered>
+          <q-card class="feature-card" bordered>
             <q-card-section class="text-center">
               <q-icon :name="feature.icon" :color="feature.color" size="4rem" />
               <div class="text-h6 q-mt-sm">{{ feature.title }}</div>
