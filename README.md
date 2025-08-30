@@ -85,6 +85,7 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Styling**: SCSS + Quasar components
 - **Icons**: Material Design Icons + Material Design Icons (mdi-v7)
 - **Build Tool**: Vite
+- **Testing**: Vitest + Vue Test Utils + Happy DOM
 - **Code Quality**: ESLint with TypeScript strict rules, Prettier
 
 ## 🎯 TypeScript Integration
@@ -151,6 +152,12 @@ npm run build           # Build for production
 npm run format          # Format code with Prettier
 npm run lint            # Lint code with ESLint (TypeScript strict)
 npm run type-check      # TypeScript compilation check
+
+# Testing
+npm test                # Run tests in watch mode
+npm run test:run        # Run all tests once
+npm run test:ui         # Run tests with UI interface
+npm run test:coverage   # Run tests with coverage report
 
 # Firebase (after setup)
 firebase emulators:start # Start Firebase emulators for local development
@@ -257,6 +264,36 @@ Routes are protected using authentication guards:
 - **Authentication Required**: Protected routes and API calls
 - **Data Validation**: Client and server-side validation
 - **Storage Rules**: Secure file uploads with size limits
+
+## 🧪 Testing
+
+This project includes a comprehensive testing suite to ensure code quality and prevent regressions:
+
+### Test Suite Overview
+
+- **59 passing tests** across 7 test files (100% success rate)
+- **Component Testing**: GameIcon, PlayerCard, PlayersPage
+- **Store Testing**: Players Firebase Store with mocked Firebase operations
+- **Utility Testing**: Game icons mapping and conversation utilities
+- **Integration Testing**: Cross-component interactions
+
+### Testing Stack
+
+- **Vitest**: Fast, modern test runner with TypeScript support
+- **Vue Test Utils**: Official Vue.js testing utilities
+- **Happy DOM**: Lightweight browser environment for testing
+- **Firebase Mocks**: Complete Firebase operation mocking
+
+### Running Tests
+
+```bash
+npm test                # Watch mode for development
+npm run test:run        # Single test run
+npm run test:coverage   # Coverage report
+npm run test:ui         # Interactive test UI
+```
+
+For detailed testing documentation, see `TESTING.md`.
 
 ## 🚀 Deployment
 

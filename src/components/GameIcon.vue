@@ -24,8 +24,8 @@ const iconInfo = computed(() => {
 </script>
 
 <template>
-  <q-icon v-if="iconInfo.type === 'mdi'" :name="iconInfo.icon" :size="size" class="game-icon" v-bind="$attrs" />
-  <img v-else :src="`/game-icons/${iconInfo.icon}.svg`" :class="['game-icon', `size-${size}`]" :alt="value"
+  <q-icon v-if="iconInfo.type === 'mdi'" :name="iconInfo.icon" :size="props.size" class="game-icon" v-bind="$attrs" />
+  <img v-else :src="`/game-icons/${iconInfo.icon}.svg`" :class="['game-icon', `size-${props.size}`]" :alt="props.value"
     v-bind="$attrs" />
 </template>
 

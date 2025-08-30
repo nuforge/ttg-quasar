@@ -177,7 +177,17 @@ export function getGameIcon(
   category: keyof typeof IconRules,
   value: string,
 ): { icon: string; type: IconType } {
+  // Handle null/undefined inputs
+  if (!category || !value) {
+    return { icon: 'mdi-help-circle', type: 'mdi' };
+  }
+
   const rules = IconRules[category];
+
+  // Handle unknown categories
+  if (!rules) {
+    return { icon: 'mdi-help-circle', type: 'mdi' };
+  }
 
   // Direct match first
   const directMatch = (rules as Record<string, { icon: string; type: IconType }>)[value];
@@ -186,7 +196,7 @@ export function getGameIcon(
   }
 
   // Fallback logic for better coverage
-  const lowerValue = value.toLowerCase();
+  const lowerValue = value?.toLowerCase() || '';
 
   if (category === 'genres') {
     // Strategy fallbacks
