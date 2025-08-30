@@ -4,12 +4,20 @@ import type { Game } from 'src/models/Game';
 import QRCode from './qrcode/QRCode.vue';
 import GameIcon from './GameIcon.vue';
 import { getGameImageUrl } from 'src/composables/useGameImage';
+import { useGamePreferences } from 'src/composables/useGamePreferences';
+import { Notify } from 'quasar';
 
 const showQRCode = ref(false);
-
-const reserved = ref(false);
-const favorite = ref(false);
-const bookmark = ref(false);
+const {
+  isFavorite,
+  isBookmarked,
+  hasNotifications,
+  toggleFavorite,
+  toggleBookmark,
+  toggleNotifications,
+  isAuthenticated,
+  loading
+} = useGamePreferences();
 
 const isWebShareSupported = ref(false);
 const shareData = ref({
@@ -23,6 +31,11 @@ const props = defineProps<{
 }>();
 
 const gameImageUrl = computed(() => getGameImageUrl(props.game.image));
+
+// Computed properties for game state based on user preferences
+const favorite = computed(() => isFavorite(props.game.id));
+const bookmark = computed(() => isBookmarked(props.game.id));
+const reserved = computed(() => hasNotifications(props.game.id));
 
 const mainGameComponents = computed(() => {
   if (!props.game.components || !Array.isArray(props.game.components)) return [];
@@ -38,16 +51,92 @@ const toggleQR = () => {
   showQRCode.value = !showQRCode.value;
 };
 
-const toggleFavorite = () => {
-  favorite.value = !favorite.value;
+const handleToggleFavorite = async () => {
+  if (!isAuthenticated.value) {
+    Notify.create({
+      type: 'warning',
+      message: 'Please sign in to add games to favorites',
+      position: 'top',
+    });
+    return;
+  }
+
+  try {
+    await toggleFavorite(props.game.id);
+    Notify.create({
+      type: 'positive',
+      message: favorite.value
+        ? `${props.game.title} added to favorites!`
+        : `${props.game.title} removed from favorites`,
+      position: 'top',
+    });
+  } catch {
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to update favorites. Please try again.',
+      position: 'top',
+    });
+  }
 };
 
-const toggleBookmark = () => {
-  bookmark.value = !bookmark.value;
+const handleToggleBookmark = async () => {
+  if (!isAuthenticated.value) {
+    Notify.create({
+      type: 'warning',
+      message: 'Please sign in to bookmark games',
+      position: 'top',
+    });
+    return;
+  }
+
+  try {
+    await toggleBookmark(props.game.id);
+    Notify.create({
+      type: 'positive',
+      message: bookmark.value
+        ? `${props.game.title} bookmarked!`
+        : `${props.game.title} removed from bookmarks`,
+      position: 'top',
+    });
+  } catch {
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to update bookmarks. Please try again.',
+      position: 'top',
+    });
+  }
 };
 
-const toggleReserved = () => {
-  reserved.value = !reserved.value;
+const handleToggleReserved = async () => {
+  if (!isAuthenticated.value) {
+    Notify.create({
+      type: 'warning',
+      message: 'Please sign in to get event notifications',
+      position: 'top',
+    });
+    return;
+  }
+
+  try {
+    await toggleNotifications(props.game.id, {
+      notifyDaysBefore: 3,
+      notifyOnNewEvents: true,
+      notifyOnUpdates: true,
+    });
+    Notify.create({
+      type: 'positive',
+      message: reserved.value
+        ? `You'll be notified about events for ${props.game.title}!`
+        : `Event notifications disabled for ${props.game.title}`,
+      position: 'top',
+    });
+  } catch {
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to update event notifications. Please try again.',
+      position: 'top',
+    });
+  }
 };
 
 const nativeShare = async (game: Game) => {
@@ -73,12 +162,24 @@ onMounted(() => {
         {{ game.title }}
       </router-link>
       <div>
-        <q-btn :icon="`mdi-calendar-clock${reserved ? '' : '-outline'}`" @click="toggleReserved()"
-          :color="reserved ? 'primary' : 'grey-9'" round flat />
-        <q-btn :icon="`mdi-bookmark${bookmark ? '' : '-outline'}`" @click="toggleBookmark()"
-          :color="bookmark ? 'accent' : 'grey-9'" round flat />
-        <q-btn :icon="`mdi-star${favorite ? '' : '-outline'}`" @click="toggleFavorite()"
-          :color="favorite ? 'secondary' : 'grey-9'" round flat />
+        <q-btn :icon="`mdi-calendar-clock${reserved ? '' : '-outline'}`" @click="handleToggleReserved()"
+          :color="reserved ? 'primary' : 'grey-9'" round flat :loading="loading">
+          <q-tooltip class="bg-primary text-black">
+            {{ reserved ? 'Event notifications enabled' : 'Get notified about events' }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn :icon="`mdi-bookmark${bookmark ? '' : '-outline'}`" @click="handleToggleBookmark()"
+          :color="bookmark ? 'accent' : 'grey-9'" round flat :loading="loading">
+          <q-tooltip class="bg-accent text-black">
+            {{ bookmark ? 'Remove from bookmarks' : 'Add to bookmarks' }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn :icon="`mdi-star${favorite ? '' : '-outline'}`" @click="handleToggleFavorite()"
+          :color="favorite ? 'secondary' : 'grey-9'" round flat :loading="loading">
+          <q-tooltip class="bg-secondary text-black">
+            {{ favorite ? 'Remove from favorites' : 'Add to favorites' }}
+          </q-tooltip>
+        </q-btn>
       </div>
     </q-card-section>
 

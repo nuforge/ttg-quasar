@@ -156,8 +156,30 @@ After setup, you'll have:
 ✅ **Real-time Events**: Create, join, and sync with Google Calendar
 ✅ **Real-time Messaging**: Game comments and event discussions
 ✅ **Profile Management**: Player profiles with photo uploads
+✅ **Game Preferences**: User favorites, bookmarks, and notifications
+✅ **Event Notifications**: Customizable game event alerts and reminders
 ✅ **Security**: Production-ready security rules
 ✅ **Offline Support**: Works offline with local caching
+
+## Firebase Collections
+
+The application uses the following Firestore collections:
+
+### Core Collections
+- **games**: Game library with metadata and images
+- **events**: Gaming events with RSVP and calendar sync
+- **players**: User profiles and player information
+- **messages**: Real-time messaging for games and events
+
+### User Preferences System
+- **userPreferences**: User game favorites, bookmarks, and notification settings
+- **gameEventNotifications**: Event notifications and reminders for users
+
+### Admin Collections
+- **userRoles**: Role-based access control (admin permissions)
+- **userStatuses**: User account status tracking
+- **gameSubmissions**: User-submitted games pending approval
+- **eventSubmissions**: User-submitted events pending approval
 
 ## Troubleshooting
 

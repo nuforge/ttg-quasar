@@ -150,6 +150,18 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/notifications',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/NotificationsPage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
     path: '/settings',
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: requireAuth,
@@ -157,6 +169,18 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         component: () => import('pages/SettingsPage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+  {
+    path: '/preferences',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/GamePreferencesPage.vue'),
         meta: { requiresAuth: true },
       },
     ],

@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import { vueFireAuthService } from 'src/services/vuefire-auth-service';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import PlayerAvatar from 'src/components/PlayerAvatar.vue';
+import NotificationBell from 'src/components/NotificationBell.vue';
 
 // Define props
 defineProps<{
@@ -66,6 +67,9 @@ onMounted(async () => {
 
       <!-- User menu -->
       <div v-if="isAuthenticated" class="row items-center q-gutter-sm">
+        <!-- Notification Bell -->
+        <NotificationBell />
+
         <PlayerAvatar v-if="currentPlayer" :player="currentPlayer" size="32px" />
         <q-avatar v-else size="32px" color="primary" text-color="white">
           {{ (user?.displayName || 'U').charAt(0).toUpperCase() }}
@@ -88,6 +92,15 @@ onMounted(async () => {
               </q-item-section>
               <q-item-section>
                 <q-item-label>Settings</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable v-close-popup to="/preferences">
+              <q-item-section avatar>
+                <q-icon name="mdi-star" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>Game Preferences</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -161,7 +174,7 @@ onMounted(async () => {
       <!-- Sign in button for guests -->
       <q-btn v-else flat to="/login" label="Sign In" />
 
-      <q-btn flat dense round icon="notifications" aria-label="Notifications" @click="emit('toggleRightDrawer')" />
+      <q-btn flat dense round icon="mdi-calendar-clock" aria-label="Notifications" @click="emit('toggleRightDrawer')" />
     </q-toolbar>
   </q-header>
 </template>

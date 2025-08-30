@@ -16,12 +16,15 @@ import type { Unsubscribe } from 'firebase/firestore';
 import { db } from '../boot/firebase';
 import { vueFireAuthService } from './vuefire-auth-service';
 import { googleCalendarService } from './google-calendar-service';
+import { gameEventNotificationService } from './game-event-notification-service';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type {
   EventSubmission,
   EventSubmissionStatus,
   CreateEventSubmissionData,
   EventSubmissionFilter,
 } from '../models/EventSubmission';
+import { Event } from '../models/Event';
 
 class EventSubmissionService {
   private readonly COLLECTION_NAME = 'eventSubmissions';
@@ -194,6 +197,51 @@ class EventSubmissionService {
       });
 
       console.log('Event approved and published to calendar:', calendarEvent.id);
+
+      // Send notifications to users who have notifications enabled for this game
+      if (submission.gameId) {
+        try {
+          const gamesStore = useGamesFirebaseStore();
+          const game = gamesStore.getGameById(submission.gameId.toString());
+
+          if (game) {
+            // Create an Event object for the notification service
+            const eventForNotification = new Event({
+              id: parseInt(submission.id || '0', 36), // Convert submission ID to number for Event model
+              gameId: submission.gameId,
+              title: submission.title,
+              date: submission.startDate,
+              time: submission.startTime,
+              endTime: submission.endTime,
+              location: submission.location,
+              description: submission.description,
+              status: 'upcoming',
+              minPlayers: 1,
+              maxPlayers: 99,
+              currentPlayers: 1,
+              rsvps: [],
+              host: {
+                name: submission.submittedBy.displayName || 'Unknown',
+                email: submission.submittedBy.email,
+                phone: '',
+              },
+              notes: '',
+            });
+
+            await gameEventNotificationService.notifyUsersAboutGameEvent(
+              game,
+              eventForNotification,
+              'new_event',
+            );
+
+            console.log('Game event notifications sent successfully');
+          }
+        } catch (notificationError) {
+          console.warn('Failed to send game event notifications:', notificationError);
+          // Don't fail the approval process if notifications fail
+        }
+      }
+
       return calendarEvent.id || '';
     } catch (error) {
       console.error('Error approving and publishing event:', error);

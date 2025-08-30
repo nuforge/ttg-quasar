@@ -43,6 +43,17 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Smart Icons**: Intelligent icon mapping based on game mechanics
 - **Rich Details**: Player counts, age ratings, playtime, and descriptions
 - **Visual Assets**: High-quality game images and artwork
+- **User Preferences**: Personal favorites, bookmarks, and notification settings
+- **Firebase Integration**: Real-time syncing of user game preferences
+
+### 🔔 Game Preferences & Notifications
+
+- **Favorites**: Star games you love for easy access
+- **Bookmarks**: Save games you want to play later
+- **Event Notifications**: Get notified about events for specific games
+- **Customizable Settings**: Configure notification timing and preferences
+- **Real-time Updates**: Instant syncing across all devices
+- **Notification Bell**: Header notification center with unread counts
 
 ### 👥 Player Management
 
