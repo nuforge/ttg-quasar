@@ -22,6 +22,8 @@ Test Results Summary:
    Duration  ~1.5s
 ```
 
+**Note**: Test output has been optimized to suppress Vue/Router/i18n warnings for clean development experience.
+
 ## Testing Stack
 
 - **Vitest**: Modern, fast test runner with TypeScript support
@@ -62,6 +64,23 @@ npm run test:ui
 # Run tests with coverage
 npm run test:coverage
 ```
+
+## Test Configuration
+
+### Clean Output
+
+Test output has been optimized for a clean development experience:
+
+- **Warning Suppression**: Vue/Router/i18n warnings are filtered during test execution
+- **Focus on Failures**: Only actual test failures and errors are displayed
+- **Development Friendly**: Clean console output improves debugging focus
+
+### Test Environment
+
+- **Happy DOM**: Lightweight browser environment for component testing
+- **Complete Mocking**: Firebase services, Quasar plugins, and router are fully mocked
+- **TypeScript Support**: Full type checking during test execution
+- **Comprehensive Setup**: All Vue ecosystem plugins properly configured
 
 ## Writing Tests
 

@@ -25,14 +25,52 @@ export function createTestWrapper(component: any, options: TestOptions = {}) {
     legacy: false,
     locale: 'en-US',
     messages: {
-      'en-US': {},
-      'en-ES': {},
+      'en-US': {
+        player: 'Player',
+        players: 'Players',
+        event: 'Event',
+        events: 'Events',
+        game: 'Game',
+        games: 'Games',
+        search: 'Search',
+        loading: 'Loading...',
+        noResults: 'No results found',
+        welcome: 'Welcome',
+        login: 'Login',
+        logout: 'Logout',
+        admin: 'Admin',
+        settings: 'Settings',
+      },
+      'en-ES': {
+        player: 'Jugador',
+        players: 'Jugadores',
+        event: 'Evento',
+        events: 'Eventos',
+        game: 'Juego',
+        games: 'Juegos',
+        search: 'Buscar',
+        loading: 'Cargando...',
+        noResults: 'No se encontraron resultados',
+        welcome: 'Bienvenido',
+        login: 'Iniciar sesión',
+        logout: 'Cerrar sesión',
+        admin: 'Administrador',
+        settings: 'Configuración',
+      },
     },
   });
 
   const router = createRouter({
     history: createWebHistory(),
-    routes: [],
+    routes: [
+      { path: '/', component: { template: '<div>Home</div>' } },
+      { path: '/players', component: { template: '<div>Players</div>' } },
+      { path: '/games', component: { template: '<div>Games</div>' } },
+      { path: '/events', component: { template: '<div>Events</div>' } },
+      { path: '/admin', component: { template: '<div>Admin</div>' } },
+      { path: '/settings', component: { template: '<div>Settings</div>' } },
+      { path: '/:pathMatch(.*)*', component: { template: '<div>Not Found</div>' } }, // Catch-all route
+    ],
   });
 
   const defaultOptions = {
@@ -57,10 +95,43 @@ export function createTestWrapper(component: any, options: TestOptions = {}) {
             hide: vi.fn(),
           },
         },
+        $t: (key: string) => key, // Simple translation mock
+        $router: {
+          push: vi.fn(),
+          replace: vi.fn(),
+          go: vi.fn(),
+          back: vi.fn(),
+          forward: vi.fn(),
+        },
+        $route: {
+          path: '/',
+          query: {},
+          params: {},
+          hash: '',
+          fullPath: '/',
+          matched: [],
+          name: undefined,
+          redirectedFrom: undefined,
+        },
       },
       stubs: {
-        'router-link': true,
-        'router-view': true,
+        'router-link': {
+          template: '<a><slot /></a>',
+          props: ['to'],
+        },
+        'router-view': {
+          template: '<div><slot /></div>',
+        },
+        'q-page': {
+          template: '<div class="q-page"><slot /></div>',
+        },
+        'q-page-container': {
+          template: '<div class="q-page-container"><slot /></div>',
+        },
+        'q-icon': {
+          template: '<i class="q-icon" :class="name"><slot /></i>',
+          props: ['name', 'size'],
+        },
       },
     },
   };

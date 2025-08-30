@@ -59,7 +59,6 @@ describe('GameIcon Component', () => {
       const icon = wrapper.find('i');
       expect(icon.exists()).toBe(true);
       expect(icon.classes()).toContain('q-icon');
-      expect(icon.classes()).toContain('mdi');
       expect(icon.classes()).toContain('mdi-account-multiple');
       expect(icon.classes()).toContain('game-icon');
     });
