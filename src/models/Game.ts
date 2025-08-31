@@ -135,6 +135,23 @@ export class Game {
     );
   }
 
+  // Helper to convert Firebase Timestamp or Date objects to Date
+  private static convertTimestamp(
+    timestamp: Timestamp | Date | string | number | undefined,
+  ): Date | undefined {
+    if (!timestamp) return undefined;
+    if (timestamp instanceof Date) return timestamp;
+    if (
+      typeof timestamp === 'object' &&
+      'toDate' in timestamp &&
+      typeof timestamp.toDate === 'function'
+    ) {
+      return timestamp.toDate();
+    }
+    if (typeof timestamp === 'string' || typeof timestamp === 'number') return new Date(timestamp);
+    return undefined;
+  }
+
   // Create from Firebase data
   static fromFirebase(id: string, data: FirebaseGame): Game {
     return new Game(
@@ -150,12 +167,12 @@ export class Game {
       data.releaseYear,
       data.image,
       data.link,
-      data.createdAt?.toDate(),
-      data.updatedAt?.toDate(),
+      Game.convertTimestamp(data.createdAt),
+      Game.convertTimestamp(data.updatedAt),
       data.createdBy,
       data.approved,
       data.approvedBy,
-      data.approvedAt?.toDate(),
+      Game.convertTimestamp(data.approvedAt),
       data.status,
       data.tags,
       data.difficulty,

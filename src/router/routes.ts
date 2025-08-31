@@ -23,28 +23,24 @@ const routes: RouteRecordRaw[] = [
     ],
   },
 
-  // Protected routes
+  // Events routes
   {
     path: '/events/',
     component: () => import('layouts/MainLayout.vue'),
-    beforeEnter: requireAuth,
     children: [
       {
         path: '',
         component: () => import('pages/EventsPage.vue'),
-        meta: { requiresAuth: true },
       },
     ],
   },
   {
     path: '/events/:id/:slug?',
     component: () => import('layouts/MainLayout.vue'),
-    beforeEnter: requireAuth,
     children: [
       {
         path: '',
         component: () => import('pages/EventPage.vue'),
-        meta: { requiresAuth: true },
       },
     ],
   },
@@ -56,12 +52,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/games/:id/:slug?',
     component: () => import('layouts/MainLayout.vue'),
-    beforeEnter: requireAuth,
     children: [
       {
         path: '',
         component: () => import('pages/GamePage.vue'),
-        meta: { requiresAuth: true },
       },
     ],
   },

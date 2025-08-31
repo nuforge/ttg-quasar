@@ -370,9 +370,21 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
             time: data.time,
             endTime: data.endTime,
             createdAt:
-              data.createdAt instanceof Timestamp ? data.createdAt.toDate() : data.createdAt,
+              data.createdAt instanceof Timestamp
+                ? data.createdAt.toDate()
+                : data.createdAt instanceof Date
+                  ? data.createdAt
+                  : data.createdAt
+                    ? new Date(data.createdAt)
+                    : undefined,
             updatedAt:
-              data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt,
+              data.updatedAt instanceof Timestamp
+                ? data.updatedAt.toDate()
+                : data.updatedAt instanceof Date
+                  ? data.updatedAt
+                  : data.updatedAt
+                    ? new Date(data.updatedAt)
+                    : undefined,
             googleCalendarEventId: data.googleCalendarEventId,
           });
         });
