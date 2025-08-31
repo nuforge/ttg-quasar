@@ -1,5 +1,45 @@
 # Development Pitfalls and Solutions
 
+## TypeScript Strict Compliance
+
+**Problem**: `exactOptionalPropertyTypes: true` and strict TypeScript settings cause compilation errors with loose type handling.
+
+**Solution**: Follow strict patterns for optional properties and type safety:
+
+```typescript
+// WRONG - exactOptionalPropertyTypes violation
+const user = {
+  name: 'John',
+  displayName: someValue || undefined, // Type 'string | undefined' not assignable
+};
+
+// CORRECT - Use conditional property spreading
+const user = {
+  name: 'John',
+  ...(someValue && { displayName: someValue }),
+};
+
+// WRONG - Array access without safety
+expect(result[0].title).toBe('Expected');
+
+// CORRECT - Use optional chaining
+expect(result[0]?.title).toBe('Expected');
+
+// WRONG - Loose number parsing
+const hour = parseInt(timeString);
+
+// CORRECT - Explicit base and null safety
+const hour = parseInt(timeString || '0', 10);
+const safeHour = hour ?? 0;
+```
+
+**Key Patterns**:
+
+- Optional properties: Use conditional spreading `...(condition && { prop: value })`
+- Array access: Always use optional chaining `array[0]?.property`
+- Type literals: Use `as const` for enum-like values `'tournament' as const`
+- Interface mocks: Include ALL required properties in test mocks
+
 ## Vue Router Parameter Reactivity
 
 **Problem**: When navigating between pages with the same component (e.g., `/events/123` to `/events/456`), Vue reuses the component instance and doesn't re-run setup. Refs set from `route.params` don't update automatically.

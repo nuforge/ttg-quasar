@@ -11,6 +11,7 @@ import type {
   EventSubmissionFilter,
 } from 'src/models/EventSubmission';
 import type { FirebaseGame } from 'src/models/Game';
+import type { CalendarEvent } from 'src/services/google-calendar-service';
 import type { User } from 'firebase/auth';
 import { Event } from 'src/models/Event';
 
@@ -109,7 +110,7 @@ describe('EventSubmissionService', () => {
     submittedBy: {
       userId: mockUser.uid,
       email: mockUser.email || '',
-      displayName: mockUser.displayName,
+      ...(mockUser.displayName && { displayName: mockUser.displayName }),
     },
     submittedAt: Timestamp.now(),
     status: 'pending',
@@ -118,20 +119,18 @@ describe('EventSubmissionService', () => {
   };
 
   const mockGame: FirebaseGame = {
-    id: 1,
-    name: 'Test Game',
+    id: '1',
+    legacyId: 1,
+    title: 'Test Game',
+    genre: 'Strategy',
+    numberOfPlayers: '2-4',
+    recommendedAge: '12+',
+    playTime: '60-90 min',
+    components: ['Cards', 'Board'],
+    description: 'A test game',
     image: '',
-    thumbnail: '',
-    minPlayers: 2,
-    maxPlayers: 6,
-    playingTime: 90,
-    yearPublished: 2020,
-    description: 'Test game description',
-    artists: [],
-    designers: [],
-    publishers: [],
-    mechanics: [],
-    categories: [],
+    status: 'active',
+    approved: true,
   };
 
   beforeEach(() => {
@@ -323,7 +322,7 @@ describe('EventSubmissionService', () => {
 
       // Assert
       expect(result).toHaveLength(3);
-      expect(result[0].title).toBe('Event 1');
+      expect(result[0]?.title).toBe('Event 1');
       expect(orderBy).toHaveBeenCalledWith('submittedAt', 'desc');
     });
 
@@ -378,7 +377,7 @@ describe('EventSubmissionService', () => {
       // Assert
       expect(where).toHaveBeenCalledWith('eventType', '==', 'tournament');
       expect(result).toHaveLength(1);
-      expect(result[0].eventType).toBe('tournament');
+      expect(result[0]?.eventType).toBe('tournament');
     });
 
     it('should filter by submittedBy when provided', async () => {
@@ -386,7 +385,7 @@ describe('EventSubmissionService', () => {
       const { collection, query, orderBy, where, getDocs } = await import('firebase/firestore');
       const mockQuerySnapshot = {
         docs: [mockSubmissions[0]].map((sub) => ({
-          id: sub.id,
+          id: sub?.id || 'unknown',
           data: () => ({ ...sub, id: undefined }),
         })),
       };
@@ -1029,7 +1028,7 @@ describe('EventSubmissionService', () => {
         endDate: '2025-12-25',
         endTime: '14:00',
         location: 'Community Center',
-        eventType: 'tournament',
+        eventType: 'tournament' as const,
         status: 'approved' as const,
       };
 
@@ -1112,7 +1111,12 @@ describe('EventSubmissionService', () => {
         data: () => ({ ...submissionWithoutGameId, id: undefined }),
         id: 'submission123',
       };
-      const mockCalendarEvent = { id: 'calendar123' };
+      const mockCalendarEvent: CalendarEvent = {
+        id: 'calendar123',
+        summary: 'Test Event',
+        start: { dateTime: '2025-01-01T10:00:00.000Z' },
+        end: { dateTime: '2025-01-01T12:00:00.000Z' },
+      };
 
       vi.mocked(doc).mockReturnValue({} as any);
       vi.mocked(getDoc).mockResolvedValue(mockDocSnapshot as any);

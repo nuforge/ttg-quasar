@@ -107,18 +107,38 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 
 This project uses **strict TypeScript** with advanced type safety features:
 
-- **Exact Optional Property Types**: Ensures complete type accuracy
+- **Exact Optional Property Types**: `exactOptionalPropertyTypes: true` ensures complete type accuracy
 - **Strict Type Checking**: Eliminates `any` types for better code safety
 - **Firebase Type Integration**: Proper typing for Firestore operations
 - **Reactive Store Types**: Full TypeScript support for Pinia stores
 - **Component Prop Types**: Strongly typed Vue component interfaces
 
+### Type Safety Patterns
+
+```typescript
+// ✅ Optional properties with conditional spreading
+const user = {
+  name: 'John',
+  ...(displayName && { displayName }),
+};
+
+// ✅ Safe array access with optional chaining
+expect(results[0]?.title).toBe('Expected');
+
+// ✅ Type-safe parsing with explicit base
+const hour = parseInt(timeString || '0', 10) ?? 0;
+
+// ✅ Const assertions for enum-like values
+const eventType = 'tournament' as const;
+```
+
 ### Type Safety Features
 
 - **ReadonlyPlayerWithFirebase**: Handles readonly store objects with Firebase fields
-- **Strict ESLint Rules**: Enforces TypeScript best practices
+- **Strict ESLint Rules**: Enforces TypeScript best practices (`@typescript-eslint/no-explicit-any`)
 - **Interface Definitions**: Comprehensive type definitions for all data models
 - **Generic Type Support**: Flexible typing for dynamic data structures
+- **Test Type Safety**: All test mocks enforce strict interface compliance
 
 ## 🚀 Quick Start
 
@@ -163,10 +183,9 @@ This project uses **strict TypeScript** with advanced type safety features:
 ```bash
 # Development
 npm run dev              # Start development server with hot reload
-npm run build           # Build for production
+npm run build           # Build for production (includes TypeScript compilation)
 npm run format          # Format code with Prettier
 npm run lint            # Lint code with ESLint (TypeScript strict)
-npm run type-check      # TypeScript compilation check
 
 # Testing
 npm test                # Run tests in watch mode

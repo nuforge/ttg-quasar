@@ -41,6 +41,60 @@ Test Results Summary:
 - **Happy DOM**: Lightweight DOM implementation for testing
 - **Firebase Mocks**: Custom mocks for Firebase services
 - **Coverage**: V8 coverage provider for detailed test coverage reports
+- **Strict TypeScript**: Tests enforce `exactOptionalPropertyTypes: true` compliance
+
+## TypeScript Test Patterns
+
+Following the project's strict TypeScript guidelines, tests must adhere to specific patterns:
+
+### ✅ Correct Mock Object Creation
+
+```typescript
+// CORRECT - Use conditional spreading for optional properties
+const mockSubmission: EventSubmission = {
+  id: 'submission123',
+  ...baseData,
+  submittedBy: {
+    userId: mockUser.uid,
+    email: mockUser.email || '',
+    ...(mockUser.displayName && { displayName: mockUser.displayName }),
+  },
+};
+
+// CORRECT - Include ALL required interface properties
+const mockCalendarEvent: CalendarEvent = {
+  id: 'calendar123',
+  summary: 'Test Event',
+  start: { dateTime: '2025-01-01T10:00:00.000Z' },
+  end: { dateTime: '2025-01-01T12:00:00.000Z' },
+};
+```
+
+### ✅ Safe Array and Object Access
+
+```typescript
+// CORRECT - Use optional chaining for potentially undefined access
+expect(result[0]?.title).toBe('Expected Value');
+expect(result[0]?.eventType).toBe('tournament');
+
+// CORRECT - Handle potentially undefined values in maps
+docs: mockData.map((item) => ({
+  id: item?.id || 'fallback',
+  data: () => ({ ...item, id: undefined }),
+}));
+```
+
+### ✅ Type-Safe Parsing and Operations
+
+```typescript
+// CORRECT - Explicit base and null safety for parsing
+const [hour, min] = timeString.split(':').map((s) => parseInt(s || '0', 10));
+const safeHour = hour ?? 0;
+const safeMin = min ?? 0;
+
+// CORRECT - Use const assertions for enum values
+const eventType = 'tournament' as const;
+```
 
 ## Test Structure
 

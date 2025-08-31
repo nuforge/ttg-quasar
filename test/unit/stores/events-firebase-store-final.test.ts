@@ -576,11 +576,11 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
       const startTime = '19:00';
       const endTime = '23:30';
 
-      const [startHour, startMin] = startTime.split(':').map((s) => parseInt(s || '0'));
-      const [endHour, endMin] = endTime.split(':').map((s) => parseInt(s || '0'));
+      const [startHour, startMin] = startTime.split(':').map((s) => parseInt(s || '0', 10));
+      const [endHour, endMin] = endTime.split(':').map((s) => parseInt(s || '0', 10));
 
-      const startMinutes = startHour * 60 + startMin;
-      const endMinutes = endHour * 60 + endMin;
+      const startMinutes = (startHour ?? 0) * 60 + (startMin ?? 0);
+      const endMinutes = (endHour ?? 0) * 60 + (endMin ?? 0);
       const durationMinutes = endMinutes - startMinutes;
       const durationHours = durationMinutes / 60;
 
@@ -592,11 +592,11 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
       const startTime = '22:00';
       const endTime = '02:00'; // Next day
 
-      const [startHour, startMin] = startTime.split(':').map((s) => parseInt(s || '0'));
-      const [endHour, endMin] = endTime.split(':').map((s) => parseInt(s || '0'));
+      const [startHour, startMin] = startTime.split(':').map((s) => parseInt(s || '0', 10));
+      const [endHour, endMin] = endTime.split(':').map((s) => parseInt(s || '0', 10));
 
-      const startMinutes = startHour * 60 + startMin;
-      let endMinutes = endHour * 60 + endMin;
+      const startMinutes = (startHour ?? 0) * 60 + (startMin ?? 0);
+      let endMinutes = (endHour ?? 0) * 60 + (endMin ?? 0);
 
       // Handle midnight crossing
       if (endMinutes < startMinutes) {
