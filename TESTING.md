@@ -4,7 +4,7 @@ This document outlines the testing strategy and configuration for the Tabletop G
 
 ## 🎯 Current Status
 
-**✅ COMPREHENSIVE: 150 passing tests across 10 test files (100% success rate)**
+**✅ COMPREHENSIVE: 202 passing tests across 11 test files (100% success rate)**
 
 Test Results Summary:
 
@@ -12,6 +12,7 @@ Test Results Summary:
 ✓ test/unit/utils/game-icons.test.ts (13 tests)
 ✓ test/unit/utils/conversation-utils.test.ts (5 tests)
 ✓ test/unit/stores/players-firebase-store.test.ts (15 tests)
+✓ test/unit/stores/games-firebase-store.test.ts (52 tests)
 ✓ test/unit/stores/events-firebase-store-final.test.ts (45 tests)
 ✓ test/unit/services/event-submission-service.test.ts (43 tests)
 ✓ test/unit/services/event-submission-service-simple.test.ts (3 tests)
@@ -20,13 +21,14 @@ Test Results Summary:
 ✓ test/unit/pages/PlayersPage.test.ts (5 tests)
 ✓ test/integration/players-store-integration.test.ts (7 tests)
 
- Test Files  10 passed (10)
-      Tests  150 passed (150)
-   Duration  ~1.4s
+ Test Files  11 passed (11)
+      Tests  202 passed (202)
+   Duration  ~2.6s
 ```
 
 **Major Testing Expansion**: Added comprehensive business logic testing for:
 
+- **Games Firebase Store**: 52 tests covering store state, computed properties, search logic, data processing
 - **Event Submission Service**: 46 tests covering complete CRUD operations, validation, error handling
 - **Events Firebase Store**: 45 tests covering store state, computed properties, RSVP logic, data processing
 
@@ -190,6 +192,46 @@ describe('Players Store', () => {
   it('should initialize with empty state', () => {
     const store = usePlayersFirebaseStore();
     expect(store.players).toEqual([]);
+  });
+});
+```
+
+### Games Firebase Store Testing
+
+Comprehensive testing of game management business logic (52 tests):
+
+```typescript
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
+
+describe('Games Firebase Store', () => {
+  // Store initialization and reactive properties
+  it('should initialize with empty state', () => {
+    const store = useGamesFirebaseStore();
+    expect(store.games).toEqual([]);
+    expect(store.loading).toBe(false);
+    expect(store.error).toBeNull();
+  });
+
+  // Computed properties testing
+  it('should return only approved and active games', () => {
+    const store = useGamesFirebaseStore();
+    store.games = [mockApprovedGame, mockPendingGame];
+    expect(store.approvedGames).toHaveLength(1);
+    expect(store.approvedGames[0].approved).toBe(true);
+  });
+
+  // Search functionality testing
+  it('should search games by multiple criteria', () => {
+    const store = useGamesFirebaseStore();
+    const results = store.searchGames('strategy');
+    expect(
+      results.every(
+        (game) =>
+          game.title.toLowerCase().includes('strategy') ||
+          game.genre.toLowerCase().includes('strategy') ||
+          game.description.toLowerCase().includes('strategy'),
+      ),
+    ).toBe(true);
   });
 });
 ```

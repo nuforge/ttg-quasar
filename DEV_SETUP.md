@@ -243,7 +243,7 @@ interface PlayerLike {
 
 ### Comprehensive Test Suite
 
-This project maintains a **150-test comprehensive testing suite** with 100% pass rate:
+This project maintains a **202-test comprehensive testing suite** with 100% pass rate:
 
 ```bash
 # Run all tests
@@ -263,11 +263,12 @@ npm run test:ui         # Interactive test UI
 
 ### Coverage Areas
 
+- ✅ **Games Store**: State management, search logic, game filtering (52 tests)
 - ✅ **Events Store**: State management, RSVP logic, event filtering (45 tests)
-- ✅ **Players Store**: User management, profile operations
+- ✅ **Players Store**: User management, profile operations (15 tests)
 - ✅ **Event Submission Service**: Complete CRUD workflow (46 tests)
-- ✅ **Components**: GameIcon, PlayerCard, PlayersPage
-- ✅ **Utilities**: Game icons, conversation helpers
+- ✅ **Components**: GameIcon, PlayerCard, PlayersPage (19 tests)
+- ✅ **Utilities**: Game icons, conversation helpers (18 tests)
 
 See `TESTING.md` for detailed testing documentation and Firebase-specific testing patterns.
 
