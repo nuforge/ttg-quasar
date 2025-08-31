@@ -244,17 +244,12 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     }
   };
 
-  const joinEvent = async (eventId: string) => {
+  const joinEvent = async (event: Event) => {
     if (!authService.isAuthenticated.value || !authService.currentPlayer.value) {
       throw new Error('Must be authenticated to join events');
     }
 
     const currentPlayer = authService.currentPlayer.value;
-    const event = events.value.find((e) => e.id.toString() === eventId);
-
-    if (!event) {
-      throw new Error('Event not found');
-    }
 
     if (event.isFull()) {
       throw new Error('Event is full');
@@ -267,7 +262,10 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     }
 
     try {
-      const eventRef = doc(db, 'events', eventId);
+      if (!event.firebaseDocId) {
+        throw new Error('Firebase document ID not found for this event');
+      }
+      const eventRef = doc(db, 'events', event.firebaseDocId);
       const newRsvp: RSVP = {
         playerId: currentPlayer.id,
         status: 'confirmed',
@@ -286,17 +284,12 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     }
   };
 
-  const leaveEvent = async (eventId: string) => {
+  const leaveEvent = async (event: Event) => {
     if (!authService.isAuthenticated.value || !authService.currentPlayer.value) {
       throw new Error('Must be authenticated to leave events');
     }
 
     const currentPlayer = authService.currentPlayer.value;
-    const event = events.value.find((e) => e.id.toString() === eventId);
-
-    if (!event) {
-      throw new Error('Event not found');
-    }
 
     const rsvp = event.rsvps.find((rsvp) => rsvp.playerId === currentPlayer.id);
     if (!rsvp || rsvp.status !== 'confirmed') {
@@ -309,7 +302,10 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     }
 
     try {
-      const eventRef = doc(db, 'events', eventId);
+      if (!event.firebaseDocId) {
+        throw new Error('Firebase document ID not found for this event');
+      }
+      const eventRef = doc(db, 'events', event.firebaseDocId);
 
       await updateDoc(eventRef, {
         rsvps: arrayRemove(rsvp),
@@ -341,6 +337,7 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
           const data = doc.data();
           return new Event({
             id: parseInt(doc.id.slice(-6), 36), // Convert doc ID to number for compatibility
+            firebaseDocId: doc.id, // Store original Firebase document ID
             ...data,
             // Convert Firestore timestamps to strings
             date: data.date,
@@ -371,6 +368,51 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     events.value = [];
   };
 
+  const toggleInterest = async (event: Event) => {
+    if (!authService.isAuthenticated.value || !authService.currentPlayer.value) {
+      throw new Error('Must be authenticated to toggle interest');
+    }
+
+    const currentPlayer = authService.currentPlayer.value;
+
+    // ONLY look for existing INTERESTED RSVP - ignore confirmed RSVPs completely
+    const existingInterestedRSVP = event.rsvps.find(
+      (rsvp: RSVP) => rsvp.playerId === currentPlayer.id && rsvp.status === 'interested',
+    );
+
+    try {
+      if (!event.firebaseDocId) {
+        throw new Error('Firebase document ID not found for this event');
+      }
+
+      const eventRef = doc(db, 'events', event.firebaseDocId);
+
+      if (existingInterestedRSVP) {
+        // Currently interested, remove the interested RSVP
+        await updateDoc(eventRef, {
+          rsvps: arrayRemove(existingInterestedRSVP),
+          updatedAt: serverTimestamp(),
+        });
+      } else {
+        // Not currently interested, add interested RSVP
+        const newInterestedRsvp: RSVP = {
+          playerId: currentPlayer.id,
+          status: 'interested',
+          participants: 0, // Interested doesn't count towards player limit
+        };
+
+        await updateDoc(eventRef, {
+          rsvps: arrayUnion(newInterestedRsvp),
+          updatedAt: serverTimestamp(),
+        });
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      error.value = `Failed to toggle interest: ${errorMessage}`;
+      throw err;
+    }
+  };
+
   return {
     // State
     events,
@@ -388,6 +430,7 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     deleteEvent,
     joinEvent,
     leaveEvent,
+    toggleInterest,
     subscribeToEvents,
     cleanup,
   };

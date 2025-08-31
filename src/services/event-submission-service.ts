@@ -207,7 +207,7 @@ class EventSubmissionService {
           if (game) {
             // Create an Event object for the notification service
             const eventForNotification = new Event({
-              id: parseInt(submission.id || '0', 36), // Convert submission ID to number for Event model
+              id: submission.id ? parseInt(submission.id, 10) : 0, // Convert string ID to number
               gameId: submission.gameId,
               title: submission.title,
               date: submission.startDate,

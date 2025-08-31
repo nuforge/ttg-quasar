@@ -1,26 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import eventsData from 'src/assets/data/events.json';
-import { Event } from 'src/models/Event';
-import type { EventStatus } from 'src/models/Event';
+import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import EventCard from 'src/components/events/EventCard.vue';
 
-// Preprocess the JSON data to convert string status to EventStatus enum
-// and ensure RSVP status values match the expected type
-const processedEventsData = eventsData.map(event => ({
-  ...event,
-  status: event.status as EventStatus,
-  rsvps: event.rsvps.map(rsvp => ({
-    ...rsvp,
-    status: rsvp.status as "cancelled" | "confirmed" | "waiting"
-  }))
-}));
-
-// Convert the JSON data to Event objects
-const events = Event.fromJSON(processedEventsData);
-
-// Games store
+const eventsStore = useEventsFirebaseStore();
 const gamesStore = useGamesFirebaseStore();
 
 // Load games on mount
@@ -28,6 +12,9 @@ onMounted(async () => {
   if (gamesStore.games.length === 0) {
     await gamesStore.loadGames();
   }
+
+  // Subscribe to Firebase events
+  eventsStore.subscribeToEvents();
 });
 
 // Filter and sorting options
@@ -55,7 +42,7 @@ const gameOptions = computed(() => {
 
 // Filtered events based on search and filter criteria
 const filteredEvents = computed(() => {
-  return events.filter(event => {
+  return eventsStore.events.filter((event) => {
     // Text search filter
     if (search.value && !event.title.toLowerCase().includes(search.value.toLowerCase()) &&
       !event.description.toLowerCase().includes(search.value.toLowerCase())) {

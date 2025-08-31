@@ -1,39 +1,30 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import eventsData from 'src/assets/data/events.json';
-import { Event } from 'src/models/Event';
-import type { EventStatus } from 'src/models/Event';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
+import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import GameCard from 'src/components/GameCard.vue';
 import EventCard from 'src/components/events/EventCard.vue';
 
 const router = useRouter();
 const gamesStore = useGamesFirebaseStore();
+const eventsStore = useEventsFirebaseStore();
 
-// Load games on mount
+// Load data on mount
 onMounted(async () => {
   if (gamesStore.games.length === 0) {
     await gamesStore.loadGames();
   }
+  // Load events from Firebase
+  eventsStore.subscribeToEvents();
 });
+
 // Featured content
 const featuredGames = computed(() => gamesStore.approvedGames.slice(0, 3));
 
-// Process events data - convert status strings to proper type
-const processedEventsData = eventsData.map(event => ({
-  ...event,
-  status: event.status as EventStatus,
-  rsvps: event.rsvps?.map(rsvp => ({
-    ...rsvp,
-    status: rsvp.status as "confirmed" | "waiting" | "cancelled"
-  }))
-}));
-
-// Create Event objects and filter for upcoming events
-const events = Event.fromJSON(processedEventsData);
+// Get upcoming events from Firebase store
 const upcomingEvents = computed(() =>
-  events
+  eventsStore.events
     .filter(event => event.status === 'upcoming')
     .sort((a, b) => a.getDateObject().getTime() - b.getDateObject().getTime())
     .slice(0, 3)
@@ -190,7 +181,7 @@ const steps = [
           <div class="text-subtitle1">Games Available</div>
         </div>
         <div class="col-xs-12 col-sm-4">
-          <div class="text-h3 text-secondary">{{ events.length }}+</div>
+          <div class="text-h3 text-secondary">{{ eventsStore.events.length }}+</div>
           <div class="text-subtitle1">Events Organized</div>
         </div>
         <div class="col-xs-12 col-sm-4">

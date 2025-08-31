@@ -4,9 +4,11 @@ import type { Event } from 'src/models/Event';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useCalendarStore } from 'src/stores/calendar-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
+import { authService } from 'src/services/auth-service';
 import type { Player } from 'src/models/Player';
 import GameIcon from '../GameIcon.vue';
 import PlayerListDialog from 'src/components/players/PlayerListDialog.vue';
+import EventRSVPButtons from './EventRSVPButtons.vue';
 
 defineOptions({
   name: 'EventCard',
@@ -46,6 +48,29 @@ const getEventPlayers = () => {
 
 const formattedDate = computed(() => {
   return props.event.getFormattedDate();
+});
+
+// Current user's RSVP status
+const currentUserId = computed(() => authService.currentUserId.value);
+const currentUserRSVP = computed(() => {
+  if (!currentUserId.value) return null;
+  return props.event.getPlayerRSVP(parseInt(currentUserId.value));
+});
+
+const isUserConfirmed = computed(() => currentUserRSVP.value?.status === 'confirmed');
+const isUserInterested = computed(() => currentUserRSVP.value?.status === 'interested');
+
+// Status badge with RSVP indicator
+const statusBadgeColor = computed(() => {
+  if (isUserConfirmed.value) return 'green';
+  if (isUserInterested.value) return 'orange';
+  return statusColor.value;
+});
+
+const statusBadgeText = computed(() => {
+  if (isUserConfirmed.value) return '✓ Confirmed';
+  if (isUserInterested.value) return '♡ Interested';
+  return props.event.status;
 });
 
 const statusColor = computed(() => {
@@ -97,13 +122,17 @@ const selectEventDate = () => {
 </script>
 
 <template>
-  <q-card class="event-card " dark>
+  <q-card :class="`${isUserConfirmed ? 'border-l-4 border-green' : isUserInterested ? 'border-l-4 border-orange' : ''}`"
+    dark>
     <q-card-section class="q-pb-xs">
       <div class="row items-center justify-between">
 
         <router-link :to="`/events/${event.id}`" class="text-h6 text-uppercase no-underline">{{ event.title
           }}</router-link>
-        <q-badge :color="statusColor">{{ event.status }}</q-badge>
+        <q-badge :color="statusBadgeColor"
+          :icon="isUserConfirmed ? 'mdi-check' : isUserInterested ? 'mdi-heart' : undefined">
+          {{ statusBadgeText }}
+        </q-badge>
       </div>
     </q-card-section>
     <q-card-section class="text-grey-5 q-px-md " horizontal>
@@ -113,7 +142,7 @@ const selectEventDate = () => {
           <q-item clickable @click="selectEventDate">
             <q-item-section avatar>
               <q-tooltip class="bg-primary text-black">Date: {{ formattedDate }} @ {{ timeDisplay }}</q-tooltip>
-              <q-icon name="mdi-calendar" size="xs" />
+              <q-icon name="mdi-calendar" :color="statusBadgeColor" size="xs" />
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ formattedDate }}</q-item-label>
@@ -122,14 +151,22 @@ const selectEventDate = () => {
           </q-item>
           <q-item clickable @click="getEventPlayers">
             <q-item-section avatar>
-              <q-icon name="mdi-account-group" :color="statusColor" size="xs">
-              </q-icon>
+              <q-icon
+                :name="isUserConfirmed ? 'mdi-account-check' : isUserInterested ? 'mdi-account-heart' : 'mdi-account-group'"
+                :color="statusBadgeColor" size="xs" />
               <q-tooltip class="bg-primary text-black">
-                Players: {{ event.currentPlayers }} / {{ event.maxPlayers }}
+                Confirmed: {{ event.getConfirmedCount() }} / {{ event.maxPlayers }}
+                <br>Interested: {{ event.getInterestedCount() }}
+                <span v-if="isUserConfirmed"><br>✓ You're confirmed!</span>
+                <span v-else-if="isUserInterested"><br>♡ You're interested</span>
               </q-tooltip>
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{ event.currentPlayers }} / {{ event.maxPlayers }} {{ $t('player', 2) }}</q-item-label>
+              <q-item-label>{{ event.getConfirmedCount() }} / {{ event.maxPlayers }} {{ $t('player', 2)
+                }}</q-item-label>
+              <q-item-label v-if="event.getInterestedCount() > 0" caption class="text-orange">
+                +{{ event.getInterestedCount() }} interested
+              </q-item-label>
             </q-item-section>
           </q-item>
           <q-item v-if="game" :to="`/games/${game.id}`" clickable>
@@ -167,7 +204,26 @@ const selectEventDate = () => {
       </q-card-actions>
     </q-card-section>
 
+    <!-- RSVP Actions -->
+    <q-card-actions align="center" class="q-pa-md">
+      <EventRSVPButtons :event="event" :show-labels="false" size="sm" />
+    </q-card-actions>
+
     <!-- Players Dialog - replaced with reusable component -->
     <PlayerListDialog :players="attendingPlayers" v-model:visible="showPlayersDialog" :title="$t('player', 2)" />
   </q-card>
 </template>
+
+<style scoped>
+.border-l-4 {
+  border-left: 4px solid !important;
+}
+
+.border-green {
+  border-left-color: #4caf50 !important;
+}
+
+.border-orange {
+  border-left-color: #ff9800 !important;
+}
+</style>

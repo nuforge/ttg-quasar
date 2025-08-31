@@ -27,13 +27,14 @@ export const useEventsStore = defineStore('events', {
         // Add await to satisfy the async requirement
         await Promise.resolve();
 
-        // Pre-process the JSON data to convert status strings to EventStatus
+        // Pre-process the JSON data to convert status strings to EventStatus and IDs to numbers
         const processedEventsData = eventsData.map((event) => ({
           ...event,
+          id: typeof event.id === 'string' ? parseInt(event.id, 10) : event.id,
           status: event.status as EventStatus,
           rsvps: event.rsvps?.map((rsvp) => ({
             ...rsvp,
-            status: rsvp.status as 'confirmed' | 'waiting' | 'cancelled',
+            status: rsvp.status as 'confirmed' | 'interested' | 'waiting' | 'cancelled',
           })),
         }));
 

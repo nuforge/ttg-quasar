@@ -11,6 +11,7 @@ import PlayerDetails from 'src/components/players/PlayerDetails.vue';
 import PlayersList from 'src/components/players/PlayersList.vue';
 import MessageList from 'src/components/messaging/MessageList.vue';
 import MessageComposer from 'src/components/messaging/MessageComposer.vue';
+import EventRSVPButtons from 'src/components/events/EventRSVPButtons.vue';
 
 const route = useRoute();
 const eventsStore = useEventsFirebaseStore();
@@ -27,15 +28,23 @@ const showPlayerDetailsDialog = ref(false);
 // Get game details for this event
 const game = computed(() => {
   if (!event.value) return null;
-  // Add explicit null check to satisfy TypeScript
   return gamesStore.games.find(g => g.legacyId === event.value?.gameId) || null;
 });
 
-// Get players for this event
+// Get players for this event (confirmed only)
 const eventPlayers = computed<Player[]>(() => {
   if (!event.value) return [];
 
   const playerIds = event.value.getPlayerIds();
+  return playersStore.getPlayersByIds(playerIds);
+});
+
+// Get interested players
+const interestedPlayers = computed<Player[]>(() => {
+  if (!event.value) return [];
+
+  const interestedRSVPs = event.value.getRSVPsByStatus('interested');
+  const playerIds = interestedRSVPs.map(rsvp => rsvp.playerId);
   return playersStore.getPlayersByIds(playerIds);
 });
 
@@ -53,10 +62,7 @@ watch(
       console.log('Events loaded, looking for event ID:', eventId.value);
       console.log('Available events:', newEvents.map(e => ({ id: e.id, title: e.title })));
 
-      const foundEvent = newEvents.find(e =>
-        e.id.toString() === eventId.value ||
-        (e.legacyId && e.legacyId.toString() === eventId.value)
-      );
+      const foundEvent = newEvents.find(e => e.id === parseInt(eventId.value || '0', 10));
       if (foundEvent) {
         console.log('Found event:', foundEvent.title);
         event.value = foundEvent;
@@ -140,7 +146,7 @@ const sendEventComment = (message: string) => {
             </q-badge>
           </div>
           <div class="col-auto">
-            <q-btn color="primary" icon="mdi-calendar-check" label="Join Event" :disabled="event.isFull()" />
+            <EventRSVPButtons :event="event" />
           </div>
         </div>
 
@@ -191,7 +197,12 @@ const sendEventComment = (message: string) => {
                     </q-item-section>
                     <q-item-section>
                       <q-item-label>Players</q-item-label>
-                      <q-item-label caption>{{ event.currentPlayers }} / {{ event.maxPlayers }}</q-item-label>
+                      <q-item-label caption>
+                        {{ event.getConfirmedCount() }} / {{ event.maxPlayers }} confirmed
+                        <span v-if="event.getInterestedCount() > 0" class="text-orange">
+                          (+{{ event.getInterestedCount() }} interested)
+                        </span>
+                      </q-item-label>
                     </q-item-section>
                   </q-item>
 
@@ -236,19 +247,28 @@ const sendEventComment = (message: string) => {
             <!-- Players section -->
             <q-card class="q-mb-md">
               <q-card-section>
-                <div class="text-h6">Players ({{ eventPlayers.length }})</div>
+                <div class="text-h6">Confirmed Players ({{ eventPlayers.length }})</div>
                 <PlayersList :players="eventPlayers" @show-player="showPlayerDetails" />
               </q-card-section>
 
-              <q-card-section v-if="event.currentPlayers < event.maxPlayers">
+              <q-card-section v-if="event.getConfirmedCount() < event.maxPlayers">
                 <q-banner class="bg-primary text-black">
                   <template v-slot:avatar>
                     <q-icon name="mdi-information" />
                   </template>
-                  {{ event.maxPlayers - event.currentPlayers }} more {{ event.maxPlayers - event.currentPlayers === 1 ?
+                  {{ event.maxPlayers - event.getConfirmedCount() }} more {{ event.maxPlayers -
+                    event.getConfirmedCount() === 1 ?
                     'player' :
                     'players' }} needed!
                 </q-banner>
+              </q-card-section>
+            </q-card>
+
+            <!-- Interested players section -->
+            <q-card v-if="interestedPlayers.length > 0" class="q-mb-md">
+              <q-card-section>
+                <div class="text-h6 text-orange">Interested Players ({{ interestedPlayers.length }})</div>
+                <PlayersList :players="interestedPlayers" @show-player="showPlayerDetails" />
               </q-card-section>
             </q-card>
           </div>
@@ -286,7 +306,7 @@ const sendEventComment = (message: string) => {
               <q-item-section>
                 <q-item-label>{{ availableEvent.title }}</q-item-label>
                 <q-item-label caption>ID: {{ availableEvent.id }} | Date: {{ availableEvent.getFormattedDate()
-                }}</q-item-label>
+                  }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>

@@ -1,6 +1,6 @@
 export interface RSVP {
   playerId: number;
-  status: 'confirmed' | 'waiting' | 'cancelled';
+  status: 'confirmed' | 'interested' | 'waiting' | 'cancelled';
   participants?: number;
 }
 
@@ -15,6 +15,7 @@ export type EventStatus = 'upcoming' | 'completed' | 'cancelled';
 
 export class Event {
   id: number;
+  firebaseDocId?: string; // Store original Firebase document ID
   legacyId?: number; // For migrated events from JSON
   gameId: number;
   title: string;
@@ -38,6 +39,9 @@ export class Event {
 
   constructor(eventData: Partial<Event>) {
     this.id = eventData.id || 0;
+    if (eventData.firebaseDocId !== undefined) {
+      this.firebaseDocId = eventData.firebaseDocId;
+    }
     if (eventData.legacyId !== undefined) {
       this.legacyId = eventData.legacyId;
     }
@@ -94,6 +98,46 @@ export class Event {
   // Get player IDs from RSVPs
   getPlayerIds(): number[] {
     return this.rsvps.filter((rsvp) => rsvp.status === 'confirmed').map((rsvp) => rsvp.playerId);
+  }
+
+  // Get a player's confirmed RSVP
+  getPlayerConfirmedRSVP(playerId: number): RSVP | undefined {
+    return this.rsvps.find((rsvp) => rsvp.playerId === playerId && rsvp.status === 'confirmed');
+  }
+
+  // Get a player's interested RSVP
+  getPlayerInterestedRSVP(playerId: number): RSVP | undefined {
+    return this.rsvps.find((rsvp) => rsvp.playerId === playerId && rsvp.status === 'interested');
+  }
+
+  // Check if player has confirmed RSVP
+  isPlayerConfirmed(playerId: number): boolean {
+    return !!this.getPlayerConfirmedRSVP(playerId);
+  }
+
+  // Check if player has interested RSVP
+  isPlayerInterested(playerId: number): boolean {
+    return !!this.getPlayerInterestedRSVP(playerId);
+  }
+
+  // Get any RSVP for player (prioritize confirmed over interested)
+  getPlayerRSVP(playerId: number): RSVP | undefined {
+    return this.getPlayerConfirmedRSVP(playerId) || this.getPlayerInterestedRSVP(playerId);
+  }
+
+  // Get count of confirmed RSVPs
+  getConfirmedCount(): number {
+    return this.rsvps.filter((rsvp) => rsvp.status === 'confirmed').length;
+  }
+
+  // Get count of interested RSVPs
+  getInterestedCount(): number {
+    return this.rsvps.filter((rsvp) => rsvp.status === 'interested').length;
+  }
+
+  // Get RSVPs by status
+  getRSVPsByStatus(status: 'confirmed' | 'interested' | 'waiting' | 'cancelled'): RSVP[] {
+    return this.rsvps.filter((rsvp) => rsvp.status === status);
   }
 
   // Class method to convert raw JSON data to Event objects

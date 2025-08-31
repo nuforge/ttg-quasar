@@ -54,7 +54,13 @@ export class EventMigrationService {
     };
 
     try {
-      const events = Event.fromJSON(eventsData as Partial<Event>[]);
+      // Process events data to ensure proper types
+      const processedEventsData = eventsData.map((eventData) => ({
+        ...eventData,
+        id: typeof eventData.id === 'string' ? parseInt(eventData.id, 10) : eventData.id,
+      }));
+
+      const events = Event.fromJSON(processedEventsData as Partial<Event>[]);
       results.total = events.length;
 
       console.log(`Starting migration of ${results.total} events...`);
@@ -354,7 +360,7 @@ export class EventMigrationService {
         const data = doc.data();
         const event = new Event({
           ...data,
-          id: parseInt(data.legacyId) || 0, // Use legacy ID or fallback to 0
+          id: data.legacyId || doc.id, // Use legacy ID or Firestore doc ID
         });
         events.push(event);
       });
