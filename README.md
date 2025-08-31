@@ -14,21 +14,18 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 ### 📅 Event Management
 
 - **Create Events**: Organize gaming sessions with real-time RSVP tracking
-- **Google Calendar Sync**: Optional integration with personal calendars
-- **Custom Calendar Selection**: Choose specific Google Calendars for event migration
-- **Auto-Authentication**: Seamless Google Calendar token refresh without manual re-auth
-- **Event Migration**: Import existing event data with Firebase sync
+- **Interactive Calendar**: Visual calendar with event indicators and date selection
+- **Independent RSVP States**: Separate RSVP and Interest toggles for flexible participation
 - **Player Limits**: Set minimum and maximum player counts
 - **Real-time Updates**: Live event updates across all users
+- **Firebase Integration**: Reliable event data storage and synchronization
 
-### 🔄 Data Migration & Integration
+### � Real-time Features
 
-- **Event Migration Dashboard**: Interactive UI for migrating JSON data to Firebase
-- **Google Calendar Integration**: Automatic sync with configurable target calendars
-- **Auto-Token Refresh**: Eliminates manual Google re-authentication requirements
-- **Progress Tracking**: Real-time migration progress with error reporting
-- **Dry Run Mode**: Test migrations before applying changes
-- **Admin Controls**: Secure admin-only access to migration tools
+- **Live Event Updates**: Events sync automatically across all users
+- **Calendar Integration**: Interactive calendar showing events with visual indicators
+- **Selected Date Events**: Right drawer shows events for currently selected date
+- **Instant RSVP Feedback**: Immediate response to user interactions
 
 ### 💬 Real-time Messaging
 
@@ -66,7 +63,6 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 
 - **Role-Based Access**: Secure admin permissions and user management
 - **Admin Dashboard**: Comprehensive system overview and statistics
-- **Event Migration Tools**: Import and sync event data to Firebase and Google Calendar
 - **User Management**: Admin controls for user roles and permissions
 - **Game Library Management**: Add, edit, and manage the game database
 - **Development Mode**: Override admin access for initial setup and development
@@ -84,7 +80,6 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Dashboard**: `/admin` - System overview and quick actions
 - **User Management**: `/admin/users` - Manage user roles and permissions
 - **Game Management**: `/admin/games` - Manage game library
-- **Data Migration**: `/admin/migration` - Event migration and Google Calendar sync
 
 ## 🛠️ Technology Stack
 
@@ -216,7 +211,7 @@ src/
 ├── models/           # TypeScript models (Event, Player, Message, Game)
 ├── pages/            # Page components
 ├── router/           # Vue Router configuration
-├── services/         # External services (Firebase, Google Calendar)
+├── services/         # External services (Firebase, Auth)
 ├── stores/           # Pinia stores (events, messages, players)
 └── utils/            # Utility functions
 ```
@@ -252,7 +247,7 @@ Routes are protected using authentication guards:
 
 - Create events with game selection
 - Real-time RSVP tracking
-- Google Calendar integration
+- Interactive calendar with event management
 - Player limit enforcement
 
 ### Messaging System

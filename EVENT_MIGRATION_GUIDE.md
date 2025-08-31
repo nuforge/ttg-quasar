@@ -1,237 +1,168 @@
-# Event Migration & Google Calendar Integration Guide
+# Event Management & Firebase Integration Guide
 
-This document provides a complete guide to the advanced event migration system that migrates event data from JSON files to Firebase and synchronizes with Google Calendar, featuring automatic authentication and custom calendar selection.
+This document provides a guide to the Firebase-based event management system that handles real-time event data and RSVP functionality.
 
-## 🚀 Recent Enhancements
+## 🚀 Current Features
 
-### ✨ New Features (Latest Update)
+### ✨ Event Management System
 
-- **🗓️ Custom Calendar Selection**: Choose specific Google Calendars for event migration
-- **🔄 Auto-Authentication**: Seamless Google Calendar access without manual re-authentication
-- **⚡ Proactive Token Refresh**: Automatic token renewal 15 minutes before expiration
-- **📊 Enhanced Migration Dashboard**: Real-time calendar loading and selection
-- **🎯 Targeted Calendar Migration**: Override default primary calendar selection
-- **🔐 Background Token Management**: 2-minute interval monitoring for optimal performance
+- **� Real-time Firebase Integration**: Live event data from Firestore
+- **� Interactive Calendar**: Click dates to view events with visual indicators
+- **✅ Independent RSVP & Interest**: Separate toggleable states for event participation
+- **� Multi-participant RSVPs**: Support for bringing multiple people
+- **🎯 Event Filtering**: Filter by date, status, and participation
+- **� Responsive Design**: Mobile-friendly event management
 
 ## Overview
 
-The event migration system provides enterprise-level data migration with:
+The event management system provides:
 
-1. **Event Data Migration**: Migrate events from `src/assets/data/events.json` to Firebase Firestore
-2. **Smart Google Calendar Sync**: Auto-sync to selected calendars with rich event details
-3. **Interactive Migration Dashboard**: User-friendly interface with real-time progress tracking
-4. **Advanced Authentication**: Eliminates repetitive Google sign-in requirements
-5. **Testing & Validation Tools**: Dry-run capabilities and comprehensive error reporting
+1. **Real-time Event Data**: All events stored and synced via Firebase Firestore
+2. **Interactive Calendar**: Visual calendar with event indicators and date selection
+3. **RSVP Management**: Join/leave events with real-time updates
+4. **Interest Tracking**: Express interest without committing to attend
+5. **Event Discovery**: Browse upcoming events and filter by preferences
 
 ## Architecture
 
-### Enhanced Services (Updated)
+### Core Services
 
-#### `EventMigrationService` (`src/services/event-migration-service.ts`)
+#### `events-firebase-store.ts`
 
-- **Firebase Integration**: Seamless migration from JSON to Firestore
-- **Google Calendar Sync**: Advanced calendar integration with custom targeting
-- **Dry-Run Capabilities**: Safe testing before actual migration
-- **Rich Event Descriptions**: Deep links, RSVP instructions, and comprehensive details
-- **Error Handling**: Comprehensive error reporting and recovery
+- **Firebase Integration**: Real-time event data from Firestore with live synchronization
+- **Fresh Data Operations**: All RSVP operations use latest store data to prevent stale state issues
+- **Independent RSVP Logic**: Separate join, leave, and interest tracking with proper state management
+- **Event Creation**: Create new events with Firebase persistence and validation
+- **Error Handling**: Comprehensive error reporting and recovery mechanisms
 
-#### `GoogleCalendarService` (`src/services/google-calendar-service.ts`) ⚡ **Enhanced**
+## Key Pages and Components
 
-- **Calendar Selection**: Override default calendar with `setCalendarId()`
-- **Auto-Authentication**: Seamless token refresh without user intervention
-- **Enhanced Timezone Handling**: Proper event scheduling across timezones
-- **CRUD Operations**: Full create, read, update, delete capabilities
-- **Token Management**: Proactive refresh and error recovery
+### `EventPage.vue` - Individual Event Details
 
-#### `VueFireAuthService` (`src/services/vuefire-auth-service.ts`) 🆕 **Major Update**
+- **Real-time Event Loading**: Loads event data from Firebase with live updates
+- **RSVP Interface**: Integration with EventRSVPButtons for user participation
+- **Player Lists**: Displays confirmed and interested players separately
+- **Event Comments**: Real-time messaging for event coordination
 
-- **Auto-Token Refresh**: Background monitoring every 2 minutes
-- **Proactive Renewal**: Refresh tokens 15 minutes before expiration
-- **Popup Re-authentication**: Seamless Google token renewal
-- **Token Persistence**: Cross-session token management
-- **Error Recovery**: Graceful handling of authentication failures
+### `EventsPage.vue` - Event Listing and Management
 
-#### `DataMigrationService` (updated in `src/services/data-migration-service.ts`)
+- **Event Grid**: Displays all events with filtering and sorting capabilities
+- **Real-time Updates**: Event cards update automatically as data changes
+- **Search and Filter**: Find events by game, date, status, or player count
+- **Navigation Integration**: Links to individual event pages
 
-- Orchestrates complete migration workflow (players → events)
-- **Enhanced Status Tracking**: Real-time migration progress
-- **Dependency Management**: Handles inter-data relationships
-- **Batch Operations**: Efficient bulk data processing
+### `EventCard.vue` - Event Display Component
 
-### UI Components
+- **Visual Status Indicators**: Shows user's participation status with colored borders
+- **Interactive Elements**: Calendar date selection and player list access
+- **Game Integration**: Links to associated game pages
+- **Compact Information**: Essential event details in card format
 
-#### `EventMigrationDashboard` (`src/components/events/EventMigrationDashboard.vue`) ⚡ **Enhanced**
+### `EventRSVPButtons.vue` - User Interaction Component
 
-- **Calendar Selection Dropdown**: Choose target Google Calendar from available options
-- **Real-time Calendar Loading**: Automatic loading of user's Google Calendars
-- **Interactive Migration Interface**: Comprehensive controls and options
-- **Live Progress Tracking**: Real-time status updates and error reporting
-- **Migration Options**:
-  - Custom target calendar selection
-  - Sync to Google Calendar toggle
-  - Skip existing events option
-  - Dry-run mode for testing
-  - Configurable app base URL for deep links
+- **Independent Button States**: RSVP and Interest buttons work separately
+- **Real-time State Reflection**: Buttons show current participation status immediately
+- **Click Handler Debugging**: Enhanced logging for troubleshooting
+- **Authentication Integration**: Secure operations with proper login checks
 
-#### `MigrationPage` (`src/pages/MigrationPage.vue`)
+## Technical Implementation
 
-- **Admin Access**: Secure page accessible via `/admin/migration`
-- **Role-Based Security**: Requires admin authentication
-- **Dashboard Integration**: Embeds the EventMigrationDashboard component
+### Firebase Real-time Updates
 
-### 🗓️ Calendar Selection Feature
+- **Firestore Subscriptions**: Live data synchronization across all users
+- **Store Management**: Pinia stores maintain fresh event data
+- **Reactive Components**: Vue computed properties reflect data changes instantly
 
-The migration system now supports selecting specific Google Calendars:
+### RSVP State Management
 
-1. **Automatic Loading**: Calendars load when dropdown is focused
-2. **Visual Selection**: Calendar names with IDs and primary calendar badges
-3. **Default Configuration**: Pre-configured with your specified calendar
-4. **Error Handling**: User-friendly messages if calendars can't be loaded
+- **Fresh Data Lookups**: All operations check latest store data instead of stale props
+- **Independent Toggles**: RSVP and Interest states work completely independently
+- **Proper Error Handling**: Clear error messages and graceful failure recovery
 
-**Default Calendar ID**: `cf4f155a3c69597b84acfb7ac13cda167375de8bf6c83f34da2f9de64684867e@group.calendar.google.com`
+### Calendar Integration
 
-### Testing & Validation
+- **Date Selection**: Interactive calendar with proper date handling
+- **Event Filtering**: Display events for selected dates in right drawer
+- **Visual Indicators**: Calendar shows event availability and user participation
 
-✅ **Production Ready**: All testing utilities have been removed for security. The migration system is accessible through the admin dashboard at `/admin/migration`.
+## Current System Status
 
-### 🔥 Firebase Store Migration
+### ✅ Firebase Integration Complete
 
-The application has **completed migration** from legacy local stores to Firebase-based real-time stores:
+All event management functionality is now powered by Firebase:
 
-#### ✅ **Migrated Pages** (Firebase)
+- **Real-time Data Synchronization**: Events sync automatically across all users
+- **Live RSVP Updates**: Changes appear immediately without page refresh
+- **Independent States**: RSVP and Interest work as separate toggleable states
+- **Proper State Management**: Fixed stale data issues for reliable button functionality
 
-- `EventPage.vue` - Individual event display
-- `PlayersPage.vue` - Player listing and management
-- `GamePage.vue` - Game details page
-- `GamePageFirebase.vue` - Firebase-enabled game page
-- `App.vue` - Application initialization
+### 🏗️ **Key Architecture Features**
 
-#### ✅ **Migrated Components** (Firebase)
+- **Real-time Data**: Live updates from Firestore with instant synchronization
+- **Authentication Integration**: Firebase Auth with Google OAuth and secure route guards
+- **Offline Support**: Built-in Firestore offline capabilities for reliable access
+- **Type Safety**: Full TypeScript support with strict type checking
+- **Error Handling**: Comprehensive error states and graceful recovery
 
-- `EventCard.vue` - Event display cards
-- `EventCardMini.vue` - Compact event cards
+### 📈 **System Benefits**
 
-#### 🔄 **Pending Migration** (Still using Legacy Stores)
+- **Performance**: Real-time updates without manual refresh requirements
+- **Scalability**: Cloud Firestore handles concurrent users efficiently
+- **Security**: Built-in Firestore security rules and authentication
+- **Reliability**: Automatic data synchronization and conflict resolution
+- **Developer Experience**: Consistent API across all stores and components
 
-- `MessagesPage.vue` - Complex messaging interface (requires enhanced Firebase store methods)
-- Messaging components (`MessageList.vue`, `MessageItem.vue`, `MessageComposer.vue`, `ConversationList.vue`)
+## How to Use the System
 
-> **Note**: MessagesPage.vue was temporarily reverted to legacy stores due to missing conversation management methods in the Firebase messaging store. Migration requires implementing methods like `getConversationWith()`, `markConversationAsRead()`, `conversations` computed property, etc.
+### 1. Viewing Events
 
-#### 🏗️ **Firebase Store Features**
+Navigate to `/events` to see all available events with:
 
-- **Real-time Data**: Live updates from Firestore
-- **Authentication Integration**: Firebase Auth with Google OAuth
-- **Offline Support**: Built-in Firestore offline capabilities
-- **Type Safety**: Full TypeScript support
-- **Error Handling**: Comprehensive error states and recovery
+- **Interactive Event Cards**: Click to view full event details
+- **Real-time Status**: See current RSVP and interest counts
+- **Search and Filter**: Find events by game, date, or status
+- **Calendar Integration**: Click dates to filter events
 
-#### 📈 **Migration Benefits**
+### 2. RSVP Functionality
 
-- **Performance**: Real-time updates without manual refresh
-- **Scalability**: Cloud Firestore handles concurrent users
-- **Security**: Built-in Firestore security rules
-- **Reliability**: Automatic data synchronization
-- **Developer Experience**: Consistent API across all stores
+**RSVP (Confirmed Attendance)**:
 
-## Usage
+- Click the calendar icon button to confirm attendance
+- Green button indicates you're confirmed
+- Counts toward the event's player limit
+- Can be toggled on/off independently
 
-### 1. Access the Migration Dashboard
+**Interest (Maybe Attending)**:
 
-Navigate to `/admin/migration` (requires admin privileges) or use the "Event Migration" button on the Admin Dashboard.
+- Click the star icon button to show interest
+- Orange button indicates you're interested
+- Does NOT count toward player limit
+- Completely independent from RSVP state
 
-### 2. Migration Options
+### 3. Calendar Features
 
-## 📋 Complete Migration Guide
+**Interactive Calendar** (`/events` page):
 
-### Step 1: Access the Migration Dashboard
+- **Date Selection**: Click any date to view events for that day
+- **Visual Indicators**: Colored dots show events and your participation
+- **Right Drawer**: Selected date events appear in the side panel
+- **Navigation**: Click event titles to view full details
 
-1. **Navigate to Admin**: Go to `/admin` or click Admin menu in header
-2. **Access Migration**: Click "Event Migration" button or go to `/admin/migration`
-3. **Admin Authentication**: Ensure you have admin privileges
+## Technical Details
 
-### Step 2: Configure Google Calendar (New!)
+### Fixed Issues
 
-1. **Sign in with Google**: If not already authenticated, sign in to enable calendar access
-2. **Select Target Calendar**:
-   - Click on "Target Google Calendar" dropdown
-   - System automatically loads your available calendars
-   - Choose your desired target calendar (pre-set to your specified calendar)
-   - Calendar names display with IDs and primary calendar badges
+✅ **Stale Data Problem**: Fixed all RSVP operations to use fresh store data instead of stale props
+✅ **Independent States**: RSVP and Interest buttons now work completely independently  
+✅ **Calendar Navigation**: Fixed date selection and event filtering functionality
+✅ **Event Propagation**: Added proper click handling to prevent duplicate operations
+✅ **Firebase Integration**: All operations use proper Firebase document IDs
 
-### Step 3: Configure Migration Options
+### Core Store Methods
 
-- **App Base URL**: Set your domain for deep links in calendar events (e.g., `https://your-domain.com`)
-- **Target Google Calendar**: Selected calendar from Step 2
-- **Sync to Google Calendar**: Enable/disable calendar synchronization
-- **Skip Existing**: Skip events that already exist in Firebase
-- **Dry Run**: Preview migration without making changes
-
-### Step 4: Migration Execution Options
-
-#### Option A: Step-by-Step Migration (Recommended)
-
-1. **Dry Run First**: Enable "Dry run" mode and click "Migrate Events Only"
-2. **Review Results**: Check migration preview and any warnings/errors
-3. **Actual Migration**: Disable dry run and click "Migrate Events Only"
-4. **Monitor Progress**: Watch real-time progress tracking
-5. **Verify Results**: Check Firebase and Google Calendar for migrated events
-
-#### Option B: Full Migration
-
-- Click "Migrate All Data" to run players and events migration in sequence
-- Automatically sets the target calendar and syncs all events
-
-#### Option C: Calendar Sync Only
-
-- Click "Sync to Calendar" to sync existing Firebase events to Google Calendar
-- Uses the selected target calendar
-
-### Step 5: Auto-Authentication Benefits (New!)
-
-The enhanced system provides:
-
-- **No Re-authentication**: Google Calendar access persists across browser sessions
-- **Automatic Refresh**: Tokens refresh 15 minutes before expiration
-- **Background Monitoring**: System checks every 2 minutes for token validity
-- **Seamless Experience**: Migration runs without authentication interruptions
-
-### 4. Testing Dashboard Integration
-
-The migration tools are also integrated into the Testing Dashboard (`/testing`) with additional testing capabilities:
-
-- Connectivity testing
-- API validation
-- Console utilities
-
-## Google Calendar Integration Features
-
-### Rich Event Descriptions
-
-Calendar events include:
-
-- 🎮 Event title and game information
-- 📝 Event description
-- 📍 Location details
-- 👥 Player count and limits
-- 🎯 Host information
-- 🔗 Deep link to event page in your app
-- 📱 Instructions for RSVP management
-
-### Deep Links
-
-Events include deep links in the format: `https://your-domain.com/events/{eventId}`
-
-### Reminders
-
-Automatic reminders:
-
-- Email: 24 hours before event
-- Popup: 1 hour before event
-
-### Timezone Handling
-
-Uses system timezone for proper event scheduling.
+- `joinEvent()`: Add confirmed RSVP using latest event data
+- `leaveEvent()`: Remove confirmed RSVP using latest event data
+- `toggleInterest()`: Toggle interest status using latest event data
 
 ## Data Structure
 
@@ -239,10 +170,6 @@ Uses system timezone for proper event scheduling.
 
 ```typescript
 {
-  // Legacy compatibility
-  legacyId: number,
-  migratedFrom: 'json',
-
   // Core event data
   gameId: number,
   title: string,
@@ -265,17 +192,17 @@ Uses system timezone for proper event scheduling.
     playerId?: number
   },
 
-  // RSVP tracking
+  // RSVP tracking with independent states
   rsvps: Array<{
     playerId: number,
-    status: 'confirmed' | 'waiting' | 'cancelled',
-    participants: number
+    status: 'confirmed' | 'interested',
+    participants: number // 0 for interested, 1+ for confirmed
   }>,
 
   // Firebase metadata
+  firebaseDocId: string, // Firebase document ID for operations
   createdAt: Timestamp,
-  updatedAt: Timestamp,
-  googleCalendarEventId?: string
+  updatedAt: Timestamp
 }
 ```
 
@@ -285,238 +212,110 @@ Uses system timezone for proper event scheduling.
 
 Events are protected by Firestore security rules in `firebase/firestore.rules`:
 
-- Public read access for event listings
-- Authenticated write access for event creation
-- Host/admin permissions for event updates
+- **Public read access**: Anyone can view event listings
+- **Authenticated write access**: Logged-in users can create events
+- **RSVP permissions**: Users can only modify their own RSVPs
+- **Host/admin permissions**: Special permissions for event updates
 
-### Google Calendar Permissions
+### Authentication Requirements
 
-Requires Google OAuth with Calendar scope:
-
-- `https://www.googleapis.com/auth/calendar`
-- `https://www.googleapis.com/auth/calendar.events`
-
-## Configuration
-
-### Environment Variables
-
-Update your `.env` file:
-
-```env
-# Google Calendar (optional shared calendar)
-SHARED_CALENDAR_ENABLED=false
-SHARED_CALENDAR_ID=your-shared-calendar@group.calendar.google.com
-```
-
-### App Base URL
-
-Update the `appBaseUrl` in migration options or service defaults to your actual domain for proper deep links.
-
-## Error Handling
-
-### Migration Errors
-
-- **Data Validation**: Invalid dates, times, or missing fields
-- **Firebase Errors**: Network issues, permission problems
-- **Calendar Sync Errors**: OAuth token expired, calendar access denied
-
-### Graceful Degradation
-
-- Events migrate to Firebase even if calendar sync fails
-- Warnings are logged for calendar sync issues
-- Existing events are skipped (configurable)
-
-## Monitoring & Logging
-
-### Migration Results
-
-Each migration provides detailed results:
-
-- Total events processed
-- Successful migrations
-- Skipped events (already exist)
-- Calendar sync count
-- Errors and warnings with details
-
-### Activity Logging
-
-The Testing Dashboard provides real-time activity logging for all operations.
-
-## Best Practices
-
-### Before Migration
-
-1. **Backup Data**: Ensure your JSON data is backed up
-2. **Test Authentication**: Verify Google OAuth is working
-3. **Validate Data**: Run dry-run migration first
-4. **Check Permissions**: Ensure proper Firebase and Calendar permissions
-
-### During Migration
-
-1. **Monitor Progress**: Watch for errors and warnings
-2. **Don't Interrupt**: Allow migration to complete fully
-3. **Check Results**: Review migration summary
-
-### After Migration
-
-1. **Verify Data**: Check Firebase console and calendar
-2. **Test Deep Links**: Ensure event URLs work correctly
-3. **Update App Logic**: Switch from JSON to Firebase data sources
+- **Google OAuth**: Primary authentication method
+- **Facebook OAuth**: Alternative authentication option
+- **Email/Password**: Fallback authentication method
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### "Google Calendar access token is expired"
+1. **Buttons not responding**: Check browser console for Firebase connection errors
+2. **RSVP state not updating**: Verify user is authenticated and has proper permissions
+3. **Events not loading**: Check Firebase configuration and network connectivity
+4. **Calendar not showing events**: Verify event data includes proper date formatting
 
-- Re-authenticate with Google in the Testing Dashboard
-- Check OAuth scope permissions
+### Debug Mode
 
-#### "Calendar not found"
+Enable comprehensive logging:
 
-- Verify `SHARED_CALENDAR_ID` in environment variables
-- Check calendar sharing permissions
+```javascript
+localStorage.setItem('debug', 'ttg:*');
+```
 
-#### "Event already exists, skipping"
+This provides detailed logging for:
 
-- This is normal behavior with `skipExisting: true`
-- Use `skipExisting: false` to force re-migration
+- Firebase operations and errors
+- RSVP state changes and updates
+- Calendar date selection and filtering
+- Authentication status and user data
 
-#### Migration fails with Firebase errors
+### Error Recovery
 
-- Check internet connection
-- Verify Firebase configuration
-- Check Firestore security rules
+- **Network Issues**: App works offline with cached data, syncs when reconnected
+- **Authentication Problems**: Clear authentication prompts guide users to re-login
+- **Data Conflicts**: Firebase handles concurrent updates automatically
 
-### Debug Tools
+## Best Practices
 
-#### Browser Console
+### For Users
 
-## Testing & Validation (Production)
+1. **Authentication**: Always log in before attempting to RSVP or show interest
+2. **Network**: Ensure stable internet connection for real-time updates
+3. **Browser**: Use modern browsers for best compatibility
+4. **Mobile**: App is fully responsive and works on all device sizes
 
-### Admin Migration Dashboard
+### For Developers
 
-Access the migration tools through the admin panel:
+1. **Fresh Data**: Always use store data instead of props for current state
+2. **Error Handling**: Implement comprehensive try-catch blocks for Firebase operations
+3. **Type Safety**: Use TypeScript interfaces for all data structures
+4. **Real-time Updates**: Subscribe to Firebase listeners for live data synchronization
 
-1. **Navigate to**: `/admin/migration`
-2. **Use the Interactive Dashboard**: Real-time migration with progress tracking
-3. **Google Calendar Sync**: Select target calendars and migrate events
-4. **Dry Run Mode**: Test migrations before applying changes
+---
 
-#### Firebase Console
+## Recent Fixes Applied
 
-Monitor Firestore collections:
+### Critical Bug Fixes
 
-- `/events` - Migrated event documents
-- `/userRoles` - Admin permissions
-- Check document counts and structure
+✅ **Fixed Stale Data Issue**: All RSVP operations now use fresh store data instead of stale props
+✅ **Independent RSVP States**: RSVP and Interest buttons work completely independently
+✅ **Calendar Functionality**: Fixed date selection and event filtering
+✅ **Event Navigation**: Proper routing and state management for event pages
+✅ **Click Handling**: Added event propagation prevention for reliable button behavior
 
-## 🔧 Troubleshooting Guide
+## This system now provides reliable, real-time event management with independent RSVP and Interest functionality.
 
-### Google Calendar Issues (New!)
+## Development Notes
 
-#### "Google Calendar access token is expired" Error
+### Recent Critical Fixes
 
-- **Solution**: This should no longer occur with auto-refresh enabled
-- **Manual Fix**: Refresh the page - system will automatically re-authenticate
-- **Prevention**: Auto-refresh runs every 2 minutes with 15-minute proactive renewal
+✅ **Fixed Stale Data Bug**: All RSVP operations (joinEvent, leaveEvent, toggleInterest) now use fresh store data instead of stale props  
+✅ **Independent Button States**: RSVP and Interest buttons work completely independently without mutual interference  
+✅ **Calendar Integration**: Fixed date selection and event filtering functionality  
+✅ **Event Navigation**: Proper routing and state management for event pages  
+✅ **Click Event Handling**: Added proper event propagation prevention for reliable button behavior
 
-#### "Failed to load Google Calendars" Error
+### Firebase Collections
 
-- **Check**: Google OAuth is properly configured in Firebase
-- **Verify**: User is signed in with Google (not just email/password)
-- **Fix**: Sign out and sign back in with Google to refresh permissions
+The system uses these Firestore collections:
 
-#### Calendar Events Not Appearing
+- **`events`**: Core event documents with RSVP data
+- **`games`**: Game catalog for event creation
+- **`players`**: User profiles and authentication data
+- **`messages`**: Event comments and discussion threads
+- **`userRoles`**: Admin permissions and role management
 
-- **Check**: Selected target calendar ID is correct
-- **Verify**: Calendar permissions allow event creation
-- **Solution**: Try using primary calendar first, then switch to target calendar
+### API Methods
 
-### Authentication Issues
+**Events Store Methods**:
 
-#### Admin Access Denied
+- `subscribeToEvents()`: Real-time Firebase listener
+- `joinEvent(event)`: Add confirmed RSVP (uses fresh store data)
+- `leaveEvent(event)`: Remove confirmed RSVP (uses fresh store data)
+- `toggleInterest(event)`: Toggle interest status (uses fresh store data)
+- `createEvent(eventData)`: Create new event with Firebase persistence
 
-- **Check**: User has admin role in `userRoles` Firestore collection
-- **Temporary**: Visit `/admin/setup` for development mode override
-- **Fix**: Ensure proper admin permissions are configured
+**Key Fix**: All methods now look up fresh event data from the store using `events.value.find(e => e.id === event.id)` instead of using potentially stale prop data.
 
-#### Token Refresh Failures
+---
 
-- **Auto-Recovery**: System attempts automatic re-authentication
-- **Manual Fix**: Sign out and sign back in
-- **Prevention**: Enhanced error handling and retry logic now active
-
-### Migration Issues
-
-#### Events Not Migrating
-
-- **Check**: Source file `src/assets/data/events.json` exists and is valid
-- **Verify**: Firebase connection and Firestore rules allow admin writes
-- **Debug**: Use dry-run mode to identify issues without making changes
-
-#### Calendar Sync Failures
-
-- **Solution**: New auto-authentication should prevent most sync failures
-- **Fallback**: Use "Sync to Calendar" button to retry just the calendar portion
-- **Debug**: Check browser console for detailed error messages
-
-### Performance Issues
-
-#### Slow Calendar Loading
-
-- **New Feature**: Calendars cache after first load
-- **Improvement**: Enhanced error handling prevents repeated failed requests
-- **Optimization**: Background token monitoring reduces authentication delays
-
-## 🎯 Next Steps & Future Enhancements
-
-### Planned Features
-
-- **Bulk Calendar Operations**: Mass event updates and deletions
-- **Advanced Filtering**: Migrate only specific event types or date ranges
-- **Backup & Restore**: Automated backup before major migrations
-- **Conflict Resolution**: Handle duplicate events more intelligently
-
-### Migration Best Practices
-
-1. **Always test first**: Use dry-run mode before actual migration
-2. **Verify calendar selection**: Ensure target calendar is correct
-3. **Monitor progress**: Watch real-time feedback during migration
-4. **Check results**: Verify both Firebase and Google Calendar after migration
-5. **Use auto-authentication**: Let the system handle token refresh automatically
-
-#### Google Calendar
-
-Verify events appear in the target calendar with:
-
-- Correct titles and descriptions
-- Proper timezone
-- Deep links working
-
-## Migration Rollback
-
-If you need to rollback:
-
-1. **Delete Firebase Events**:
-
-   ```javascript
-   // In browser console (admin only)
-   // This would need to be implemented if needed
-   ```
-
-2. **Remove Calendar Events**:
-   - Manually delete from Google Calendar, or
-   - Use bulk delete tools if many events
-
-3. **Restore JSON Usage**:
-   - Switch stores back to local data mode
-   - Redeploy without Firebase migration
-
-## Future Enhancements
-
-- Incremental sync for new events
-- Bidirectional sync (calendar → Firebase)
-- Batch operations for large datasets
-- Migration scheduling and automation
-- Advanced conflict resolution
+_Last Updated: August 2025 - Post Stale Data Fix_  
+_System Status: ✅ Fully Operational - Independent RSVP/Interest Functionality_

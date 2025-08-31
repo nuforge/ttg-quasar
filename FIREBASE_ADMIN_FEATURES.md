@@ -1,102 +1,107 @@
 # Firebase Integration & Admin Features - Production Ready
 
-This document outlines the complete Firebase integration, admin features, and event migration system for the TTG Quasar application. **All systems are now production-ready with security hardening complete.**
+This document outlines the complete Firebase integration and admin features for the TTG Quasar application. **All systems are production-ready with security hardening complete.**
 
-## Overview
+## 🔥 Firebase Integration
 
-The application features a complete Firebase backend with enterprise-level user management, real-time data synchronization, and comprehensive admin controls. All development/testing utilities have been removed for production security.
+### Core Firebase Services
 
-## ✅ Production Features
+- **Firestore Database**: Real-time event and user data
+- **Authentication**: Multi-provider sign-in (Google, Facebook, Email)
+- **Security Rules**: Comprehensive data protection
+- **Real-time Subscriptions**: Live data synchronization
 
-### 🔐 Firebase Authentication
+### Key Components
 
-- Email/password authentication
-- Google OAuth integration with **auto-token refresh**
-- Facebook OAuth integration
-- User profile management
-- Session management with **automatic token renewal**
-- **Production-hardened authentication guards**
+- `src/stores/events-firebase-store.ts` - Event management with Firebase
+- `src/stores/games-firebase-store.ts` - Game catalog management
+- `src/stores/players-firebase-store.ts` - User and player data
+- `src/services/auth-service.ts` - Authentication service
 
-### 🔄 Event Migration System **[Production Ready]**
+## 🎯 Event Management Features
 
-- **Secure Admin Dashboard**: Web-based UI for data migration (admin-only access)
-- **Google Calendar Integration**: Automatic sync with selectable target calendars
-- **Auto-Authentication**: Eliminates manual Google re-authentication requirements
-- **Progress Tracking**: Real-time migration status with comprehensive error reporting
-- **Dry Run Mode**: Safe testing before applying changes
-- **Calendar Selection**: Choose specific Google Calendars for event sync
-- **Token Management**: Proactive token refresh 15 minutes before expiration
+### Interactive Calendar System
 
-### 👥 User Management System
+- **Visual Event Indicators**: Colored dots show event status
+- **Date Selection**: Click dates to view events for that day
+- **Real-time Updates**: Events sync automatically across users
 
-- Firebase-based user storage with **strict typing**
-- Role-based access control (admin, moderator, user)
-- User status management (active, blocked, suspended)
-- Admin controls for user moderation
-- **Type-safe user operations**
+### RSVP System
 
-### 🛡️ Admin Panel **[Secured]**
+- **Independent States**: RSVP and Interest are completely separate toggles
+- **Real-time Updates**: Changes sync immediately across all connected clients
+- **Multi-participant Support**: Bring multiple people to events
 
-- Comprehensive admin dashboard with **system statistics**
-- User management interface with **proper TypeScript interfaces**
-- Role and permission assignment
-- **Event Migration Dashboard**: Secure data import and Google Calendar sync
-- System monitoring and statistics
-- Bulk operations for user management
-- **Calendar Management**: Select target calendars for event migration
-- **Migration Controls**: Dry run, progress tracking, and error reporting
-- **Production security**: All test interfaces removed
+### Game Integration
 
-### 📊 Data Management **[Complete]**
+- **Dynamic Game Loading**: Games load from Firebase with real-time updates
+- **Game Images**: Automatic image handling with fallbacks
+- **Preferences**: Users can set game preferences that persist
 
-- **Complete Migration System**: JSON to Firebase with Google Calendar sync
-- Live data synchronization with **real-time updates**
-- Backward compatibility with existing data
-- **Calendar-specific targeting**: Choose destination calendars for events
-- Audit logging for admin actions
-- **Automatic token management**: Seamless Google authentication
-- **Strict TypeScript validation throughout**
+## 🛡️ Admin Panel
 
-## File Structure
+### User Management
 
-### New Pages
+- **Role-based Access Control**: Admin, moderator, user roles
+- **User Status Management**: Active, blocked, suspended states
+- **Profile Management**: Edit user details and preferences
+- **Admin Dashboard**: System statistics and monitoring
 
-- `src/pages/AdminDashboard.vue` - Main admin dashboard with migration controls
+### Authentication Features
+
+- **Multi-provider Sign-in**: Google OAuth, Facebook, Email/password
+- **Session Management**: Automatic token renewal and security
+- **Production Security**: Hardened authentication guards
+
+## 📁 File Structure
+
+### Core Pages
+
+- `src/pages/AdminDashboard.vue` - Main admin dashboard
 - `src/pages/AdminUsers.vue` - User management interface
-- `src/pages/AdminSetup.vue` - First-time admin setup
-- `src/pages/MigrationPage.vue` - Complete event migration interface
+- `src/pages/AdminGames.vue` - Game catalog management
+- `src/pages/EventsPage.vue` - Event listing and management
+- `src/pages/EventPage.vue` - Individual event details
 
-### New Services
+### Services
 
-- `src/services/user-management-service.ts` - Core user management operations
-- `src/services/data-migration-service.ts` - Data migration utilities
-- `src/services/event-migration-service.ts` - **Event migration with Google Calendar sync**
-- `src/services/google-calendar-service.ts` - **Google Calendar API integration**
-- `src/services/vuefire-auth-service.ts` - **Enhanced authentication with auto-token refresh**
-- `src/services/config-service.ts` - Application configuration management
+- `src/services/auth-service.ts` - Authentication service
+- `src/services/user-management-service.ts` - User operations
+- `src/boot/firebase.ts` - Firebase initialization
 
-### New Components
+### Stores (Pinia)
 
-- `src/components/events/EventMigrationDashboard.vue` - **Interactive migration interface**
-- Calendar selection dropdown with real-time loading
-- Progress tracking with error reporting
-- Dry run mode for safe testing
+- `src/stores/events-firebase-store.ts` - Event management
+- `src/stores/games-firebase-store.ts` - Game catalog
+- `src/stores/players-firebase-store.ts` - User/player data
+- `src/stores/calendar-store.ts` - Calendar state management
 
-### New Stores
+### Key Components
 
-- `src/stores/players-firebase-store.ts` - Firebase-based player data management
+- `src/components/events/EventCard.vue` - Event display cards
+- `src/components/events/EventRSVPButtons.vue` - Independent RSVP/Interest buttons
+- `src/components/calendar/EventCalendar.vue` - Interactive calendar
+- `src/components/RightDrawer.vue` - Selected date events display
 
-### Updated Components
+## 🔧 Technical Implementation
 
-- `src/layouts/MainLayout.vue` - Added admin navigation
-- `src/composables/useAuthGuard.ts` - Enhanced with admin role checking and **strict typing**
-- `src/models/Player.ts` - Extended for Firebase compatibility with **TypeScript interfaces**
-- `src/stores/players-store.ts` - Updated to support Firebase integration
-- `src/components/PlayerAvatar.vue` - **Readonly-compatible PlayerLike interface**
-- `src/components/players/PlayerCard.vue` - **TypeScript-safe player handling**
-- `src/components/players/PlayerDetails.vue` - **Proper type definitions**
-- `src/pages/AdminUsers.vue` - **ReadonlyPlayerWithFirebase type integration**
-- `src/pages/PlayersPage.vue` - **Eliminated any type usage**
+### TypeScript Integration
+
+- **Strict Type Checking**: Full TypeScript support throughout
+- **Interface Definitions**: Proper models for all data structures
+- **Type-safe Operations**: Validated Firebase operations
+
+### Real-time Features
+
+- **Firestore Subscriptions**: Live data updates
+- **Reactive State Management**: Pinia with Vue 3 Composition API
+- **Optimistic UI Updates**: Immediate feedback with server sync
+
+### Security
+
+- **Firestore Rules**: Comprehensive data access control
+- **Authentication Guards**: Route protection based on roles
+- **Input Validation**: Client and server-side validation
 
 ### TypeScript Improvements
 
@@ -106,7 +111,7 @@ The application features a complete Firebase backend with enterprise-level user 
 - **Type-Safe Firebase Operations**: Proper typing for Firestore operations
 - **Component Prop Validation**: Strongly typed component interfaces
 
-## Setup Instructions
+## 🚀 Setup Instructions
 
 ### 1. Initial Admin Setup
 
@@ -114,11 +119,11 @@ The application features a complete Firebase backend with enterprise-level user 
 2. Create the first administrator account
 3. The system will automatically assign admin privileges
 
-### 2. Data Migration
+### 2. Firebase Configuration
 
-1. Go to Admin Dashboard (`/admin`)
-2. Use the data migration tools to import existing JSON data
-3. Monitor migration progress and handle any errors
+1. Ensure Firebase project is configured with Firestore and Authentication
+2. Update security rules as needed
+3. Configure OAuth providers (Google, Facebook)
 
 ### 3. User Management
 
@@ -126,26 +131,22 @@ The application features a complete Firebase backend with enterprise-level user 
 2. Manage user roles, permissions, and status
 3. Use bulk operations for efficient user management
 
-## Admin Permissions
-
-The system uses a role-based permission system:
+## 🔐 Admin Permissions
 
 ### Permission Levels
 
-- `admin` - Full system access
+- `admin` - Full system access including user management
 - `moderator` - User management and content moderation
 - `organizer` - Event creation and management
 - `user` - Standard user access
 
 ### Role Assignment
 
-Admins can assign multiple roles to users:
-
 - Roles are stored in the `userRoles` Firestore collection
 - Each user can have multiple permissions
 - Role changes are logged for audit purposes
 
-## User Status Management
+## 👤 User Status Management
 
 ### Status Types
 
@@ -156,38 +157,36 @@ Admins can assign multiple roles to users:
 
 ### Status Operations
 
-- Bulk status updates
-- Temporary restrictions with expiration
-- Reason tracking for all status changes
-- Audit trail for administrative actions
+- Bulk status updates with reason tracking
+- Temporary restrictions with expiration dates
+- Complete audit trail for administrative actions
 
-## Security Features
+## 🛡️ Security Features
 
 ### Route Protection
 
-- Admin routes require authentication and admin role
-- Role checking happens at route level and component level
+- Admin routes require authentication and appropriate roles
+- Role checking at both route and component levels
 - Graceful fallbacks for insufficient permissions
 
 ### Data Access
 
-- Firebase security rules (to be configured)
+- Firebase security rules enforce data protection
 - Client-side permission validation
-- Server-side permission enforcement
+- Server-side permission enforcement via Cloud Functions
 
 ### Audit Logging
 
-- All admin actions are logged
-- User creation, modification, and deletion tracking
-- Role and status change history
-- Searchable audit trails
+- All admin actions are tracked and logged
+- User creation, modification, and deletion history
+- Role and status change audit trails
 
-## Configuration Options
+## ⚙️ Configuration Options
 
-The app supports various configuration options:
+The app supports various feature flags:
 
 ```typescript
-// Feature flags in config-service.ts
+// Configuration options in config-service.ts
 useFirebaseData: boolean; // Enable Firebase vs local data
 enableUserManagement: boolean; // Enable admin user management
 requireAdminApproval: boolean; // Require admin approval for new users
@@ -195,7 +194,7 @@ allowUserRegistration: boolean; // Allow self-registration
 enableGuestAccess: boolean; // Allow unauthenticated access
 ```
 
-## API Reference
+## 🔧 API Reference
 
 ### User Management Service
 
@@ -230,99 +229,34 @@ await playersStore.fetchAllPlayers();
 // Search players
 const results = await playersStore.searchPlayers('john');
 
-// Admin operations (if user has admin privileges)
+// Admin operations
 await playersStore.updatePlayerRole(firebaseId, role);
 await playersStore.updateUserStatus(firebaseId, 'blocked');
-await playersStore.deleteUser(firebaseId);
 ```
 
-## Migration Notes
-
-### Backward Compatibility
-
-- Existing components continue to work with local data
-- Firebase integration can be enabled/disabled via configuration
-- Gradual migration path from JSON to Firebase
-
-### Data Mapping
-
-- Legacy player IDs are preserved
-- Firebase document IDs are separate from display IDs
-- Migration maintains referential integrity
-
-### Error Handling
-
-- Graceful degradation when Firebase is unavailable
-- Fallback to local data for read operations
-- User-friendly error messages for admin operations
-
-## Google Calendar Integration
-
-### 🗓️ Features
-
-- **Automatic Event Sync**: Migrated events automatically sync to Google Calendar
-- **Calendar Selection**: Choose specific target calendars (not just primary)
-- **Auto-Authentication**: No manual re-authentication required after page refresh
-- **Token Management**: Proactive refresh 15 minutes before expiration
-- **Deep Links**: Calendar events include links back to your app
-- **Error Recovery**: Graceful handling of authentication failures
-
-### Setup Requirements
-
-1. **Google Cloud Console Setup**:
-   - Enable Google Calendar API
-   - Configure OAuth 2.0 credentials
-   - Add authorized domains
-
-2. **Firebase Configuration**:
-   - Enable Google Authentication provider
-   - Configure OAuth scopes for Calendar access
-
-3. **Application Configuration**:
-   - Set `appBaseUrl` in migration options for deep links
-   - Configure default target calendar ID if needed
-
-### Usage
-
-1. **Admin Access**: Navigate to `/admin/migration`
-2. **Google Sign-In**: Authenticate with Google (includes Calendar permissions)
-3. **Calendar Selection**:
-   - Click on "Target Google Calendar" dropdown
-   - Choose from your available calendars
-   - System defaults to your specified calendar ID
-4. **Migration**: Run migration with Google Calendar sync enabled
-
-### Technical Details
-
-- **Token Refresh**: Every 2 minutes check, 15-minute proactive refresh
-- **Calendar API**: Direct integration with Google Calendar v3 API
-- **Error Handling**: Automatic retry with user-friendly error messages
-- **Security**: Popup-based re-authentication maintains security standards
-
-## Next Steps
-
-1. Configure Firebase security rules
-2. Implement server-side admin operations (Cloud Functions)
-3. Add email notifications for user status changes
-4. Implement advanced search and filtering
-5. Add data export capabilities
-6. Create automated backup systems
-
-## Troubleshooting
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Admin access denied**: Ensure user has admin role in `userRoles` collection
-2. **Migration failures**: Check Firebase connection and permissions
-3. **Route redirects**: Verify auth guards and role requirements
-4. **Data not loading**: Check Firebase configuration and network connectivity
+1. **Admin access denied**: Verify user has admin role in `userRoles` collection
+2. **Events not loading**: Check Firebase connection and Firestore rules
+3. **Calendar not updating**: Ensure proper date formatting in calendar service
+4. **RSVP not syncing**: Verify Firebase document IDs are correct
 
 ### Debug Mode
 
-Enable debug logging by setting:
+Enable debug logging:
 
 ```javascript
 localStorage.setItem('debug', 'ttg:*');
 ```
 
-This will provide detailed logging for all admin operations and data flows.
+This provides detailed logging for all operations and data flows.
+
+## 📋 Next Steps
+
+1. Configure production Firebase security rules
+2. Implement server-side admin operations with Cloud Functions
+3. Add email notifications for user status changes
+4. Implement advanced search and filtering capabilities
+5. Create automated backup systems

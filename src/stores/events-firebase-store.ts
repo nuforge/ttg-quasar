@@ -251,12 +251,18 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
 
     const currentPlayer = authService.currentPlayer.value;
 
-    if (event.isFull()) {
+    // ⚡ FIX: Get the LATEST event data from the store instead of using the stale prop
+    const storeEvent = events.value.find((e) => e.id === event.id);
+    if (!storeEvent) {
+      throw new Error('Event not found in store');
+    }
+
+    if (storeEvent.isFull()) {
       throw new Error('Event is full');
     }
 
-    // Check if already joined
-    const existingRsvp = event.rsvps.find((rsvp) => rsvp.playerId === currentPlayer.id);
+    // Check if already joined using fresh store data
+    const existingRsvp = storeEvent.rsvps.find((rsvp) => rsvp.playerId === currentPlayer.id);
     if (existingRsvp?.status === 'confirmed') {
       throw new Error('Already joined this event');
     }
@@ -274,7 +280,7 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
 
       await updateDoc(eventRef, {
         rsvps: arrayUnion(newRsvp),
-        currentPlayers: event.currentPlayers + 1,
+        currentPlayers: storeEvent.currentPlayers + 1,
         updatedAt: serverTimestamp(),
       });
     } catch (err) {
@@ -291,13 +297,19 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
 
     const currentPlayer = authService.currentPlayer.value;
 
-    const rsvp = event.rsvps.find((rsvp) => rsvp.playerId === currentPlayer.id);
+    // ⚡ FIX: Get the LATEST event data from the store instead of using the stale prop
+    const storeEvent = events.value.find((e) => e.id === event.id);
+    if (!storeEvent) {
+      throw new Error('Event not found in store');
+    }
+
+    const rsvp = storeEvent.rsvps.find((rsvp) => rsvp.playerId === currentPlayer.id);
     if (!rsvp || rsvp.status !== 'confirmed') {
       throw new Error('Not joined to this event');
     }
 
     // Prevent host from leaving their own event
-    if (event.host.playerId === currentPlayer.id) {
+    if (storeEvent.host.playerId === currentPlayer.id) {
       throw new Error('Event host cannot leave their own event');
     }
 
@@ -309,7 +321,7 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
 
       await updateDoc(eventRef, {
         rsvps: arrayRemove(rsvp),
-        currentPlayers: event.currentPlayers - 1,
+        currentPlayers: storeEvent.currentPlayers - 1,
         updatedAt: serverTimestamp(),
       });
     } catch (err) {
@@ -374,10 +386,23 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     }
 
     const currentPlayer = authService.currentPlayer.value;
+    console.log('🔄 toggleInterest: Starting for player', currentPlayer.id, 'on event', event.id);
+
+    // ⚡ FIX: Get the LATEST event data from the store instead of using the stale prop
+    const storeEvent = events.value.find((e) => e.id === event.id);
+    if (!storeEvent) {
+      throw new Error('Event not found in store');
+    }
 
     // ONLY look for existing INTERESTED RSVP - ignore confirmed RSVPs completely
-    const existingInterestedRSVP = event.rsvps.find(
+    const existingInterestedRSVP = storeEvent.rsvps.find(
       (rsvp: RSVP) => rsvp.playerId === currentPlayer.id && rsvp.status === 'interested',
+    );
+
+    console.log('🔍 toggleInterest: Existing interested RSVP:', existingInterestedRSVP);
+    console.log(
+      '🔍 toggleInterest: All RSVPs for this user:',
+      storeEvent.rsvps.filter((r) => r.playerId === currentPlayer.id),
     );
 
     try {
@@ -386,13 +411,16 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       }
 
       const eventRef = doc(db, 'events', event.firebaseDocId);
+      console.log('📄 toggleInterest: Using Firebase doc ID:', event.firebaseDocId);
 
       if (existingInterestedRSVP) {
         // Currently interested, remove the interested RSVP
+        console.log('❌ toggleInterest: Removing interested RSVP');
         await updateDoc(eventRef, {
           rsvps: arrayRemove(existingInterestedRSVP),
           updatedAt: serverTimestamp(),
         });
+        console.log('✅ toggleInterest: Successfully removed interested RSVP');
       } else {
         // Not currently interested, add interested RSVP
         const newInterestedRsvp: RSVP = {
@@ -401,13 +429,17 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
           participants: 0, // Interested doesn't count towards player limit
         };
 
+        console.log('➕ toggleInterest: Adding new interested RSVP:', newInterestedRsvp);
         await updateDoc(eventRef, {
           rsvps: arrayUnion(newInterestedRsvp),
           updatedAt: serverTimestamp(),
         });
+        console.log('✅ toggleInterest: Successfully added interested RSVP');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      console.error('❌ toggleInterest: Error occurred:', err);
+      console.error('❌ toggleInterest: Error message:', errorMessage);
       error.value = `Failed to toggle interest: ${errorMessage}`;
       throw err;
     }

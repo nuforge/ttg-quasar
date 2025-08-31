@@ -119,14 +119,7 @@ This guide will help you set up Firebase integration for your Tabletop Gaming ap
 
 3. Access emulator UI at: http://localhost:4000
 
-## Step 9: Google Calendar API Setup
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Enable the Google Calendar API:
-   - Go to APIs & Services > Library
-   - Search for "Google Calendar API"
-   - Click and Enable
-3. No additional setup needed - the Firebase Auth token will work
+## Step 9: Testing Your Setup
 
 ## Security Rules
 
@@ -153,7 +146,7 @@ The project includes production-ready security rules for:
 After setup, you'll have:
 
 ✅ **Authentication**: Google, Facebook, and Email sign-in
-✅ **Real-time Events**: Create, join, and sync with Google Calendar
+✅ **Real-time Events**: Create, join, and manage events with RSVP tracking
 ✅ **Real-time Messaging**: Game comments and event discussions
 ✅ **Profile Management**: Player profiles with photo uploads
 ✅ **Game Preferences**: User favorites, bookmarks, and notifications
@@ -168,7 +161,7 @@ The application uses the following Firestore collections:
 ### Core Collections
 
 - **games**: Game library with metadata and images
-- **events**: Gaming events with RSVP and calendar sync
+- **events**: Gaming events with RSVP and interest tracking
 - **players**: User profiles and player information
 - **messages**: Real-time messaging for games and events
 
@@ -196,10 +189,11 @@ The application uses the following Firestore collections:
 - Check that security rules are deployed
 - Verify user is authenticated before writes
 
-### Calendar API Issues
+### Firebase Connection Issues
 
-- Ensure Google Calendar API is enabled
-- Check that calendar scope is included in auth
+- Check your internet connection
+- Verify API keys and configuration
+- Check Firebase console for service status
 
 ### Emulator Connection Issues
 

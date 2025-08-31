@@ -113,7 +113,7 @@ const handleConfirm = async () => {
 };
 
 const handleCancel = async () => {
-  console.log('DEBUG: handleCancel called, isConfirmed =', isConfirmed.value);
+  console.log('DEBUG: handleCancel called (UN-RSVP button clicked), isConfirmed =', isConfirmed.value);
   console.log('DEBUG: currentUserRSVP =', currentUserRSVP.value);
 
   loading.value = true;
@@ -134,6 +134,9 @@ const handleCancel = async () => {
 };
 
 const handleInterested = async () => {
+  console.log('DEBUG: handleInterested called, isInterested =', isInterested.value);
+  console.log('DEBUG: currentUserRSVP =', currentUserRSVP.value);
+
   if (!isAuthenticated.value) {
     $q.notify({
       type: 'negative',
@@ -144,12 +147,15 @@ const handleInterested = async () => {
 
   loading.value = true;
   try {
+    console.log('🚀 About to call eventsStore.toggleInterest with event:', props.event.title);
     await eventsStore.toggleInterest(props.event);
+    console.log('✅ toggleInterest completed successfully');
     $q.notify({
       type: 'positive',
       message: isInterested.value ? 'Interest removed' : 'Marked as interested!'
     });
   } catch (error) {
+    console.error('❌ toggleInterest failed:', error);
     $q.notify({
       type: 'negative',
       message: error instanceof Error ? error.message : 'Failed to toggle interest'
@@ -181,7 +187,8 @@ const handleInterested = async () => {
       <q-btn :loading="loading" :color="isConfirmed ? 'green' : 'grey'" :size="size"
         :icon="isConfirmed ? 'mdi-calendar-check' : 'mdi-calendar-plus'"
         :label="showLabels ? (isConfirmed ? 'RSVP\'d' : 'RSVP') : undefined"
-        @click="isConfirmed ? handleCancel() : handleConfirm()" :disabled="!isConfirmed && event.isFull()">
+        @click.stop="() => { console.log('DEBUG: RSVP button clicked, isConfirmed =', isConfirmed); isConfirmed ? handleCancel() : handleConfirm(); }"
+        :disabled="!isConfirmed && event.isFull()">
         <q-tooltip v-if="!isConfirmed && event.isFull()">Event is full</q-tooltip>
         <q-tooltip v-else-if="isConfirmed">Click to UN-RSVP</q-tooltip>
         <q-tooltip v-else>Click to RSVP (confirmed attendance)</q-tooltip>
@@ -190,7 +197,8 @@ const handleInterested = async () => {
       <!-- Interested Button -->
       <q-btn :loading="loading" :color="isInterested ? 'orange' : 'grey-6'" :size="size"
         :icon="isInterested ? 'mdi-star' : 'mdi-star-outline'"
-        :label="showLabels ? (isInterested ? 'Interested' : 'Interest') : undefined" @click="handleInterested()">
+        :label="showLabels ? (isInterested ? 'Interested' : 'Interest') : undefined"
+        @click.stop="() => { console.log('DEBUG: Interest button clicked, isInterested =', isInterested); handleInterested(); }">
         <q-tooltip v-if="isInterested">Click to remove interest</q-tooltip>
         <q-tooltip v-else>Click to show interest (no commitment)</q-tooltip>
       </q-btn>

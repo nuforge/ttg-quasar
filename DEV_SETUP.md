@@ -114,19 +114,19 @@ USE_FIREBASE_EMULATOR=false
    npm run dev
    ```
 
-## Google Calendar API Setup
+## Additional Configuration
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Select your Firebase project
-3. APIs & Services → Library
-4. Search "Google Calendar API" → Enable
-5. The Firebase Auth token automatically provides access
+For full functionality, ensure:
+
+1. Firebase Authentication is properly configured
+2. All OAuth providers are enabled as needed
+3. Firestore security rules are in place
 
 ## Features Available
 
 ### 🔐 Authentication
 
-- Google sign-in with calendar permissions
+- Google sign-in with secure authentication
 - Automatic player profile creation
 - User state persistence
 
@@ -134,7 +134,7 @@ USE_FIREBASE_EMULATOR=false
 
 - Create events with game selection
 - Join/leave events with real-time updates
-- Optional Google Calendar sync
+- Interactive calendar with event management
 - RSVP tracking with player limits
 
 ### 💬 Real-time Messaging
@@ -217,7 +217,7 @@ interface PlayerLike {
 ### Authentication Issues
 
 - Verify OAuth domains in Firebase Console
-- Check that Google Calendar API is enabled
+- Check Firebase Authentication providers are enabled
 
 ### Connection Issues
 
