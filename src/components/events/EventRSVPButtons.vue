@@ -26,7 +26,8 @@ const props = defineProps({
 
 const $q = useQuasar();
 const eventsStore = useEventsFirebaseStore();
-const loading = ref(false);
+const rsvpLoading = ref(false);
+const interestLoading = ref(false);
 
 // Get current user's RSVP status from store (reactive)
 const currentUserRSVP = computed(() => {
@@ -86,7 +87,7 @@ const handleConfirm = async () => {
     return;
   }
 
-  loading.value = true;
+  rsvpLoading.value = true;
   try {
     if (hasNoRSVP.value) {
       await eventsStore.joinEvent(props.event);
@@ -108,7 +109,7 @@ const handleConfirm = async () => {
       message: error instanceof Error ? error.message : 'Failed to update RSVP'
     });
   } finally {
-    loading.value = false;
+    rsvpLoading.value = false;
   }
 };
 
@@ -116,7 +117,7 @@ const handleCancel = async () => {
   console.log('DEBUG: handleCancel called (UN-RSVP button clicked), isConfirmed =', isConfirmed.value);
   console.log('DEBUG: currentUserRSVP =', currentUserRSVP.value);
 
-  loading.value = true;
+  rsvpLoading.value = true;
   try {
     await eventsStore.leaveEvent(props.event);
     $q.notify({
@@ -129,7 +130,7 @@ const handleCancel = async () => {
       message: error instanceof Error ? error.message : 'Failed to cancel RSVP'
     });
   } finally {
-    loading.value = false;
+    rsvpLoading.value = false;
   }
 };
 
@@ -145,7 +146,7 @@ const handleInterested = async () => {
     return;
   }
 
-  loading.value = true;
+  interestLoading.value = true;
   try {
     console.log('🚀 About to call eventsStore.toggleInterest with event:', props.event.title);
     await eventsStore.toggleInterest(props.event);
@@ -161,7 +162,7 @@ const handleInterested = async () => {
       message: error instanceof Error ? error.message : 'Failed to toggle interest'
     });
   } finally {
-    loading.value = false;
+    interestLoading.value = false;
   }
 };
 </script>
@@ -169,36 +170,38 @@ const handleInterested = async () => {
 <template>
   <div class="event-rsvp-buttons">
     <!-- Not authenticated -->
-    <div v-if="!isAuthenticated" class="text-center q-pa-sm">
-      <q-btn color="primary" :size="size" icon="mdi-login" :label="showLabels ? 'Login to RSVP' : undefined"
-        to="/login" />
+    <div v-if="!isAuthenticated" class="text-center">
+      <q-btn color="primary" :size="size" icon="mdi-login" :label="showLabels ? 'Login to RSVP' : undefined" to="/login"
+        unelevated />
     </div>
 
     <!-- Host cannot change RSVP -->
-    <div v-else-if="isHost" class="text-center q-pa-sm">
-      <q-chip color="green" icon="mdi-crown" :size="size">
+    <div v-else-if="isHost" class="text-center">
+      <q-chip color="green" icon="mdi-crown" :size="size" outline>
         {{ showLabels ? 'Event Host' : 'Host' }}
       </q-chip>
     </div>
 
     <!-- RSVP and Interest Buttons -->
-    <div v-else class="q-gutter-sm">
+    <div v-else class="row q-gutter-xs">
       <!-- RSVP Button -->
-      <q-btn :loading="loading" :color="isConfirmed ? 'green' : 'grey'" :size="size"
+      <q-btn :loading="rsvpLoading" :color="isConfirmed ? 'green' : 'grey'" :size="size"
         :icon="isConfirmed ? 'mdi-calendar-check' : 'mdi-calendar-plus'"
         :label="showLabels ? (isConfirmed ? 'RSVP\'d' : 'RSVP') : undefined"
         @click.stop="() => { console.log('DEBUG: RSVP button clicked, isConfirmed =', isConfirmed); isConfirmed ? handleCancel() : handleConfirm(); }"
-        :disabled="!isConfirmed && event.isFull()">
-        <q-tooltip v-if="!isConfirmed && event.isFull()">Event is full</q-tooltip>
+        :disabled="!isConfirmed && event.isFull() && !isInterested" unelevated :outline="!isConfirmed">
+        <q-tooltip v-if="!isConfirmed && event.isFull() && !isInterested">Event is full</q-tooltip>
         <q-tooltip v-else-if="isConfirmed">Click to UN-RSVP</q-tooltip>
+        <q-tooltip v-else-if="isInterested">Click to RSVP (upgrade from interested)</q-tooltip>
         <q-tooltip v-else>Click to RSVP (confirmed attendance)</q-tooltip>
       </q-btn>
 
       <!-- Interested Button -->
-      <q-btn :loading="loading" :color="isInterested ? 'orange' : 'grey-6'" :size="size"
+      <q-btn :loading="interestLoading" :color="isInterested ? 'orange' : 'grey-6'" :size="size"
         :icon="isInterested ? 'mdi-star' : 'mdi-star-outline'"
         :label="showLabels ? (isInterested ? 'Interested' : 'Interest') : undefined"
-        @click.stop="() => { console.log('DEBUG: Interest button clicked, isInterested =', isInterested); handleInterested(); }">
+        @click.stop="() => { console.log('DEBUG: Interest button clicked, isInterested =', isInterested); handleInterested(); }"
+        unelevated :outline="!isInterested">
         <q-tooltip v-if="isInterested">Click to remove interest</q-tooltip>
         <q-tooltip v-else>Click to show interest (no commitment)</q-tooltip>
       </q-btn>
@@ -209,14 +212,12 @@ const handleInterested = async () => {
 <style scoped>
 .event-rsvp-buttons {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   align-items: center;
+  gap: 4px;
 }
 
-.event-rsvp-buttons>div {
-  display: flex;
-  gap: 8px;
+.row {
   align-items: center;
+  gap: 4px;
 }
 </style>

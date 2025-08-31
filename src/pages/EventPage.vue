@@ -19,7 +19,8 @@ const playersStore = usePlayersFirebaseStore();
 const messagesStore = useMessagesFirebaseStore();
 const gamesStore = useGamesFirebaseStore();
 
-const eventId = ref(route.params.id ? route.params.id.toString().split('/')[0] : '');
+// Make eventId reactive to route changes
+const eventId = computed(() => route.params.id ? route.params.id.toString().split('/')[0] : '');
 const event = ref<Event | null>(null);
 const loading = ref(true);
 const selectedPlayer = ref<Player | null>(null);
@@ -99,6 +100,26 @@ watch(
     }
   },
   { immediate: true }
+);
+
+// Watch for route changes to update event when navigating between events
+watch(
+  () => eventId.value,
+  (newEventId) => {
+    if (newEventId && eventsStore.events.length > 0) {
+      console.log('Route changed, looking for new event ID:', newEventId);
+      const foundEvent = eventsStore.events.find(e => e.id === parseInt(newEventId || '0', 10));
+      if (foundEvent) {
+        console.log('Found new event:', foundEvent.title);
+        event.value = foundEvent;
+        loading.value = false;
+      } else {
+        console.warn(`Event with ID ${newEventId} not found`);
+        event.value = null;
+        loading.value = false;
+      }
+    }
+  }
 );
 
 onMounted(async () => {
@@ -332,7 +353,7 @@ const sendEventComment = (message: string) => {
               <q-item-section>
                 <q-item-label>{{ availableEvent.title }}</q-item-label>
                 <q-item-label caption>ID: {{ availableEvent.id }} | Date: {{ availableEvent.getFormattedDate()
-                }}</q-item-label>
+                  }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>

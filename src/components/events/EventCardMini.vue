@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import type { Event } from 'src/models/Event';
-import { useCalendarStore } from 'src/stores/calendar-store';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
-import type { Player } from 'src/models/Player';
 import EventQRCode from 'src/components/qrcode/EventQRCode.vue';
-import PlayerListDialog from 'src/components/players/PlayerListDialog.vue';
+import EventRSVPButtons from './EventRSVPButtons.vue';
 
 defineOptions({
   name: 'EventCard',
@@ -21,13 +19,10 @@ const props = defineProps({
 
 // QR code state
 const showQRCode = ref(false);
-// Player dialog state
-const showPlayersDialog = ref(false);
 
 // Players store
 const playersStore = usePlayersFirebaseStore();
 const gamesStore = useGamesFirebaseStore();
-const attendingPlayers = ref<Player[]>([]);
 
 // Fetch data on mount
 onMounted(async () => {
@@ -39,20 +34,10 @@ onMounted(async () => {
   }
 });
 
-// Get players for this event
-const getEventPlayers = () => {
-  const playerIds = props.event.getPlayerIds();
-  attendingPlayers.value = playersStore.getPlayersByIds(playerIds);
-  showPlayersDialog.value = true;
-};
-
 // Toggle QR code dialog visibility
 const toggleQR = () => {
   showQRCode.value = !showQRCode.value;
 };
-
-// Calendar store for date selection
-const calendarStore = useCalendarStore();
 
 const formattedDate = computed(() => {
   return props.event.getFormattedDate();
@@ -73,10 +58,6 @@ const playerStatus = computed(() => {
   } else {
     return 'tooMany'; // Should not happen normally
   }
-});
-
-const isEventFull = computed(() => {
-  return props.event.isFull();
 });
 
 // Replace gameTitle with full game object
@@ -112,63 +93,70 @@ const statusColor = computed(() => {
     default: return 'grey';
   }
 });
-
-// Function to handle date click and update calendar
-const selectEventDate = () => {
-  calendarStore.setSelectedDate(props.event.date);
-};
 </script>
 
 <template>
   <q-card class="event-card q-px-none q-mb-sm">
-    <q-card-section class="text-h6 text-primary q-py-xs">
-      <router-link :to="`/events/${event.id}`">
-        {{ event.title }}
-      </router-link>
+    <q-card-section class="q-py-xs">
+      <div class="row items-center justify-between">
+        <div class="col">
+          <router-link :to="`/events/${event.id}`" class="text-h6 text-primary no-underline">
+            {{ event.title }}
+          </router-link>
+        </div>
+        <div class="col-auto">
+          <q-badge :color="statusColor">
+            {{ event.getConfirmedCount() }}/{{ event.maxPlayers }}
+          </q-badge>
+        </div>
+      </div>
     </q-card-section>
 
-    <q-card-section class="row items-center justify-between q-py-xs ">
-      <q-list dense>
-        <q-item clickable @click="selectEventDate">
-          <q-item-section avatar>
-            <q-tooltip class="bg-primary text-black">Date: {{ formattedDate }} @ {{ timeDisplay }}</q-tooltip>
+    <q-card-section class="q-py-xs">
+      <div class="row items-center justify-between">
+        <!-- Left: Event info (compact) -->
+        <div class="col-auto">
+          <div class="row items-center q-gutter-xs text-body2">
             <q-icon name="mdi-calendar" size="xs" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ formattedDate }}</q-item-label>
-            <q-item-label caption>{{ timeDisplay }}</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item clickable @click="getEventPlayers">
-          <q-item-section avatar>
-            <q-icon name="mdi-account-group" :color="statusColor" size="xs">
-            </q-icon>
-            <q-tooltip class="bg-primary text-black">
-              Players: {{ event.currentPlayers }} / {{ event.maxPlayers }}
-            </q-tooltip>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>{{ event.currentPlayers }} / {{ event.maxPlayers }} {{ $t('player', 2) }}</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item v-if="game" :to="`/games/${game.id}`" clickable>
-          <q-item-section avatar>
-            <q-tooltip class="bg-primary text-black">Game: {{ game.title }}</q-tooltip>
+            <span>{{ formattedDate }}</span>
+            <span class="text-grey-6">{{ timeDisplay }}</span>
+          </div>
+          <div v-if="game" class="row items-center q-gutter-xs text-caption text-grey-6 q-mt-xs">
             <q-icon name="mdi-dice-multiple" size="xs" />
-          </q-item-section>
-          <q-item-section>{{ game.title }}</q-item-section>
-        </q-item>
-      </q-list>
-      <q-card-actions vertical class="q-pa-none text-grey-8">
-        <q-btn flat :disabled="isEventFull" icon="mdi-calendar-check" />
-        <q-btn flat icon="mdi-qrcode" @click="toggleQR()" size="md" />
-      </q-card-actions>
+            <router-link :to="`/games/${game.id}`" class="text-grey-6 no-underline" @click.stop>{{ game.title
+              }}</router-link>
+          </div>
+        </div>
+
+        <!-- Right: Action buttons (horizontal) -->
+        <div class="col-auto" @click.stop>
+          <div class="row items-center q-gutter-xs">
+            <EventRSVPButtons :event="event" :show-labels="false" size="sm" />
+            <q-btn flat dense icon="mdi-qrcode" @click="toggleQR()" size="sm" color="grey-6">
+              <q-tooltip>Show QR Code</q-tooltip>
+            </q-btn>
+          </div>
+        </div>
+      </div>
     </q-card-section>
 
     <!-- Add the EventQRCode component -->
     <EventQRCode :event="event" v-model:showQR="showQRCode" />
-
-    <!-- Players Dialog - replaced with reusable component -->
-    <PlayerListDialog :players="attendingPlayers" v-model:visible="showPlayersDialog" :title="$t('player', 2)" />
   </q-card>
 </template>
+
+<style scoped>
+.event-card {
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.no-underline {
+  text-decoration: none;
+}
+</style>

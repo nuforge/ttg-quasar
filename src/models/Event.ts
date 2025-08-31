@@ -115,9 +115,12 @@ export class Event {
     return !!this.getPlayerConfirmedRSVP(playerId);
   }
 
-  // Check if player has interested RSVP
+  // Check if a player is interested
   isPlayerInterested(playerId: number): boolean {
-    return !!this.getPlayerInterestedRSVP(playerId);
+    const rsvp = this.rsvps.find(
+      (rsvp) => rsvp.playerId === playerId && rsvp.status === 'interested',
+    );
+    return !!rsvp;
   }
 
   // Get any RSVP for player (prioritize confirmed over interested)

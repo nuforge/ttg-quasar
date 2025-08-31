@@ -261,9 +261,11 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       throw new Error('Event is full');
     }
 
-    // Check if already joined using fresh store data
-    const existingRsvp = storeEvent.rsvps.find((rsvp) => rsvp.playerId === currentPlayer.id);
-    if (existingRsvp?.status === 'confirmed') {
+    // Check if already confirmed
+    const existingConfirmedRsvp = storeEvent.rsvps.find(
+      (rsvp) => rsvp.playerId === currentPlayer.id && rsvp.status === 'confirmed',
+    );
+    if (existingConfirmedRsvp) {
       throw new Error('Already joined this event');
     }
 
@@ -272,6 +274,8 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
         throw new Error('Firebase document ID not found for this event');
       }
       const eventRef = doc(db, 'events', event.firebaseDocId);
+
+      // ALWAYS add a NEW confirmed RSVP - DON'T touch any existing interested RSVPs
       const newRsvp: RSVP = {
         playerId: currentPlayer.id,
         status: 'confirmed',
@@ -303,10 +307,17 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       throw new Error('Event not found in store');
     }
 
-    const rsvp = storeEvent.rsvps.find((rsvp) => rsvp.playerId === currentPlayer.id);
-    if (!rsvp || rsvp.status !== 'confirmed') {
+    // Find the confirmed RSVP to remove
+    const confirmedRSVP = storeEvent.rsvps.find(
+      (rsvp) => rsvp.playerId === currentPlayer.id && rsvp.status === 'confirmed',
+    );
+    if (!confirmedRSVP) {
       throw new Error('Not joined to this event');
     }
+
+    console.log('🔄 leaveEvent: Attempting to remove RSVP for player', currentPlayer.id);
+    console.log('🔍 leaveEvent: Found confirmed RSVP:', confirmedRSVP);
+    console.log('📄 leaveEvent: Using Firebase doc ID:', event.firebaseDocId);
 
     // Prevent host from leaving their own event
     if (storeEvent.host.playerId === currentPlayer.id) {
@@ -319,12 +330,15 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       }
       const eventRef = doc(db, 'events', event.firebaseDocId);
 
+      console.log('🗑️ leaveEvent: Removing RSVP from Firebase:', confirmedRSVP);
       await updateDoc(eventRef, {
-        rsvps: arrayRemove(rsvp),
+        rsvps: arrayRemove(confirmedRSVP),
         currentPlayers: storeEvent.currentPlayers - 1,
         updatedAt: serverTimestamp(),
       });
+      console.log('✅ leaveEvent: Successfully removed RSVP from Firebase');
     } catch (err) {
+      console.error('❌ leaveEvent: Firebase error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       error.value = `Failed to leave event: ${errorMessage}`;
       throw err;
@@ -394,16 +408,12 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       throw new Error('Event not found in store');
     }
 
-    // ONLY look for existing INTERESTED RSVP - ignore confirmed RSVPs completely
+    // Find existing interested RSVP (only interested status, not confirmed)
     const existingInterestedRSVP = storeEvent.rsvps.find(
       (rsvp: RSVP) => rsvp.playerId === currentPlayer.id && rsvp.status === 'interested',
     );
 
     console.log('🔍 toggleInterest: Existing interested RSVP:', existingInterestedRSVP);
-    console.log(
-      '🔍 toggleInterest: All RSVPs for this user:',
-      storeEvent.rsvps.filter((r) => r.playerId === currentPlayer.id),
-    );
 
     try {
       if (!event.firebaseDocId) {
@@ -414,19 +424,19 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       console.log('📄 toggleInterest: Using Firebase doc ID:', event.firebaseDocId);
 
       if (existingInterestedRSVP) {
-        // Currently interested, remove the interested RSVP
-        console.log('❌ toggleInterest: Removing interested RSVP');
+        // Remove the interested RSVP
+        console.log('➖ toggleInterest: Removing interested RSVP');
         await updateDoc(eventRef, {
           rsvps: arrayRemove(existingInterestedRSVP),
           updatedAt: serverTimestamp(),
         });
-        console.log('✅ toggleInterest: Successfully removed interested RSVP');
+        console.log('✅ toggleInterest: Successfully removed interest');
       } else {
-        // Not currently interested, add interested RSVP
+        // Add new interested RSVP
         const newInterestedRsvp: RSVP = {
           playerId: currentPlayer.id,
           status: 'interested',
-          participants: 0, // Interested doesn't count towards player limit
+          participants: 1,
         };
 
         console.log('➕ toggleInterest: Adding new interested RSVP:', newInterestedRsvp);
@@ -434,7 +444,7 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
           rsvps: arrayUnion(newInterestedRsvp),
           updatedAt: serverTimestamp(),
         });
-        console.log('✅ toggleInterest: Successfully added interested RSVP');
+        console.log('✅ toggleInterest: Successfully added interest');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
