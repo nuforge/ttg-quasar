@@ -19,8 +19,8 @@ const playersStore = usePlayersFirebaseStore();
 const messagesStore = useMessagesFirebaseStore();
 const gamesStore = useGamesFirebaseStore();
 
-// Make eventId reactive to route changes
-const eventId = computed(() => route.params.id ? route.params.id.toString().split('/')[0] : '');
+// Make eventId reactive to route changes - use Firebase document ID
+const eventId = computed(() => route.params.id ? route.params.id.toString() : '');
 const event = ref<Event | null>(null);
 const loading = ref(true);
 const selectedPlayer = ref<Player | null>(null);
@@ -36,8 +36,8 @@ const game = computed(() => {
 const eventPlayers = computed<Player[]>(() => {
   if (!eventId.value) return [];
 
-  // Get fresh event data from store to ensure reactivity to RSVP changes
-  const freshEvent = eventsStore.events.find(e => e.id === parseInt(eventId.value || '0', 10));
+  // Get fresh event data from store using Firebase document ID
+  const freshEvent = eventsStore.events.find(e => e.firebaseDocId === eventId.value);
   if (!freshEvent) return [];
 
   const playerIds = freshEvent.getPlayerIds();
@@ -89,7 +89,7 @@ watch(
       console.log('Events loaded, looking for event ID:', eventId.value);
       console.log('Available events:', newEvents.map(e => ({ id: e.id, title: e.title })));
 
-      const foundEvent = newEvents.find(e => e.id === parseInt(eventId.value || '0', 10));
+      const foundEvent = newEvents.find(e => e.firebaseDocId === eventId.value);
       if (foundEvent) {
         console.log('Found event:', foundEvent.title);
         event.value = foundEvent;
@@ -108,7 +108,7 @@ watch(
   (newEventId) => {
     if (newEventId && eventsStore.events.length > 0) {
       console.log('Route changed, looking for new event ID:', newEventId);
-      const foundEvent = eventsStore.events.find(e => e.id === parseInt(newEventId || '0', 10));
+      const foundEvent = eventsStore.events.find(e => e.firebaseDocId === newEventId);
       if (foundEvent) {
         console.log('Found new event:', foundEvent.title);
         event.value = foundEvent;
@@ -353,7 +353,7 @@ const sendEventComment = (message: string) => {
               <q-item-section>
                 <q-item-label>{{ availableEvent.title }}</q-item-label>
                 <q-item-label caption>ID: {{ availableEvent.id }} | Date: {{ availableEvent.getFormattedDate()
-                  }}</q-item-label>
+                }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>

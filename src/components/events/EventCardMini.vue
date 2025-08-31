@@ -5,6 +5,7 @@ import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import EventQRCode from 'src/components/qrcode/EventQRCode.vue';
 import EventRSVPButtons from './EventRSVPButtons.vue';
+import { createEventUrl, createGameUrl } from 'src/utils/slug';
 
 defineOptions({
   name: 'EventCard',
@@ -100,7 +101,8 @@ const statusColor = computed(() => {
     <q-card-section class="q-py-xs">
       <div class="row items-center justify-between">
         <div class="col">
-          <router-link :to="`/events/${event.id}`" class="text-h6 text-primary no-underline">
+          <router-link :to="createEventUrl(event.firebaseDocId || event.id.toString(), event.title)"
+            class="text-h6 text-primary no-underline">
             {{ event.title }}
           </router-link>
         </div>
@@ -123,7 +125,8 @@ const statusColor = computed(() => {
           </div>
           <div v-if="game" class="row items-center q-gutter-xs text-caption text-grey-6 q-mt-xs">
             <q-icon name="mdi-dice-multiple" size="xs" />
-            <router-link :to="`/games/${game.id}`" class="text-grey-6 no-underline" @click.stop>{{ game.title
+            <router-link :to="createGameUrl(game.id, game.title)" class="text-grey-6 no-underline" @click.stop>{{
+              game.title
               }}</router-link>
           </div>
         </div>

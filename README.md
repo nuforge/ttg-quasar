@@ -26,6 +26,7 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Player Limits**: Set minimum and maximum player counts
 - **Real-time Updates**: Live event updates across all users
 - **Firebase Integration**: Reliable event data storage and synchronization
+- **SEO-Friendly URLs**: Events use `/events/firebase_doc_id/title-slug` format
 
 ### � Real-time Features
 
@@ -48,6 +49,7 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Rich Details**: Player counts, age ratings, playtime, and descriptions
 - **Visual Assets**: High-quality game images and artwork
 - **User Preferences**: Personal favorites, bookmarks, and notification settings
+- **SEO-Friendly URLs**: Games use `/games/firebase_doc_id/title-slug` format
 - **Firebase Integration**: Real-time syncing of user game preferences
 
 ### 🔔 Game Preferences & Notifications

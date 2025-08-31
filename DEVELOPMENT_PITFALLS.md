@@ -79,3 +79,38 @@ await updateDoc(eventRef, {
   <button @click.stop="handleButton">Button</button>
 </div>
 ```
+
+## SEO-Friendly URLs with Firebase Document IDs
+
+**Problem**: Using fake numeric IDs for routing that don't match actual Firebase document IDs, breaking navigation and SEO.
+
+**Solution**: Use actual Firebase document IDs with title slugs for SEO-friendly URLs:
+
+```typescript
+// URL Structure
+/events/firebase_doc_id/title-slug
+/games/firebase_doc_id/title-slug
+
+// Implementation
+import { createEventUrl, createGameUrl } from 'src/utils/slug';
+
+// In router-links
+<router-link :to="createEventUrl(event.firebaseDocId, event.title)">
+```
+
+**Router Configuration:**
+
+```typescript
+{
+  path: '/events/:id/:slug?',
+  component: () => import('pages/EventPage.vue')
+}
+```
+
+**Page Component:**
+
+```typescript
+// Use Firebase document ID directly
+const eventId = computed(() => route.params.id);
+const event = eventsStore.events.find((e) => e.firebaseDocId === eventId.value);
+```

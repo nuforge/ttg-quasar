@@ -37,7 +37,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/events/:id(.*)*',
+    path: '/events/:id/:slug?',
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: requireAuth,
     children: [
@@ -54,9 +54,16 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/GamesPage.vue') }],
   },
   {
-    path: '/games/:id(.*)*',
+    path: '/games/:id/:slug?',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/GamePage.vue') }],
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/GamePage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
 
   // Admin routes
