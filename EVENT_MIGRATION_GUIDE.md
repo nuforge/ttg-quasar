@@ -41,7 +41,9 @@ The event management system provides:
 
 - **Real-time Event Loading**: Loads event data from Firebase with live updates
 - **RSVP Interface**: Integration with EventRSVPButtons for user participation
-- **Player Lists**: Displays confirmed and interested players separately
+- **Reactive Player Lists**: Confirmed and interested player lists update automatically when RSVP states change
+- **Reactive Player Counts**: All count displays use computed properties that reactively update with store changes
+- **Fresh Data Architecture**: All computed properties use fresh store data instead of potentially stale props
 - **Event Comments**: Real-time messaging for event coordination
 
 ### `EventsPage.vue` - Event Listing and Management
@@ -289,6 +291,8 @@ This provides detailed logging for:
 
 ✅ **Fixed Stale Data Bug**: All RSVP operations (joinEvent, leaveEvent, toggleInterest) now use fresh store data instead of stale props  
 ✅ **Independent Button States**: RSVP and Interest buttons work completely independently without mutual interference  
+✅ **Reactive Player Lists**: EventPage confirmed and interested player lists now update automatically when RSVP states change  
+✅ **Reactive Player Counts**: All player count displays use reactive computed properties for real-time updates  
 ✅ **Calendar Integration**: Fixed date selection and event filtering functionality  
 ✅ **Event Navigation**: Proper routing and state management for event pages  
 ✅ **Click Event Handling**: Added proper event propagation prevention for reliable button behavior

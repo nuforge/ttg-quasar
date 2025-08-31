@@ -1,4 +1,10 @@
-# Tabletop Gaming (TTG) - Quasar App
+# Tabletop Gaming (TTG### � Real-time Features
+
+- **Live Event Updates**: Events sync automatically across all users
+- **Calendar Integration**: Interactive calendar showing events with visual indicators
+- **Selected Date Events**: Right drawer shows events for currently selected date
+- **Instant RSVP Feedback**: Immediate response to user interactions
+- **Reactive Player Lists**: Confirmed and interested player lists update automaticallyasar App
 
 A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar Framework, and Firebase.
 

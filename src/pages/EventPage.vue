@@ -33,19 +33,45 @@ const game = computed(() => {
 
 // Get players for this event (confirmed only)
 const eventPlayers = computed<Player[]>(() => {
-  if (!event.value) return [];
+  if (!eventId.value) return [];
 
-  const playerIds = event.value.getPlayerIds();
+  // Get fresh event data from store to ensure reactivity to RSVP changes
+  const freshEvent = eventsStore.events.find(e => e.id === parseInt(eventId.value || '0', 10));
+  if (!freshEvent) return [];
+
+  const playerIds = freshEvent.getPlayerIds();
   return playersStore.getPlayersByIds(playerIds);
 });
 
 // Get interested players
 const interestedPlayers = computed<Player[]>(() => {
-  if (!event.value) return [];
+  if (!eventId.value) return [];
 
-  const interestedRSVPs = event.value.getRSVPsByStatus('interested');
+  // Get fresh event data from store to ensure reactivity to interest changes
+  const freshEvent = eventsStore.events.find(e => e.id === parseInt(eventId.value || '0', 10));
+  if (!freshEvent) return [];
+
+  const interestedRSVPs = freshEvent.getRSVPsByStatus('interested');
   const playerIds = interestedRSVPs.map(rsvp => rsvp.playerId);
   return playersStore.getPlayersByIds(playerIds);
+});
+
+// Get reactive confirmed count
+const confirmedCount = computed(() => {
+  if (!eventId.value) return 0;
+
+  // Get fresh event data from store to ensure reactivity to RSVP changes
+  const freshEvent = eventsStore.events.find(e => e.id === parseInt(eventId.value || '0', 10));
+  return freshEvent ? freshEvent.getConfirmedCount() : 0;
+});
+
+// Get reactive interested count
+const interestedCount = computed(() => {
+  if (!eventId.value) return 0;
+
+  // Get fresh event data from store to ensure reactivity to interest changes
+  const freshEvent = eventsStore.events.find(e => e.id === parseInt(eventId.value || '0', 10));
+  return freshEvent ? freshEvent.getInterestedCount() : 0;
 });
 
 // Get event comments
@@ -198,9 +224,9 @@ const sendEventComment = (message: string) => {
                     <q-item-section>
                       <q-item-label>Players</q-item-label>
                       <q-item-label caption>
-                        {{ event.getConfirmedCount() }} / {{ event.maxPlayers }} confirmed
-                        <span v-if="event.getInterestedCount() > 0" class="text-orange">
-                          (+{{ event.getInterestedCount() }} interested)
+                        {{ confirmedCount }} / {{ event.maxPlayers }} confirmed
+                        <span v-if="interestedCount > 0" class="text-orange">
+                          (+{{ interestedCount }} interested)
                         </span>
                       </q-item-label>
                     </q-item-section>
@@ -251,13 +277,13 @@ const sendEventComment = (message: string) => {
                 <PlayersList :players="eventPlayers" @show-player="showPlayerDetails" />
               </q-card-section>
 
-              <q-card-section v-if="event.getConfirmedCount() < event.maxPlayers">
+              <q-card-section v-if="confirmedCount < event.maxPlayers">
                 <q-banner class="bg-primary text-black">
                   <template v-slot:avatar>
                     <q-icon name="mdi-information" />
                   </template>
-                  {{ event.maxPlayers - event.getConfirmedCount() }} more {{ event.maxPlayers -
-                    event.getConfirmedCount() === 1 ?
+                  {{ event.maxPlayers - confirmedCount }} more {{ event.maxPlayers -
+                    confirmedCount === 1 ?
                     'player' :
                     'players' }} needed!
                 </q-banner>
@@ -306,7 +332,7 @@ const sendEventComment = (message: string) => {
               <q-item-section>
                 <q-item-label>{{ availableEvent.title }}</q-item-label>
                 <q-item-label caption>ID: {{ availableEvent.id }} | Date: {{ availableEvent.getFormattedDate()
-                  }}</q-item-label>
+                }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
