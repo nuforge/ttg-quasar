@@ -39,3 +39,4 @@ yarn-error.log*
 .env
 COMMIT_MESSAGE.md
 ttgaming-dd3c0-firebase-adminsdk-fbsvc-defb0cbb77.json
+firebase-debug.log
