@@ -113,11 +113,14 @@ import { useRouter } from 'vue-router';
 import { date } from 'quasar';
 import { useGameNotificationsStore } from 'src/stores/game-notifications-store';
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { GameEventNotification } from 'src/services/game-event-notification-service';
+import { createGameUrl } from 'src/utils/slug';
 
 const router = useRouter();
 const notificationsStore = useGameNotificationsStore();
 const preferencesStore = useUserPreferencesStore();
+const gamesStore = useGamesFirebaseStore();
 
 // State
 const filter = ref<'all' | 'unread' | 'events' | 'reminders'>('all');
@@ -202,8 +205,13 @@ const handleNotificationClick = async (notification: GameEventNotification) => {
         await notificationsStore.markAsRead(notification.id);
     }
 
-    // Navigate to the game page
-    void router.push(`/games/${notification.gameId}`);
+    // Find the game to get proper SEO URL
+    const game = gamesStore.games.find(g => g.legacyId === parseInt(notification.gameId));
+    if (game) {
+        void router.push(createGameUrl(game.id, game.title));
+    } else {
+        void router.push(`/games/${notification.gameId}`); // Fallback
+    }
 };
 
 const dismissNotification = async (notification: GameEventNotification) => {

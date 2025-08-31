@@ -12,6 +12,7 @@ import PlayersList from 'src/components/players/PlayersList.vue';
 import MessageList from 'src/components/messaging/MessageList.vue';
 import MessageComposer from 'src/components/messaging/MessageComposer.vue';
 import EventRSVPButtons from 'src/components/events/EventRSVPButtons.vue';
+import { createGameUrl } from 'src/utils/slug';
 
 const route = useRoute();
 const eventsStore = useEventsFirebaseStore();
@@ -260,7 +261,7 @@ const sendEventComment = (message: string) => {
                     <q-item-section>
                       <q-item-label>Game</q-item-label>
                       <q-item-label caption>
-                        <router-link :to="`/games/${game.id}`">{{ game.title }}</router-link>
+                        <router-link :to="createGameUrl(game.id, game.title)">{{ game.title }}</router-link>
                       </q-item-label>
                     </q-item-section>
                   </q-item>
@@ -353,7 +354,7 @@ const sendEventComment = (message: string) => {
               <q-item-section>
                 <q-item-label>{{ availableEvent.title }}</q-item-label>
                 <q-item-label caption>ID: {{ availableEvent.id }} | Date: {{ availableEvent.getFormattedDate()
-                }}</q-item-label>
+                  }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>

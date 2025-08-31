@@ -73,9 +73,12 @@ import { useRouter } from 'vue-router';
 import { date } from 'quasar';
 import { useGameNotificationsStore } from 'src/stores/game-notifications-store';
 import type { GameEventNotification } from 'src/services/game-event-notification-service';
+import { createGameUrl } from 'src/utils/slug';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 
 const router = useRouter();
 const notificationsStore = useGameNotificationsStore();
+const gamesStore = useGamesFirebaseStore();
 
 // Computed properties
 const notifications = computed(() => notificationsStore.notifications.slice(0, 10)); // Show latest 10
@@ -93,8 +96,13 @@ const handleNotificationClick = async (notification: GameEventNotification) => {
         await notificationsStore.markAsRead(notification.id);
     }
 
-    // Navigate to the event or game page
-    void router.push(`/games/${notification.gameId}`);
+    // Find the game to get proper URL
+    const game = gamesStore.games.find(g => g.legacyId === parseInt(notification.gameId));
+    if (game) {
+        void router.push(createGameUrl(game.id, game.title));
+    } else {
+        void router.push(`/games/${notification.gameId}`); // Fallback
+    }
 }; const getNotificationIcon = (type: string) => {
     switch (type) {
         case 'new_event':

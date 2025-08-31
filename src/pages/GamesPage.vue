@@ -7,6 +7,7 @@ import type { Game } from 'src/models/Game';
 import { useRouter } from 'vue-router';
 import { gamesApiService } from 'src/services/api-service';
 import { getGameImageUrl } from 'src/composables/useGameImage';
+import { createGameUrl } from 'src/utils/slug';
 
 // Router
 const router = useRouter();
@@ -221,7 +222,7 @@ const toggleQRCode = (gameId: number) => {
 };
 
 const navigateToGame = (game: Game) => {
-  router.push(`/games/${game.legacyId}`).catch((err) => {
+  router.push(createGameUrl(game.id, game.title)).catch((err) => {
     console.error('Navigation error:', err);
   });
 };

@@ -6,6 +6,7 @@ import GameIcon from './GameIcon.vue';
 import { getGameImageUrl } from 'src/composables/useGameImage';
 import { useGamePreferences } from 'src/composables/useGamePreferences';
 import { Notify } from 'quasar';
+import { createGameUrl } from 'src/utils/slug';
 
 const showQRCode = ref(false);
 const {
@@ -158,7 +159,8 @@ onMounted(() => {
 <template>
   <q-card class="game-card q-px-sm" dark>
     <q-card-section class="q-pa-sm justify-between row ">
-      <router-link :to="`/games/${game.id}`" class="game-card-title text-h5 text-uppercase no-underline ">
+      <router-link :to="createGameUrl(game.id, game.title)"
+        class="game-card-title text-h5 text-uppercase no-underline ">
         {{ game.title }}
       </router-link>
       <div>
