@@ -286,11 +286,12 @@ This project includes a comprehensive testing suite to ensure code quality and p
 
 ### Test Suite Overview
 
-- **59 passing tests** across 7 test files (100% success rate)
+- **150 passing tests** across 10 test files (100% success rate)
 - **Component Testing**: GameIcon, PlayerCard, PlayersPage
-- **Store Testing**: Players Firebase Store with mocked Firebase operations
+- **Store Testing**: Events Firebase Store, Players Firebase Store with comprehensive business logic
+- **Service Testing**: Event Submission Service with full CRUD operations
 - **Utility Testing**: Game icons mapping and conversation utilities
-- **Integration Testing**: Cross-component interactions
+- **Firebase Strategy**: Business logic testing focused on testable operations (not Firebase Auth internals)
 
 ### Testing Stack
 

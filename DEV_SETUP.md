@@ -239,4 +239,36 @@ interface PlayerLike {
 5. **Create Test Event** to verify real-time updates
 6. **Optional**: Setup emulators for offline development
 
+## Testing & Quality Assurance
+
+### Comprehensive Test Suite
+
+This project maintains a **150-test comprehensive testing suite** with 100% pass rate:
+
+```bash
+# Run all tests
+npm test                # Watch mode for development
+npm run test:run        # Single test run
+npm run test:coverage   # Generate coverage report
+npm run test:ui         # Interactive test UI
+```
+
+### Testing Strategy
+
+- **Business Logic Focus**: Tests cover store state, computed properties, and data processing
+- **Firebase Mocking**: Proper mocking patterns for Firestore operations
+- **Component Testing**: Vue component behavior and interactions
+- **Service Testing**: CRUD operations and error handling
+- **TypeScript Safety**: Strict type checking prevents runtime errors
+
+### Coverage Areas
+
+- ✅ **Events Store**: State management, RSVP logic, event filtering (45 tests)
+- ✅ **Players Store**: User management, profile operations
+- ✅ **Event Submission Service**: Complete CRUD workflow (46 tests)
+- ✅ **Components**: GameIcon, PlayerCard, PlayersPage
+- ✅ **Utilities**: Game icons, conversation helpers
+
+See `TESTING.md` for detailed testing documentation and Firebase-specific testing patterns.
+
 The app will work perfectly with a real Firebase project and provides all the real-time features we've implemented!

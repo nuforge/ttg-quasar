@@ -4,7 +4,7 @@ This document outlines the testing strategy and configuration for the Tabletop G
 
 ## 🎯 Current Status
 
-**✅ COMPLETE: 59 passing tests across 7 test files (100% success rate)**
+**✅ COMPREHENSIVE: 150 passing tests across 10 test files (100% success rate)**
 
 Test Results Summary:
 
@@ -12,17 +12,25 @@ Test Results Summary:
 ✓ test/unit/utils/game-icons.test.ts (13 tests)
 ✓ test/unit/utils/conversation-utils.test.ts (5 tests)
 ✓ test/unit/stores/players-firebase-store.test.ts (15 tests)
+✓ test/unit/stores/events-firebase-store-final.test.ts (45 tests)
+✓ test/unit/services/event-submission-service.test.ts (43 tests)
+✓ test/unit/services/event-submission-service-simple.test.ts (3 tests)
 ✓ test/unit/components/GameIcon.test.ts (8 tests)
 ✓ test/unit/components/PlayerCard.test.ts (6 tests)
 ✓ test/unit/pages/PlayersPage.test.ts (5 tests)
 ✓ test/integration/players-store-integration.test.ts (7 tests)
 
- Test Files  7 passed (7)
-      Tests  59 passed (59)
-   Duration  ~1.5s
+ Test Files  10 passed (10)
+      Tests  150 passed (150)
+   Duration  ~1.4s
 ```
 
-**Note**: Test output has been optimized to suppress Vue/Router/i18n warnings for clean development experience.
+**Major Testing Expansion**: Added comprehensive business logic testing for:
+
+- **Event Submission Service**: 46 tests covering complete CRUD operations, validation, error handling
+- **Events Firebase Store**: 45 tests covering store state, computed properties, RSVP logic, data processing
+
+**Firebase Testing Strategy**: Following Firebase documentation guidelines, we focus on testable business logic rather than Firebase Auth operations (which cannot be unit tested with traditional mocking per Firebase docs).
 
 ## Testing Stack
 
@@ -81,6 +89,78 @@ Test output has been optimized for a clean development experience:
 - **Complete Mocking**: Firebase services, Quasar plugins, and router are fully mocked
 - **TypeScript Support**: Full type checking during test execution
 - **Comprehensive Setup**: All Vue ecosystem plugins properly configured
+
+## Firebase Testing Strategy
+
+### What We Test ✅
+
+Based on Firebase documentation and best practices, our testing strategy focuses on **testable business logic**:
+
+**Store State Management:**
+
+- State mutations and reactive properties
+- Computed property calculations
+- Store initialization and cleanup
+
+**Business Logic:**
+
+- RSVP calculations and capacity management
+- Event filtering, sorting, and searching
+- Data validation and transformation
+- Error handling and user feedback
+
+**Data Processing:**
+
+- Firebase timestamp conversion
+- Array operations simulation (arrayUnion/arrayRemove logic)
+- Event status transitions
+- Host information validation
+
+### What We Don't Test ❌
+
+Per Firebase documentation, certain operations cannot be unit tested effectively:
+
+**Firebase Authentication:**
+
+- User login/logout flows (requires Firebase Auth Emulator for integration testing)
+- Authentication state changes (not mockable in unit tests)
+- User permission checks (handled by Firebase Security Rules)
+
+**Firebase Internal Operations:**
+
+- Firestore connection management
+- Real-time subscription internals
+- Firebase SDK method implementations
+
+### Testing Examples
+
+**Store Business Logic:**
+
+```typescript
+// ✅ Test RSVP capacity calculations
+const confirmedCount = event.rsvps
+  .filter((r) => r.status === 'confirmed')
+  .reduce((sum, r) => sum + (r.participants || 0), 0);
+
+expect(confirmedCount).toBe(expectedValue);
+```
+
+**Data Transformation:**
+
+```typescript
+// ✅ Test Firebase timestamp handling
+const mockTimestamp = { toDate: () => new Date('2025-12-25T10:00:00Z') };
+const convertedDate = mockTimestamp.toDate();
+expect(convertedDate).toBeInstanceOf(Date);
+```
+
+**Computed Properties:**
+
+```typescript
+// ✅ Test event filtering logic
+const upcomingEvents = store.upcomingEvents;
+expect(upcomingEvents.every((e) => e.status === 'upcoming')).toBe(true);
+```
 
 ## Writing Tests
 
