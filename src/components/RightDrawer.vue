@@ -1,17 +1,20 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
+import { useCalendarStore } from 'src/stores/calendar-store';
 import { authService } from 'src/services/auth-service';
 import EventCard from './events/EventCardMini.vue';
 import EventCalendar from './calendar/EventCalendar.vue';
 
 const rightDrawerOpen = ref(true);
 const eventsStore = useEventsFirebaseStore();
+const calendarStore = useCalendarStore();
 
 // Collapsible section states
 const showMyEvents = ref(false); // Start collapsed
 const showInterestedEvents = ref(false); // Start collapsed
 const showUpcomingEvents = ref(true); // Keep this open by default
+const showSelectedDateEvents = ref(true); // Show selected date events by default
 
 onMounted(() => {
   // Subscribe to events if not already subscribed
@@ -45,6 +48,14 @@ const myInterestedEvents = computed(() => {
     event.isUpcoming() && event.isPlayerInterested(parseInt(currentUserId.value!))
   ).sort((a, b) => a.getDateObject().getTime() - b.getDateObject().getTime());
 });
+
+// Events for the selected date
+const selectedDateEvents = computed(() => {
+  if (!calendarStore.selectedDate) return [];
+  return eventsStore.events.filter(event =>
+    event.date === calendarStore.selectedDate && event.isUpcoming()
+  ).sort((a, b) => a.getDateObject().getTime() - b.getDateObject().getTime());
+});
 </script>
 
 <template>
@@ -54,6 +65,15 @@ const myInterestedEvents = computed(() => {
       <EventCalendar flat />
 
       <q-scroll-area class="flex-grow" style="flex: 1;">
+        <!-- Events for Selected Date -->
+        <q-expansion-item v-if="selectedDateEvents.length > 0" v-model="showSelectedDateEvents"
+          icon="mdi-calendar-today" :label="`${calendarStore.selectedDate} (${selectedDateEvents.length})`"
+          header-class="text-blue text-weight-bold" class="q-ma-sm">
+          <div class="q-pa-sm">
+            <EventCard v-for="event in selectedDateEvents" :key="event.id" :event="event" />
+          </div>
+        </q-expansion-item>
+
         <!-- My Confirmed Events -->
         <q-expansion-item v-if="currentUserId && myConfirmedEvents.length > 0" v-model="showMyEvents"
           icon="mdi-calendar-check" :label="`My Events (${myConfirmedEvents.length})`"

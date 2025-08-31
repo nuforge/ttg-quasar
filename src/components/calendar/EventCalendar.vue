@@ -23,11 +23,24 @@ const formatToSlash = (dateStr: string): string => {
   return dateStr.replace(/-/g, '/');
 };
 
-const formatToDash = (dateStr: string): string => {
+const formatToDash = (dateInput: string | Date | { toString(): string }): string => {
+  // Handle different input types
+  let dateStr: string;
+
+  if (typeof dateInput === 'string') {
+    dateStr = dateInput;
+  } else if (dateInput instanceof Date) {
+    const isoString = dateInput.toISOString();
+    dateStr = isoString.split('T')[0] || ''; // Convert Date to YYYY-MM-DD
+  } else if (dateInput && typeof dateInput === 'object' && 'toString' in dateInput) {
+    dateStr = dateInput.toString();
+  } else {
+    dateStr = String(dateInput);
+  }
+
   // Convert YYYY/MM/DD to YYYY-MM-DD
   return dateStr.replace(/\//g, '-');
 };
-
 // Use the selected date from store with computed for v-model binding
 const selectedDate = computed({
   get: () => {
@@ -114,29 +127,33 @@ const getEventColor = computed(() => {
 });
 
 // Handle date clicks to show events for that date
-const onDateClick = (date: string) => {
+const onDateClick = (date: string | Date | { toString(): string } | null) => {
+  if (!date) {
+    console.log('Date click received null, ignoring');
+    return;
+  }
+
   const selectedDateStr = formatToDash(date);
   const dayEvents = eventsStore.events.filter(event =>
     event.date === selectedDateStr && event.isUpcoming()
   );
 
+  console.log(`Selected date: ${selectedDateStr}`);
+
   if (dayEvents.length > 0) {
-    // If there's only one event, navigate to it directly
-    if (dayEvents.length === 1 && dayEvents[0]) {
-      // Navigate to event page
-      window.location.href = `/events/${dayEvents[0].id}`;
-    } else {
-      // Show a dialog with multiple events for this date
-      console.log('Multiple events on this date:', dayEvents.map(e => e.title));
-      // TODO: Could show a dialog or navigate to events page with date filter
-    }
+    console.log(`Found ${dayEvents.length} events for ${selectedDateStr}:`, dayEvents.map(e => e.title));
+  } else {
+    console.log(`No events found for ${selectedDateStr}`);
   }
+
+  // Update the selected date in the store (this should keep the calendar on the selected date)
+  calendarStore.setSelectedDate(selectedDateStr);
 };
 </script>
 
 <template>
   <q-card>
     <q-date v-model="selectedDate" :events="eventDates" :event-color="getEventColor" minimal flat text-color="black"
-      first-day-of-week="1" @click="onDateClick" />
+      first-day-of-week="1" @update:model-value="onDateClick" />
   </q-card>
 </template>

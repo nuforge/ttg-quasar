@@ -128,7 +128,7 @@ const selectEventDate = () => {
       <div class="row items-center justify-between">
 
         <router-link :to="`/events/${event.id}`" class="text-h6 text-uppercase no-underline">{{ event.title
-          }}</router-link>
+        }}</router-link>
         <q-badge :color="statusBadgeColor"
           :icon="isUserConfirmed ? 'mdi-check' : isUserInterested ? 'mdi-heart' : undefined">
           {{ statusBadgeText }}
@@ -163,7 +163,7 @@ const selectEventDate = () => {
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ event.getConfirmedCount() }} / {{ event.maxPlayers }} {{ $t('player', 2)
-                }}</q-item-label>
+              }}</q-item-label>
               <q-item-label v-if="event.getInterestedCount() > 0" caption class="text-orange">
                 +{{ event.getInterestedCount() }} interested
               </q-item-label>

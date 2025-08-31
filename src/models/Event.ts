@@ -16,7 +16,7 @@ export type EventStatus = 'upcoming' | 'completed' | 'cancelled';
 export class Event {
   id: number;
   firebaseDocId?: string; // Store original Firebase document ID
-  legacyId?: number; // For migrated events from JSON
+  legacyId?: number; // For migrated events from JSON (still needed for compatibility)
   gameId: number;
   title: string;
   date: string;

@@ -106,18 +106,6 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
-  {
-    path: '/admin/migration',
-    component: () => import('layouts/MainLayout.vue'),
-    beforeEnter: requireAuth,
-    children: [
-      {
-        path: '',
-        component: () => import('pages/MigrationPage.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true },
-      },
-    ],
-  },
 
   // Other routes
   {
