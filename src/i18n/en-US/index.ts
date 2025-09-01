@@ -177,6 +177,8 @@ export default {
   loading: 'Loading',
   loadingEventDetails: 'Loading event details...',
   success: 'Success',
+  yes: 'Yes',
+  no: 'No',
 
   // Notifications
   markAllRead: 'Mark all read',
@@ -225,6 +227,12 @@ export default {
 
   // Tooltips
   showQrCode: 'Show QR Code',
+  reserveGame: 'Reserve game',
+  removeReservation: 'Remove reservation',
+  bookmarkGame: 'Bookmark game',
+  shareGame: 'Share game',
+  checkOutThisGame: 'Check out this cool game: {description}',
+  openExternalLink: 'Open external link',
   confirmedRsvps: 'Confirmed RSVPs',
   playersShowingInterest: 'Players showing interest',
   clickToUnRsvp: 'Click to UN-RSVP',
@@ -337,6 +345,8 @@ export default {
   howItWorks: 'How It Works',
   ascending: 'Ascending',
   descending: 'Descending',
+  sortAscending: 'Sort ascending',
+  sortDescending: 'Sort descending',
   gameTitleRequired: 'Game title is required',
   navigation: 'Navigation',
   actions: 'Actions',
@@ -363,4 +373,26 @@ export default {
   eventsOrganized: 'Events Organized',
   activePlayers: 'Active Players',
   lookingForGroup: 'Looking For Group',
+
+  // Account page specific
+  userInformation: 'User Information',
+  displayName: 'Display Name',
+  noDisplayName: 'No display name',
+  firebaseUid: 'Firebase UID',
+  notSignedIn: 'Not signed in',
+  permissionsAndRoles: 'Permissions & Roles',
+  debugInformationPermissions: 'Debug information for your current permissions',
+  administrator: 'Administrator',
+  regularUser: 'Regular User',
+  adminStatus: 'Admin Status',
+  noPermissionsAssigned: 'No permissions assigned',
+  yourPermissions: 'Your Permissions',
+  roleName: 'Role Name',
+  rolesDataLoaded: 'Roles Data Loaded',
+  totalRolesInSystem: '{count} total roles in system',
+  loadingPermissions: 'Loading permissions...',
+  firebaseDebugInfo: 'Firebase Debug Info',
+  developmentModeOnly: 'Development mode only - Raw Firebase data',
+  permissionsRefreshedSuccessfully: 'Permissions refreshed successfully',
+  failedToRefreshPermissions: 'Failed to refresh permissions',
 };

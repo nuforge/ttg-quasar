@@ -178,6 +178,8 @@ export default {
   loading: 'Cargando',
   loadingEventDetails: 'Cargando detalles del evento...',
   success: 'Éxito',
+  yes: 'Sí',
+  no: 'No',
 
   // Notifications
   markAllRead: 'Marcar todo como leído',
@@ -226,6 +228,12 @@ export default {
 
   // Tooltips
   showQrCode: 'Mostrar Código QR',
+  reserveGame: 'Reservar juego',
+  removeReservation: 'Quitar reserva',
+  bookmarkGame: 'Marcar juego',
+  shareGame: 'Compartir juego',
+  checkOutThisGame: 'Echa un vistazo a este genial juego: {description}',
+  openExternalLink: 'Abrir enlace externo',
   confirmedRsvps: 'Confirmaciones de Asistencia',
   playersShowingInterest: 'Jugadores mostrando interés',
   clickToUnRsvp: 'Clic para cancelar confirmación',
@@ -292,6 +300,8 @@ export default {
   howItWorks: 'Cómo Funciona',
   ascending: 'Ascendente',
   descending: 'Descendente',
+  sortAscending: 'Ordenar ascendente',
+  sortDescending: 'Ordenar descendente',
   gameTitleRequired: 'El título del juego es requerido',
 
   // Tooltips
@@ -367,4 +377,26 @@ export default {
   eventsOrganized: 'Eventos Organizados',
   activePlayers: 'Jugadores Activos',
   lookingForGroup: 'Buscando Grupo',
+
+  // Account page specific
+  userInformation: 'Información del Usuario',
+  displayName: 'Nombre para Mostrar',
+  noDisplayName: 'Sin nombre para mostrar',
+  firebaseUid: 'ID de Usuario Firebase',
+  notSignedIn: 'No has iniciado sesión',
+  permissionsAndRoles: 'Permisos y Roles',
+  debugInformationPermissions: 'Información de depuración para tus permisos actuales',
+  administrator: 'Administrador',
+  regularUser: 'Usuario Regular',
+  adminStatus: 'Estado de Administrador',
+  noPermissionsAssigned: 'No se han asignado permisos',
+  yourPermissions: 'Tus Permisos',
+  roleName: 'Nombre del Rol',
+  rolesDataLoaded: 'Datos de Roles Cargados',
+  totalRolesInSystem: '{count} roles totales en el sistema',
+  loadingPermissions: 'Cargando permisos...',
+  firebaseDebugInfo: 'Información de Depuración de Firebase',
+  developmentModeOnly: 'Solo modo de desarrollo - Datos sin procesar de Firebase',
+  permissionsRefreshedSuccessfully: 'Permisos actualizados exitosamente',
+  failedToRefreshPermissions: 'Error al actualizar permisos',
 };

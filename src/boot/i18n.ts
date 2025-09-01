@@ -45,16 +45,24 @@ function detectBrowserLanguage(): MessageLanguages {
 
 /**
  * Get initial locale considering localStorage and browser preferences
+ * Prioritizes saved preferences over browser detection
  */
 function getInitialLocale(): MessageLanguages {
-  // Check localStorage for previously saved preference
-  const savedLanguage = localStorage.getItem('ttg-preferred-language') as MessageLanguages;
-  if (savedLanguage && savedLanguage in messages) {
-    return savedLanguage;
+  // Always check localStorage first for previously saved preference
+  try {
+    const savedLanguage = localStorage.getItem('ttg-preferred-language') as MessageLanguages;
+    if (savedLanguage && savedLanguage in messages) {
+      console.debug('Using saved language preference:', savedLanguage);
+      return savedLanguage;
+    }
+  } catch (error) {
+    console.warn('Failed to read from localStorage:', error);
   }
 
-  // Fall back to browser language detection
-  return detectBrowserLanguage();
+  // Only fall back to browser language detection if no saved preference
+  const browserLanguage = detectBrowserLanguage();
+  console.debug('Using browser detected language:', browserLanguage);
+  return browserLanguage;
 }
 
 export default defineBoot(({ app }) => {

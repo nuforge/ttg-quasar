@@ -251,28 +251,33 @@ src/
 
 The application features comprehensive internationalization with support for **English** and **Spanish**:
 
-- **260+ Translation Keys**: Complete coverage of all user-facing text
-- **Smart Language Detection**: Automatically detects browser language preference
-- **User Preference Override**: Logged-in users can set personal language preference
+- **350+ Translation Keys**: Complete coverage of all user-facing text including recent GamesPage and AccountPage additions
+- **Smart Language Detection**: Automatically detects browser language preference with localStorage priority
+- **User Preference Override**: Logged-in users can set personal language preference stored in Firebase
 - **Real-time Switching**: Instant language changes without page refresh
 - **Type-Safe Translations**: Full TypeScript integration with Vue i18n v9
+- **Development Resilience**: Language preferences persist through hot reloads and code changes
+- **Firebase Integration**: Proper undefined value handling prevents Firestore errors
 
 ### Language Detection Flow
 
 1. **First Visit**:
-   - Detects browser's preferred language (`navigator.language`)
+   - Prioritizes localStorage for previously saved preferences
+   - Detects browser's preferred language (`navigator.language`) as fallback
    - Falls back to English for unsupported languages
    - Supports language variants (e.g., `es-MX` → `en-ES`)
 
 2. **User Authentication**:
    - Loads user's saved language preference from Firebase
-   - Overrides browser detection with account setting
+   - Overrides localStorage/browser detection with account setting
    - Syncs across all user devices
+   - Graceful handling of undefined preferences to prevent Firebase errors
 
 3. **Manual Override**:
    - Settings page provides elegant language selector with flag icons 🇺🇸 🇪🇸
-   - Changes saved to Firebase user preferences
-   - LocalStorage backup for faster subsequent loads
+   - Changes saved to both Firebase user preferences and localStorage
+   - Immediate UI updates with error handling
+   - Development-friendly with hot reload persistence
 
 ### Translation Coverage
 
@@ -281,12 +286,24 @@ The application features comprehensive internationalization with support for **E
 - Navigation and menus
 - Forms and validation messages
 - RSVP states and interactions
-- Game management features
+- Game management features (fully internationalized GamesPage)
 - Event coordination
 - Admin panel functionality
+- Account management and user profiles (fully internationalized AccountPage)
 - Notification messages
 - Tooltips and help text
 - Error and success messages
+- Sorting and filtering interfaces
+- Game interaction tooltips and actions
+
+**Recent Improvements (September 2025):**
+
+- **GamesPage Full Internationalization**: All hardcoded text converted to i18n keys
+- **AccountPage Complete Translation**: User information, permissions, debug features, and admin tools fully internationalized
+- **Enhanced Filter System**: Sort options, filter labels, and placeholders localized
+- **Game Action Tooltips**: Reserve, bookmark, favorite, share actions fully internationalized
+- **Firebase Error Resolution**: Fixed undefined value handling in language preferences
+- **Development Experience**: Improved hot reload stability and debug logging
 
 **Usage in Components:**
 
@@ -312,7 +329,7 @@ $q.notify({
 src/i18n/
 ├── index.ts          # i18n configuration
 ├── en-US/           # English translations
-│   └── index.ts     # 260+ translation keys
+│   └── index.ts     # 350+ translation keys
 └── en-ES/           # Spanish translations
     └── index.ts     # Complete Spanish translations
 ```
@@ -440,7 +457,7 @@ export default {
   // Pluralization
   playersCount: '{count} player | {count} players',
 
-  // ... 220+ more keys
+  // ... 350+ more keys
 };
 ```
 

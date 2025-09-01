@@ -6,11 +6,12 @@ TTG Quasar implements comprehensive internationalization using Vue i18n v9, supp
 
 ## Current Language Support
 
-- **English (en-US)**: Primary language with 260+ translation keys
+- **English (en-US)**: Primary language with 350+ translation keys
 - **Spanish (en-ES)**: Complete Spanish translations matching English structure
 - **Browser Detection**: Automatic detection of user's preferred language
-- **User Preferences**: Firebase-backed personal language settings
+- **User Preferences**: Firebase-backed personal language settings with proper undefined handling
 - **Smart Fallbacks**: Graceful handling of unsupported languages
+- **Development Resilience**: Language preferences persist through hot reloads and code changes
 
 ## Architecture
 
@@ -20,9 +21,9 @@ TTG Quasar implements comprehensive internationalization using Vue i18n v9, supp
 src/i18n/
 ├── index.ts           # i18n configuration and setup
 ├── en-US/
-│   └── index.ts      # English translations (260+ keys)
+│   └── index.ts      # English translations (350+ keys)
 └── en-ES/
-    └── index.ts      # Spanish translations (260+ keys)
+    └── index.ts      # Spanish translations (350+ keys)
 
 src/composables/
 └── useLanguage.ts    # Language management composable
@@ -102,11 +103,12 @@ export default boot(({ app }) => {
 4. **RSVP & Events**: Event participation and status management
 5. **Forms & Validation**: Input labels and error messages
 6. **Admin Features**: Administrative interface elements
-7. **Status & States**: Loading, error, success states
+7. **Status & States**: Loading, error, success states (including yes/no)
 8. **Notifications**: Alert messages and feedback
 9. **Search & Filters**: Search interface and filtering options
 10. **Tooltips**: Contextual help and descriptions
 11. **Pluralization**: Dynamic count-based translations
+12. **Account Management**: User profile, permissions, and debug information
 
 ### Naming Conventions
 
@@ -157,6 +159,14 @@ Authenticated users can override browser detection with personal language prefer
 - Faster language application on subsequent visits
 - Reduces Firebase calls for better performance
 - Falls back to browser detection if no saved preference
+- Persists through development hot reloads and code changes
+- Always updated regardless of authentication status for development resilience
+
+**Firebase Integration Improvements:**
+
+- Proper handling of undefined values to prevent Firestore errors
+- Graceful fallback when Firebase operations fail
+- Optimistic UI updates with error handling
 
 ### Language Management Flow
 
@@ -204,6 +214,161 @@ Authenticated users can override browser detection with personal language prefer
     </q-item>
   </template>
 </q-select>
+```
+
+## Component Internationalization Examples
+
+### GamesPage Complete Implementation
+
+The GamesPage demonstrates comprehensive i18n integration:
+
+```vue
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
+// Reactive sort options using i18n
+const sortOptions = computed(() => [
+  { label: t('title'), value: 'title' },
+  { label: t('genre'), value: 'genre' },
+  { label: t('players'), value: 'numberOfPlayers' },
+  { label: t('age'), value: 'recommendedAge' },
+  { label: t('playTime'), value: 'playTime' },
+]);
+</script>
+
+<template>
+  <!-- Filter section with i18n -->
+  <div class="filter-header">
+    <div class="text-subtitle2">{{ t('filters') }}</div>
+    <q-btn :label="t('clearAll')" @click="clearAllFilters" />
+  </div>
+
+  <!-- Filter controls -->
+  <q-select :placeholder="t('allGenres')" />
+  <q-select :placeholder="t('anyCount')" />
+  <q-select :placeholder="t('anyAge')" />
+
+  <!-- Tooltips with conditional translations -->
+  <q-tooltip>
+    {{ gameState.favorite ? t('removeFromFavorites') : t('addToFavorites') }}
+  </q-tooltip>
+</template>
+```
+
+### New Translation Keys Added
+
+**Game Actions:**
+
+```typescript
+// Tooltips and actions
+reserveGame: 'Reserve game',
+removeReservation: 'Remove reservation',
+shareGame: 'Share game',
+openExternalLink: 'Open external link',
+sortAscending: 'Sort ascending',
+sortDescending: 'Sort descending',
+
+// Parameterized messages
+checkOutThisGame: 'Check out this cool game: {description}',
+```
+
+**Filter and Sort Interface:**
+
+```typescript
+// All existing filter keys were leveraged:
+filters: 'filters',
+clearAll: 'clear all',
+sortBy: 'sort by',
+allGenres: 'all genres',
+anyCount: 'any count',
+anyAge: 'any age',
+anyDuration: 'any duration',
+anyComponents: 'any components',
+```
+
+### AccountPage Complete Implementation
+
+The AccountPage demonstrates comprehensive i18n integration for administrative and user management interfaces:
+
+```vue
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+</script>
+
+<template>
+  <!-- User Information Section -->
+  <q-card>
+    <q-card-section>
+      <div class="text-h6">{{ $t('userInformation') }}</div>
+    </q-card-section>
+    <q-card-section>
+      <q-item>
+        <q-item-section>
+          <q-item-label>{{ currentUser.displayName || $t('noDisplayName') }}</q-item-label>
+          <q-item-label caption>{{ $t('displayName') }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-card-section>
+  </q-card>
+
+  <!-- Permissions Debug Section -->
+  <q-card>
+    <q-card-section>
+      <div class="text-h6">{{ $t('permissionsAndRoles') }}</div>
+      <div class="text-caption">{{ $t('debugInformationPermissions') }}</div>
+    </q-card-section>
+  </q-card>
+
+  <!-- Dynamic status messages -->
+  <q-item-label>
+    {{ permissionsInfo.isAdmin ? $t('administrator') : $t('regularUser') }}
+  </q-item-label>
+
+  <!-- Parameterized count messages -->
+  <q-item-label>
+    {{ $t('yes') }}/{{ $t('no') }} ({{
+      $t('totalRolesInSystem', { count: permissionsInfo.totalRolesInSystem })
+    }})
+  </q-item-label>
+</template>
+```
+
+**New Account Management Translation Keys:**
+
+```typescript
+// User information
+userInformation: 'User Information',
+displayName: 'Display Name',
+noDisplayName: 'No display name',
+firebaseUid: 'Firebase UID',
+notSignedIn: 'Not signed in',
+
+// Permissions and roles
+permissionsAndRoles: 'Permissions & Roles',
+debugInformationPermissions: 'Debug information for your current permissions',
+administrator: 'Administrator',
+regularUser: 'Regular User',
+adminStatus: 'Admin Status',
+noPermissionsAssigned: 'No permissions assigned',
+yourPermissions: 'Your Permissions',
+roleName: 'Role Name',
+rolesDataLoaded: 'Roles Data Loaded',
+totalRolesInSystem: '{count} total roles in system',
+
+// Loading and debug states
+loadingPermissions: 'Loading permissions...',
+firebaseDebugInfo: 'Firebase Debug Info',
+developmentModeOnly: 'Development mode only - Raw Firebase data',
+
+// Status messages
+permissionsRefreshedSuccessfully: 'Permissions refreshed successfully',
+failedToRefreshPermissions: 'Failed to refresh permissions',
+yes: 'Yes',
+no: 'No',
 ```
 
 ## Usage Patterns
@@ -367,10 +532,31 @@ const updateLanguage = async (newLanguage: string) => {
 
 ### Language Detection Priority
 
-1. **User Preference** (if authenticated): Loads from Firebase user document
-2. **LocalStorage Cache**: Previously saved language preference
+1. **LocalStorage Cache**: Previously saved language preference (highest priority for development stability)
+2. **User Preference** (if authenticated): Loads from Firebase user document
 3. **Browser Detection**: `navigator.language` automatic detection
 4. **Default Fallback**: English (en-US) for unsupported languages
+
+### Recent Improvements (September 2025)
+
+**GamesPage Full Internationalization:**
+
+- Converted all hardcoded text to i18n keys
+- Added new translation keys for game actions and tooltips
+- Implemented proper sort option localization
+- Enhanced filter labels and placeholders with i18n
+
+**Firebase Error Resolution:**
+
+- Fixed undefined value errors in Firestore operations
+- Implemented proper optional field handling in UserPreferences model
+- Added robust error handling for language preference persistence
+
+**Development Experience:**
+
+- Enhanced hot reload stability for language preferences
+- Added debug logging for troubleshooting language issues
+- Improved I18nDemo component to use proper language management
 
 ## Testing i18n
 
@@ -411,7 +597,7 @@ expect(wrapper.text()).toContain('Confirm');
 To add more languages:
 
 1. Create new language file (e.g., `src/i18n/fr-FR/index.ts`)
-2. Add all 260+ translation keys
+2. Add all 350+ translation keys
 3. Update `src/i18n/index.ts` to include new language
 4. Add language option to UI selectors
 

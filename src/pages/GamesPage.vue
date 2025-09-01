@@ -8,9 +8,11 @@ import { useRouter } from 'vue-router';
 import { gamesApiService } from 'src/services/api-service';
 import { getGameImageUrl } from 'src/composables/useGameImage';
 import { createGameUrl } from 'src/utils/slug';
+import { useI18n } from 'vue-i18n';
 
-// Router
+// Router and i18n
 const router = useRouter();
+const { t } = useI18n();
 
 // Reactive state
 const searchQuery = ref('');
@@ -98,13 +100,13 @@ const availableComponents = computed(() => {
 });
 
 // Sort options
-const sortOptions = [
-  { label: 'Title', value: 'title' },
-  { label: 'Genre', value: 'genre' },
-  { label: 'Players', value: 'numberOfPlayers' },
-  { label: 'Age', value: 'recommendedAge' },
-  { label: 'Play Time', value: 'playTime' }
-];
+const sortOptions = computed(() => [
+  { label: t('title'), value: 'title' },
+  { label: t('genre'), value: 'genre' },
+  { label: t('players'), value: 'numberOfPlayers' },
+  { label: t('age'), value: 'recommendedAge' },
+  { label: t('playTime'), value: 'playTime' }
+]);
 
 // Filter and sort logic
 const filteredAndSortedGames = computed(() => {
@@ -232,7 +234,7 @@ const shareGame = async (game: Game) => {
     try {
       await navigator.share({
         title: game.title,
-        text: `Check out this cool game: ${game.description}`,
+        text: t('checkOutThisGame', { description: game.description }),
         url: `${window.location.origin}/games/${game.legacyId}`
       });
     } catch (err) {
@@ -327,46 +329,46 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
         <div v-show="showFilters" class="filters-panel q-mb-md">
           <q-card bordered class="q-pa-md">
             <div class="filter-header q-mb-md">
-              <div class="text-subtitle2 text-weight-medium">Filters</div>
-              <q-btn v-if="hasActiveFilters" @click="clearAllFilters" label="Clear All" color="negative" flat dense
+              <div class="text-subtitle2 text-weight-medium">{{ t('filters') }}</div>
+              <q-btn v-if="hasActiveFilters" @click="clearAllFilters" :label="t('clearAll')" color="negative" flat dense
                 size="sm" />
             </div>
 
             <div class="filters-grid">
               <!-- Genre Filter -->
               <div class="filter-group">
-                <div class="filter-label">Genre</div>
+                <div class="filter-label">{{ t('genre') }}</div>
                 <q-select v-model="selectedGenres" :options="availableGenres" multiple outlined dense emit-value
-                  map-options use-chips placeholder="All genres" class="filter-select"
+                  map-options use-chips :placeholder="t('allGenres')" class="filter-select"
                   popup-content-class="filter-popup" />
               </div>
 
               <!-- Player Count Filter -->
               <div class="filter-group">
-                <div class="filter-label">Players</div>
+                <div class="filter-label">{{ t('players') }}</div>
                 <q-select v-model="selectedPlayerCounts" :options="availablePlayerCounts" multiple outlined dense
-                  emit-value map-options use-chips placeholder="Any count" class="filter-select" />
+                  emit-value map-options use-chips :placeholder="t('anyCount')" class="filter-select" />
               </div>
 
               <!-- Age Range Filter -->
               <div class="filter-group">
-                <div class="filter-label">Age</div>
+                <div class="filter-label">{{ t('age') }}</div>
                 <q-select v-model="selectedAgeRanges" :options="availableAgeRanges" multiple outlined dense emit-value
-                  map-options use-chips placeholder="Any age" class="filter-select" />
+                  map-options use-chips :placeholder="t('anyAge')" class="filter-select" />
               </div>
 
               <!-- Play Time Filter -->
               <div class="filter-group">
-                <div class="filter-label">Play Time</div>
+                <div class="filter-label">{{ t('playTime') }}</div>
                 <q-select v-model="selectedPlayTimes" :options="availablePlayTimes" multiple outlined dense emit-value
-                  map-options use-chips placeholder="Any duration" class="filter-select" />
+                  map-options use-chips :placeholder="t('anyDuration')" class="filter-select" />
               </div>
 
               <!-- Components Filter -->
               <div class="filter-group">
-                <div class="filter-label">Components</div>
+                <div class="filter-label">{{ t('components') }}</div>
                 <q-select v-model="selectedComponents" :options="availableComponents" multiple outlined dense emit-value
-                  map-options use-chips placeholder="Any components" class="filter-select" />
+                  map-options use-chips :placeholder="t('anyComponents')" class="filter-select" />
               </div>
             </div>
           </q-card>
@@ -376,12 +378,14 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
       <!-- Sort controls -->
       <div class="sort-section q-mb-md">
         <div class="sort-controls">
-          <q-select v-model="sortBy" :options="sortOptions" outlined dense emit-value map-options label="Sort by"
+          <q-select v-model="sortBy" :options="sortOptions" outlined dense emit-value map-options :label="t('sortBy')"
             class="sort-select" />
 
           <q-btn @click="sortDirection = sortDirection === 'asc' ? 'desc' : 'asc'"
             :icon="sortDirection === 'asc' ? 'mdi-sort-ascending' : 'mdi-sort-descending'" flat dense round
-            color="primary" class="q-ml-sm" />
+            color="primary" class="q-ml-sm">
+            <q-tooltip>{{ sortDirection === 'asc' ? t('sortDescending') : t('sortAscending') }}</q-tooltip>
+          </q-btn>
         </div>
       </div>
 
@@ -390,9 +394,9 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
         <!-- No results message -->
         <div v-if="filteredAndSortedGames.length === 0" class="no-results text-center q-py-xl">
           <q-icon name="mdi-gamepad-variant-outline" size="4rem" color="grey-4" />
-          <div class="text-h6 text-grey-6 q-mt-md">No games found</div>
-          <div class="text-body2 text-grey-5">Try adjusting your search or filters</div>
-          <q-btn v-if="hasActiveFilters" @click="clearAllFilters" label="Clear Filters" color="primary" flat
+          <div class="text-h6 text-grey-6 q-mt-md">{{ t('noGamesFound') }}</div>
+          <div class="text-body2 text-grey-5">{{ t('tryAdjustingFilters') }}</div>
+          <q-btn v-if="hasActiveFilters" @click="clearAllFilters" :label="t('clearFilters')" color="primary" flat
             class="q-mt-md" />
         </div>
 
@@ -427,7 +431,7 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
                     <div class="meta-item">
                       <game-icon category="players" :value="game.numberOfPlayers" size="xs"
                         class="text-secondary q-mr-xs" />
-                      <span class="text-grey-6">{{ game.numberOfPlayers }} players</span>
+                      <span class="text-grey-6">{{ game.numberOfPlayers }} {{ t('players') }}</span>
                     </div>
 
                     <div class="meta-item">
@@ -461,7 +465,7 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
                       @click="toggleReserved(game.legacyId)"
                       :color="getGameState(game.legacyId).reserved ? 'primary' : 'grey-6'" flat dense round size="sm">
                       <q-tooltip class="bg-primary">
-                        {{ getGameState(game.legacyId).reserved ? 'Remove reservation' : 'Reserve game' }}
+                        {{ getGameState(game.legacyId).reserved ? t('removeReservation') : t('reserveGame') }}
                       </q-tooltip>
                     </q-btn>
 
@@ -469,7 +473,7 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
                       @click="toggleBookmark(game.legacyId)"
                       :color="getGameState(game.legacyId).bookmark ? 'accent' : 'grey-6'" flat dense round size="sm">
                       <q-tooltip class="bg-accent">
-                        {{ getGameState(game.legacyId).bookmark ? 'Remove bookmark' : 'Bookmark game' }}
+                        {{ getGameState(game.legacyId).bookmark ? t('removeFromBookmarks') : t('addToBookmarks') }}
                       </q-tooltip>
                     </q-btn>
 
@@ -477,7 +481,7 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
                       @click="toggleFavorite(game.legacyId)"
                       :color="getGameState(game.legacyId).favorite ? 'secondary' : 'grey-6'" flat dense round size="sm">
                       <q-tooltip class="bg-secondary">
-                        {{ getGameState(game.legacyId).favorite ? 'Remove from favorites' : 'Add to favorites' }}
+                        {{ getGameState(game.legacyId).favorite ? t('removeFromFavorites') : t('addToFavorites') }}
                       </q-tooltip>
                     </q-btn>
                   </div>
@@ -486,16 +490,16 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
                   <div class="action-row q-mt-xs">
                     <q-btn icon="mdi-qrcode" @click="toggleQRCode(game.legacyId)" flat dense round size="sm"
                       color="grey-6">
-                      <q-tooltip>Show QR Code</q-tooltip>
+                      <q-tooltip>{{ t('showQrCode') }}</q-tooltip>
                     </q-btn>
 
                     <q-btn icon="mdi-share" @click="shareGame(game)" flat dense round size="sm" color="grey-6">
-                      <q-tooltip>Share game</q-tooltip>
+                      <q-tooltip>{{ t('shareGame') }}</q-tooltip>
                     </q-btn>
 
                     <q-btn v-if="game.link" icon="mdi-open-in-new" :href="game.link" target="_blank" flat dense round
                       size="sm" color="grey-6">
-                      <q-tooltip>Open external link</q-tooltip>
+                      <q-tooltip>{{ t('openExternalLink') }}</q-tooltip>
                     </q-btn>
                   </div>
                 </div>

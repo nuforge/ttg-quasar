@@ -10,7 +10,7 @@
     <!-- User Info Card -->
     <q-card class="q-mb-md">
       <q-card-section>
-        <div class="text-h6">User Information</div>
+        <div class="text-h6">{{ $t('userInformation') }}</div>
       </q-card-section>
       <q-card-section>
         <div v-if="currentUser">
@@ -22,8 +22,8 @@
                 </q-avatar>
               </q-item-section>
               <q-item-section>
-                <q-item-label>{{ currentUser.displayName || 'No display name' }}</q-item-label>
-                <q-item-label caption>Display Name</q-item-label>
+                <q-item-label>{{ currentUser.displayName || $t('noDisplayName') }}</q-item-label>
+                <q-item-label caption>{{ $t('displayName') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -35,7 +35,7 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>{{ currentUser.email }}</q-item-label>
-                <q-item-label caption>Email</q-item-label>
+                <q-item-label caption>{{ $t('email') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -47,13 +47,13 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-mono">{{ currentUser.uid }}</q-item-label>
-                <q-item-label caption>Firebase UID</q-item-label>
+                <q-item-label caption>{{ $t('firebaseUid') }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
         </div>
         <div v-else class="text-center text-grey-6">
-          Not signed in
+          {{ $t('notSignedIn') }}
         </div>
       </q-card-section>
     </q-card>
@@ -63,9 +63,9 @@
       <q-card-section>
         <div class="text-h6">
           <q-icon name="security" class="q-mr-sm" />
-          Permissions & Roles
+          {{ $t('permissionsAndRoles') }}
         </div>
-        <div class="text-caption text-grey-6">Debug information for your current permissions</div>
+        <div class="text-caption text-grey-6">{{ $t('debugInformationPermissions') }}</div>
       </q-card-section>
       <q-card-section>
         <div v-if="permissionsInfo">
@@ -79,9 +79,9 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>
-                  {{ permissionsInfo.isAdmin ? 'Administrator' : 'Regular User' }}
+                  {{ permissionsInfo.isAdmin ? $t('administrator') : $t('regularUser') }}
                 </q-item-label>
-                <q-item-label caption>Admin Status</q-item-label>
+                <q-item-label caption>{{ $t('adminStatus') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -99,8 +99,8 @@
                     {{ permission }}
                   </q-chip>
                 </q-item-label>
-                <q-item-label v-else class="text-grey-6">No permissions assigned</q-item-label>
-                <q-item-label caption>Your Permissions</q-item-label>
+                <q-item-label v-else class="text-grey-6">{{ $t('noPermissionsAssigned') }}</q-item-label>
+                <q-item-label caption>{{ $t('yourPermissions') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -113,7 +113,7 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>{{ permissionsInfo.role.name }}</q-item-label>
-                <q-item-label caption>Role Name</q-item-label>
+                <q-item-label caption>{{ $t('roleName') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -126,23 +126,23 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label>
-                  {{ permissionsInfo.rolesLoaded ? 'Yes' : 'No' }}
-                  ({{ permissionsInfo.totalRolesInSystem }} total roles in system)
+                  {{ permissionsInfo.rolesLoaded ? $t('yes') : $t('no') }}
+                  ({{ $t('totalRolesInSystem', { count: permissionsInfo.totalRolesInSystem }) }})
                 </q-item-label>
-                <q-item-label caption>Roles Data Loaded</q-item-label>
+                <q-item-label caption>{{ $t('rolesDataLoaded') }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
 
           <!-- Refresh Button -->
           <div class="q-mt-md text-center">
-            <q-btn color="primary" icon="refresh" label="Refresh Permissions" @click="refreshPermissions"
+            <q-btn color="primary" icon="refresh" :label="$t('refreshPermissions')" @click="refreshPermissions"
               :loading="loading" />
           </div>
         </div>
         <div v-else class="text-center text-grey-6">
           <q-spinner size="lg" class="q-mb-md" />
-          <div>Loading permissions...</div>
+          <div>{{ $t('loadingPermissions') }}</div>
         </div>
       </q-card-section>
     </q-card>
@@ -152,12 +152,12 @@
       <q-card-section>
         <div class="text-h6">
           <q-icon name="storage" class="q-mr-sm" />
-          Firebase Debug Info
+          {{ $t('firebaseDebugInfo') }}
         </div>
-        <div class="text-caption text-grey-6">Development mode only - Raw Firebase data</div>
+        <div class="text-caption text-grey-6">{{ $t('developmentModeOnly') }}</div>
       </q-card-section>
       <q-card-section>
-        <q-expansion-item icon="code" label="Raw Permissions Object" class="text-weight-bold">
+        <q-expansion-item icon="code" :label="$t('rawPermissionsObject')" class="text-weight-bold">
           <div class="q-pa-md bg-grey-1">
             <pre class="text-caption">{{ JSON.stringify(permissionsInfo, null, 2) }}</pre>
           </div>
@@ -172,7 +172,9 @@ import { computed, onMounted, ref } from 'vue';
 import { useCurrentUser } from 'vuefire';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const $q = useQuasar();
 const currentUser = useCurrentUser();
 const playersStore = usePlayersFirebaseStore();
@@ -201,14 +203,14 @@ const refreshPermissions = async () => {
     await playersStore.initializeAdminData();
     $q.notify({
       type: 'positive',
-      message: 'Permissions refreshed successfully',
+      message: t('permissionsRefreshedSuccessfully'),
       position: 'top'
     });
   } catch (error) {
     console.error('Error refreshing permissions:', error);
     $q.notify({
       type: 'negative',
-      message: 'Failed to refresh permissions',
+      message: t('failedToRefreshPermissions'),
       position: 'top'
     });
   } finally {
