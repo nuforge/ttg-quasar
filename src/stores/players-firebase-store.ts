@@ -11,6 +11,7 @@ import {
   limit,
   onSnapshot,
   setDoc,
+  Timestamp,
 } from 'firebase/firestore';
 import { db } from 'src/boot/firebase';
 import { Player } from 'src/models/Player';
@@ -84,7 +85,7 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
         const player = new Player({
           ...data,
           id: data.id || parseInt(doc.id.slice(-6), 36), // Fallback ID generation
-          joinDate: data.joinDate?.toDate() || new Date(),
+          joinDate: data.joinDate instanceof Timestamp ? data.joinDate.toDate() : data.joinDate,
         });
 
         // Store Firebase ID for reference
@@ -132,7 +133,7 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
           id: doc.id,
           status: data.status,
           reason: data.reason,
-          updatedAt: data.updatedAt?.toDate() || new Date(),
+          updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : data.updatedAt,
           updatedBy: data.updatedBy,
         };
         statusesMap.set(doc.id, statusData);
@@ -249,7 +250,7 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
         const player = new Player({
           ...data,
           id: data.id || parseInt(doc.id.slice(-6), 36),
-          joinDate: data.joinDate?.toDate() || new Date(),
+          joinDate: data.joinDate instanceof Timestamp ? data.joinDate.toDate() : data.joinDate,
         });
 
         (player as Player & { firebaseId?: string }).firebaseId = doc.id;
@@ -299,7 +300,7 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
         const player = new Player({
           ...data,
           id: data.id || parseInt(doc.id.slice(-6), 36),
-          joinDate: data.joinDate?.toDate() || new Date(),
+          joinDate: data.joinDate instanceof Timestamp ? data.joinDate.toDate() : data.joinDate,
         });
 
         (player as Player & { firebaseId?: string }).firebaseId = doc.id;
