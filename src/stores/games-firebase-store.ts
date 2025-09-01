@@ -55,9 +55,7 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
    * with user bookmarks, favorites, upcoming events, and popularity metrics
    */
   const featuredGames = computed(() => {
-    const result = getFeaturedGames();
-    console.log('🏪 Store featuredGames getter called, returning:', result.length, 'games');
-    return result;
+    return getFeaturedGames();
   });
 
   // Search games
@@ -92,30 +90,12 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     // Use only active games (simplified from approved + active)
     const availableGames = games.value.filter((game) => game.status === 'active');
 
-    console.log('🎲 getFeaturedGames called with:', {
-      count,
-      totalGames: games.value.length,
-      approvedGames: games.value.filter((g) => g.approved).length,
-      activeGames: games.value.filter((g) => g.status === 'active').length,
-      availableGamesCount: availableGames.length,
-      firstFewGames: games.value
-        .slice(0, 3)
-        .map((g) => ({ title: g.title, status: g.status, approved: g.approved })),
-    });
-
     if (availableGames.length === 0) {
-      console.log('❌ No active games available');
       return [];
     }
 
     // Use the featured games service for calculation
     const result = FeaturedGamesService.getFeaturedGames(availableGames, { count });
-    console.log(
-      '✅ getFeaturedGames returning:',
-      result.length,
-      'games:',
-      result.map((g) => g.title),
-    );
     return result;
 
     // TODO: Future enhancement - Add user-specific criteria:
@@ -285,32 +265,18 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     error.value = null;
 
     try {
-      console.log('🔥 Loading games from Firebase...');
       const q = query(collection(db, 'games'), orderBy('title', 'asc'));
 
       const snapshot = await getDocs(q);
-      console.log('📊 Firebase snapshot received:', snapshot.docs.length, 'documents');
 
       games.value = snapshot.docs.map((doc) => {
         const data = doc.data() as FirebaseGame;
         const game = Game.fromFirebase(doc.id, data);
-        console.log(
-          '🎮 Game loaded:',
-          game.title,
-          'approved:',
-          game.approved,
-          'status:',
-          game.status,
-        );
         return game;
       });
-
-      console.log('✅ Total games loaded:', games.value.length);
-      console.log('✅ Approved games:', approvedGames.value.length);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       error.value = `Failed to load games: ${errorMessage}`;
-      console.error('❌ Error loading games:', errorMessage);
       throw err;
     } finally {
       loading.value = false;

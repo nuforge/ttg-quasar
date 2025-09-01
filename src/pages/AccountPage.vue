@@ -221,7 +221,6 @@ const refreshPermissions = async () => {
 // Initialize permissions on mount
 onMounted(async () => {
   if (currentUser.value) {
-    console.log('🔄 Account page mounted, initializing permissions...');
     await refreshPermissions();
   }
 });

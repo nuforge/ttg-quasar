@@ -51,7 +51,6 @@ class EventSubmissionService {
 
     try {
       const docRef = await addDoc(collection(db, this.COLLECTION_NAME), submission);
-      console.log('Event submission created with ID:', docRef.id);
       return docRef.id;
     } catch (error) {
       console.error('Error creating event submission:', error);
@@ -141,7 +140,6 @@ class EventSubmissionService {
       }
 
       await updateDoc(docRef, updateData);
-      console.log('Submission status updated:', id, status);
     } catch (error) {
       console.error('Error updating submission status:', error);
       throw new Error('Failed to update submission status');
@@ -196,8 +194,6 @@ class EventSubmissionService {
         updatedAt: Timestamp.now(),
       });
 
-      console.log('Event approved and published to calendar:', calendarEvent.id);
-
       // Send notifications to users who have notifications enabled for this game
       if (submission.gameId) {
         try {
@@ -232,8 +228,6 @@ class EventSubmissionService {
               eventForNotification,
               'new_event',
             );
-
-            console.log('Game event notifications sent successfully');
           }
         } catch (notificationError) {
           console.warn('Failed to send game event notifications:', notificationError);
@@ -254,7 +248,6 @@ class EventSubmissionService {
   async deleteSubmission(id: string): Promise<void> {
     try {
       await deleteDoc(doc(db, this.COLLECTION_NAME, id));
-      console.log('Submission deleted:', id);
     } catch (error) {
       console.error('Error deleting submission:', error);
       throw new Error('Failed to delete submission');

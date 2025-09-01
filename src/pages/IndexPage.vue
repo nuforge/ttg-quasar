@@ -23,44 +23,26 @@ const featuredGamesData = ref<Game[]>([]);
 
 // Load data on mount
 onMounted(async () => {
-  console.log('🚀 IndexPage mounted, starting data load...');
-
   // Load games first
   if (gamesStore.games.length === 0) {
-    console.log('📚 Loading games from Firebase...');
     await gamesStore.loadGames();
-    console.log('📚 Games loaded:', gamesStore.games.length, 'total games');
-    console.log('✅ Approved games:', gamesStore.approvedGames.length);
-  } else {
-    console.log('📚 Games already loaded:', gamesStore.games.length, 'total games');
-    console.log('✅ Approved games:', gamesStore.approvedGames.length);
   }
 
   // Load events from Firebase
-  console.log('📅 Subscribing to events...');
   eventsStore.subscribeToEvents();
 
   // Load user preferences if authenticated
   if (currentUser.value) {
-    console.log('👤 User authenticated, loading preferences...');
     await preferencesStore.loadPreferences();
-  } else {
-    console.log('👤 No user authenticated');
   }
 
   // Load featured games with user data
-  console.log('🎮 Loading featured games...');
   await loadFeaturedGames();
-  console.log('🎮 Featured games load complete');
 });
 
 // Load featured games with personalization data
 const loadFeaturedGames = async () => {
   try {
-    console.log('🎮 Loading featured games...');
-    console.log('Games available:', gamesStore.games.length);
-    console.log('Approved games:', gamesStore.approvedGames.length);
-
     const criteria = {
       count: 3,
       // Include user data if available for future personalization
@@ -74,14 +56,11 @@ const loadFeaturedGames = async () => {
       }),
     };
 
-    console.log('Featured games criteria:', criteria);
     featuredGamesData.value = await gamesStore.getFeaturedGamesWithUserData(criteria);
-    console.log('Featured games loaded:', featuredGamesData.value.length);
   } catch (error) {
     console.error('Failed to load featured games:', error);
     // Fallback to basic featured games
     featuredGamesData.value = gamesStore.featuredGames;
-    console.log('Using fallback featured games:', featuredGamesData.value.length);
   }
 };
 
@@ -126,9 +105,7 @@ watch(
 );// Featured content - uses personalized data when available
 const featuredGames = computed(() => {
   // Use loaded personalized data if available, otherwise fallback to store's random selection
-  const result = featuredGamesData.value.length > 0 ? featuredGamesData.value : gamesStore.featuredGames;
-  console.log('🎯 Featured games computed:', result.length, result.map(g => g.title));
-  return result;
+  return featuredGamesData.value.length > 0 ? featuredGamesData.value : gamesStore.featuredGames;
 });
 
 // Get upcoming events from Firebase store

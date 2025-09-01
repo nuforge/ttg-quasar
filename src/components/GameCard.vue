@@ -156,12 +156,11 @@ const handleToggleReserved = async () => {
 
 const nativeShare = async (game: Game) => {
   shareData.value.title = game.title;
-  console.log(shareData.value);
   try {
     await navigator.share(shareData.value);
     //trackShare('native'); // Analytics
-  } catch (err) {
-    console.log('Share canceled', err);
+  } catch {
+    // Share was canceled or failed
   }
 };
 

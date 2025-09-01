@@ -313,10 +313,6 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       throw new Error('Not joined to this event');
     }
 
-    console.log('🔄 leaveEvent: Attempting to remove RSVP for player', currentPlayer.id);
-    console.log('🔍 leaveEvent: Found confirmed RSVP:', confirmedRSVP);
-    console.log('📄 leaveEvent: Using Firebase doc ID:', event.firebaseDocId);
-
     // Prevent host from leaving their own event
     if (storeEvent.host.playerId === currentPlayer.id) {
       throw new Error('Event host cannot leave their own event');
@@ -328,14 +324,11 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       }
       const eventRef = doc(db, 'events', event.firebaseDocId);
 
-      console.log('🗑️ leaveEvent: Removing RSVP from Firebase:', confirmedRSVP);
       await updateDoc(eventRef, {
         rsvps: arrayRemove(confirmedRSVP),
         updatedAt: serverTimestamp(),
       });
-      console.log('✅ leaveEvent: Successfully removed RSVP from Firebase');
     } catch (err) {
-      console.error('❌ leaveEvent: Firebase error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       error.value = `Failed to leave event: ${errorMessage}`;
       throw err;
@@ -409,8 +402,6 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     }
 
     const currentPlayer = authService.currentPlayer.value;
-    console.log('🔄 toggleInterest: Starting for player', currentPlayer.id, 'on event', event.id);
-
     // ⚡ FIX: Get the LATEST event data from the store instead of using the stale prop
     const storeEvent = events.value.find((e) => e.id === event.id);
     if (!storeEvent) {
@@ -422,24 +413,19 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       (rsvp: RSVP) => rsvp.playerId === currentPlayer.id && rsvp.status === 'interested',
     );
 
-    console.log('🔍 toggleInterest: Existing interested RSVP:', existingInterestedRSVP);
-
     try {
       if (!event.firebaseDocId) {
         throw new Error('Firebase document ID not found for this event');
       }
 
       const eventRef = doc(db, 'events', event.firebaseDocId);
-      console.log('📄 toggleInterest: Using Firebase doc ID:', event.firebaseDocId);
 
       if (existingInterestedRSVP) {
         // Remove the interested RSVP
-        console.log('➖ toggleInterest: Removing interested RSVP');
         await updateDoc(eventRef, {
           rsvps: arrayRemove(existingInterestedRSVP),
           updatedAt: serverTimestamp(),
         });
-        console.log('✅ toggleInterest: Successfully removed interest');
       } else {
         // Add new interested RSVP
         const newInterestedRsvp: RSVP = {
@@ -448,17 +434,13 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
           participants: 1,
         };
 
-        console.log('➕ toggleInterest: Adding new interested RSVP:', newInterestedRsvp);
         await updateDoc(eventRef, {
           rsvps: arrayUnion(newInterestedRsvp),
           updatedAt: serverTimestamp(),
         });
-        console.log('✅ toggleInterest: Successfully added interest');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
-      console.error('❌ toggleInterest: Error occurred:', err);
-      console.error('❌ toggleInterest: Error message:', errorMessage);
       error.value = `Failed to toggle interest: ${errorMessage}`;
       throw err;
     }

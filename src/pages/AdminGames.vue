@@ -204,11 +204,10 @@ const rejectSubmission = (gameId: string) => {
       type: 'text'
     },
     cancel: true,
-  }).onOk((reason: string) => {
+  }).onOk(() => {
     void (async () => {
       try {
         await gamesStore.rejectGame(gameId);
-        console.log('Game submission rejected with reason:', reason);
         $q.notify({
           type: 'info',
           message: 'Submission rejected',
@@ -250,12 +249,11 @@ const rejectGameInList = (gameId: string) => {
       type: 'text'
     },
     cancel: true,
-  }).onOk((reason: string) => {
+  }).onOk(() => {
     void (async () => {
       try {
         // TODO: Store rejection reason in game metadata
         await gamesStore.rejectGame(gameId);
-        console.log('Game rejected with reason:', reason);
         $q.notify({
           type: 'info',
           message: 'Game rejected',

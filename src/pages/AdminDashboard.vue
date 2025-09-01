@@ -312,18 +312,9 @@ const refreshCache = async () => {
 
 // Debug permissions function
 const debugPermissions = async () => {
-  console.log('🔍 Debug Permissions Called');
-
   try {
     // Refresh permissions data
     await playersStore.initializeAdminData();
-
-    const permissionsInfo = playersStore.getCurrentUserPermissions;
-    console.log('👤 Current User Permissions:', permissionsInfo);
-
-    // Log all roles in system
-    console.log('👥 All User Roles:', playersStore.userRoles);
-    console.log('📊 All User Statuses:', playersStore.userStatuses);
 
     $q.notify({
       type: 'info',

@@ -69,12 +69,10 @@ export function useLanguage() {
 
       // Always save to localStorage for development persistence and performance
       localStorage.setItem('ttg-preferred-language', language);
-      console.debug('Language preference saved to localStorage:', language);
 
       // Save to user preferences if authenticated
       if (user.value) {
         await userPreferencesStore.updateLanguagePreference(language);
-        console.debug('Language preference saved to Firebase:', language);
       }
     } catch (error) {
       console.error('Failed to set language:', error);
@@ -98,16 +96,13 @@ export function useLanguage() {
     const savedLanguage = localStorage.getItem('ttg-preferred-language') as SupportedLanguage;
     if (savedLanguage && savedLanguage in SUPPORTED_LANGUAGES) {
       targetLanguage = savedLanguage;
-      console.debug('Using localStorage language preference:', savedLanguage);
     } else if (user.value) {
       // User is authenticated - check their preferences
       await userPreferencesStore.loadPreferences();
       targetLanguage = getPreferredLanguage();
-      console.debug('Using authenticated user language preference');
     } else {
       // Fall back to browser detection only if no saved preference
       targetLanguage = detectBrowserLanguage();
-      console.debug('Using browser detected language:', targetLanguage);
     }
 
     locale.value = targetLanguage;

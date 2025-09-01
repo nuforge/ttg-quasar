@@ -92,12 +92,9 @@ export class VueFireAuthService {
         if (expiry > now + 5 * 60 * 1000) {
           this.googleAccessToken.value = token;
           this.googleAccessTokenExpiry.value = expiry;
-          console.log('✅ Loaded valid Google access token from storage');
         } else if (refreshToken) {
-          console.log('🔄 Access token expired, attempting auto-refresh...');
           void this.refreshGoogleToken();
         } else {
-          console.log('❌ Stored Google access token expired and no refresh token available');
           this.clearTokenFromStorage();
         }
       }
@@ -109,12 +106,9 @@ export class VueFireAuthService {
 
   private async refreshGoogleToken(): Promise<boolean> {
     try {
-      console.log('🔄 Refreshing Google access token...');
-
       // Use Firebase Auth's built-in token refresh
       const user = auth.currentUser;
       if (!user) {
-        console.log('❌ No authenticated user for token refresh');
         return false;
       }
 
@@ -130,13 +124,11 @@ export class VueFireAuthService {
           const googleCredential = GoogleAuthProvider.credentialFromResult(credential);
 
           if (googleCredential?.accessToken) {
-            console.log('✅ Successfully refreshed Google access token');
             this.saveTokenToStorage(googleCredential.accessToken, 3600);
             return true;
           }
         } catch {
           // If popup is blocked, user will need to manually re-authenticate
-          console.log('🔔 Popup blocked - user needs to manually refresh Google Calendar access');
           return false;
         }
       }
@@ -152,12 +144,10 @@ export class VueFireAuthService {
   public async refreshGoogleTokenIfNeeded(): Promise<boolean> {
     try {
       // Since we don't store refresh tokens separately, just attempt re-authentication
-      console.log('🔄 Attempting to refresh Google Calendar access...');
       const user = auth.currentUser;
       if (user?.providerData.find((p) => p.providerId === 'google.com')) {
         return await this.refreshGoogleToken();
       }
-      console.log('❌ User not authenticated with Google');
       return false;
     } catch (error) {
       console.error('❌ Error in public token refresh:', error);
@@ -175,8 +165,6 @@ export class VueFireAuthService {
 
       this.googleAccessToken.value = token;
       this.googleAccessTokenExpiry.value = expiryTime;
-
-      console.log('Saved Google access token to storage');
     } catch (error) {
       console.error('Error saving Google access token to storage:', error);
     }
@@ -213,16 +201,14 @@ export class VueFireAuthService {
 
     // If token expires in less than 15 minutes, try to refresh proactively
     if (expiry - now < 15 * 60 * 1000) {
-      console.log('🔄 Google access token expiring soon, attempting proactive refresh...');
-
       const refreshToken = localStorage.getItem('google_refresh_token');
       if (refreshToken) {
         const refreshed = await this.refreshGoogleToken();
         if (!refreshed) {
-          console.log('🔔 Auto-refresh failed - user will need to re-authenticate when needed');
+          // Silent failure - user will re-authenticate when needed
         }
       } else {
-        console.log('🔔 No refresh token - user will need to re-authenticate when needed');
+        // No refresh token available
       }
     }
   }
@@ -243,32 +229,14 @@ export class VueFireAuthService {
   async signInWithGoogle() {
     this.loading.value = true;
     try {
-      console.log('Signing in with Google Calendar permissions...');
-
       const result = await signInWithPopup(auth, this.googleProvider);
 
       // Store the Google OAuth access token for Calendar API
       const credential = GoogleAuthProvider.credentialFromResult(result);
-      console.log('Google OAuth credential:', credential);
 
       if (credential?.accessToken) {
-        console.log(
-          'Got Google OAuth access token (first 20 chars):',
-          credential.accessToken.substring(0, 20) + '...',
-        );
-
         // Save token to storage with persistence (default 1 hour expiry)
         this.saveTokenToStorage(credential.accessToken);
-      } else {
-        console.warn('No access token received from Google OAuth');
-      }
-
-      // Log what scopes were actually granted
-      if (credential) {
-        console.log('OAuth credential details:', {
-          hasAccessToken: !!credential.accessToken,
-          tokenLength: credential.accessToken?.length,
-        });
       }
 
       return result.user;

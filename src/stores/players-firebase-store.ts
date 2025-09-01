@@ -56,7 +56,6 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
 
     // Development override: Allow admin access for authenticated users if no admin roles exist
     if (process.env.NODE_ENV === 'development' && userRoles.value.size === 0) {
-      console.warn('🔧 Development Mode: Granting admin access due to no admin roles configured');
       return true;
     }
 
@@ -114,7 +113,6 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
         });
 
         userRoles.value = rolesMap;
-        console.log('✅ Real-time loaded', rolesMap.size, 'user roles');
       });
     } catch (err) {
       console.error('❌ Error setting up user roles listener:', err);
@@ -123,7 +121,6 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
   const fetchUserStatuses = async () => {
     // Remove admin check to avoid circular dependency
     try {
-      console.log('🔍 Fetching user statuses from Firebase...');
       const statusesSnapshot = await getDocs(collection(db, 'userStatuses'));
       const statusesMap = new Map<string, UserStatus>();
 
@@ -140,7 +137,6 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
       });
 
       userStatuses.value = statusesMap;
-      console.log('✅ Loaded', statusesMap.size, 'user statuses');
     } catch (err) {
       console.error('❌ Error fetching user statuses:', err);
     }

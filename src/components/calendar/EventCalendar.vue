@@ -129,22 +129,10 @@ const getEventColor = computed(() => {
 // Handle date clicks to show events for that date
 const onDateClick = (date: string | Date | { toString(): string } | null) => {
   if (!date) {
-    console.log('Date click received null, ignoring');
     return;
   }
 
   const selectedDateStr = formatToDash(date);
-  const dayEvents = eventsStore.events.filter(event =>
-    event.date === selectedDateStr && event.isUpcoming()
-  );
-
-  console.log(`Selected date: ${selectedDateStr}`);
-
-  if (dayEvents.length > 0) {
-    console.log(`Found ${dayEvents.length} events for ${selectedDateStr}:`, dayEvents.map(e => e.title));
-  } else {
-    console.log(`No events found for ${selectedDateStr}`);
-  }
 
   // Update the selected date in the store (this should keep the calendar on the selected date)
   calendarStore.setSelectedDate(selectedDateStr);

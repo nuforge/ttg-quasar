@@ -237,8 +237,8 @@ const shareGame = async (game: Game) => {
         text: t('checkOutThisGame', { description: game.description }),
         url: `${window.location.origin}/games/${game.legacyId}`
       });
-    } catch (err) {
-      console.log('Share canceled', err);
+    } catch {
+      // Share was canceled by user - no action needed
     }
   }
 };

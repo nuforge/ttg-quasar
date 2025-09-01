@@ -66,12 +66,7 @@ const confirmedCount = computed(() => {
   const freshEvent = eventsStore.events.find(e => e.firebaseDocId === eventId.value);
   if (!freshEvent) return 0;
 
-  // DEBUG: Log the RSVP data to see what's happening
-  console.log('Event RSVPs for debug:', freshEvent.title, freshEvent.rsvps);
-  const count = freshEvent.getConfirmedCount();
-  console.log('Confirmed count:', count);
-
-  return count;
+  return freshEvent.getConfirmedCount();
 });
 
 // Get reactive interested count
@@ -94,15 +89,9 @@ watch(
   () => eventsStore.events,
   (newEvents) => {
     if (newEvents.length > 0 && eventId.value && !event.value) {
-      console.log('Events loaded, looking for event ID:', eventId.value);
-      console.log('Available events:', newEvents.map(e => ({ id: e.id, title: e.title })));
-
       const foundEvent = newEvents.find(e => e.firebaseDocId === eventId.value);
       if (foundEvent) {
-        console.log('Found event:', foundEvent.title);
         event.value = foundEvent;
-      } else {
-        console.warn(`Event with ID ${eventId.value} not found in ${newEvents.length} available events`);
       }
       loading.value = false;
     }
@@ -115,14 +104,11 @@ watch(
   () => eventId.value,
   (newEventId) => {
     if (newEventId && eventsStore.events.length > 0) {
-      console.log('Route changed, looking for new event ID:', newEventId);
       const foundEvent = eventsStore.events.find(e => e.firebaseDocId === newEventId);
       if (foundEvent) {
-        console.log('Found new event:', foundEvent.title);
         event.value = foundEvent;
         loading.value = false;
       } else {
-        console.warn(`Event with ID ${newEventId} not found`);
         event.value = null;
         loading.value = false;
       }
@@ -133,8 +119,6 @@ watch(
 onMounted(async () => {
   try {
     if (eventId.value) {
-      console.log('Loading event with ID:', eventId.value);
-
       // Load games data
       if (gamesStore.games.length === 0) {
         await gamesStore.loadGames();
@@ -361,7 +345,7 @@ const sendEventComment = (message: string) => {
               <q-item-section>
                 <q-item-label>{{ availableEvent.title }}</q-item-label>
                 <q-item-label caption>ID: {{ availableEvent.id }} | Date: {{ availableEvent.getFormattedDate()
-                  }}</q-item-label>
+                }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>

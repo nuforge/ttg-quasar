@@ -41,11 +41,9 @@ export class GoogleCalendarService {
       sharedCalendarId &&
       sharedCalendarId !== 'your-shared-calendar-id@group.calendar.google.com'
     ) {
-      console.log('Using shared calendar:', sharedCalendarId);
       return sharedCalendarId;
     }
 
-    console.log('Using primary (personal) calendar');
     return 'primary';
   }
 
@@ -54,12 +52,10 @@ export class GoogleCalendarService {
 
   public setCalendarId(calendarId: string) {
     this.currentCalendarId = calendarId;
-    console.log('Calendar ID override set to:', calendarId);
   }
 
   public clearCalendarId() {
     this.currentCalendarId = null;
-    console.log('Calendar ID override cleared, using default logic');
   }
 
   public getCurrentCalendarId(): string {
@@ -74,12 +70,9 @@ export class GoogleCalendarService {
 
     // Check if we have a valid Google OAuth access token
     if (!vueFireAuthService.isGoogleTokenValid()) {
-      console.log('Google Calendar token expired, attempting auto-refresh...');
       try {
         const refreshed = await vueFireAuthService.refreshGoogleTokenIfNeeded();
-        if (refreshed) {
-          console.log('✅ Google Calendar token refreshed successfully');
-        } else {
+        if (!refreshed) {
           throw new Error('Token refresh failed');
         }
       } catch (error) {
@@ -103,10 +96,6 @@ export class GoogleCalendarService {
       const token = await this.getAccessToken();
       const calendarId = this.getCurrentCalendarId();
 
-      console.log('Creating calendar event with data:', JSON.stringify(eventData, null, 2));
-      console.log('Using calendar ID:', calendarId);
-      console.log('Using access token (first 20 chars):', token.substring(0, 20) + '...');
-
       const requestBody = {
         ...eventData,
         reminders: eventData.reminders || {
@@ -117,8 +106,6 @@ export class GoogleCalendarService {
           ],
         },
       };
-
-      console.log('Request body:', JSON.stringify(requestBody, null, 2));
 
       const response = await fetch(
         `${this.CALENDAR_API_URL}/calendars/${encodeURIComponent(calendarId)}/events`,
@@ -132,11 +119,8 @@ export class GoogleCalendarService {
         },
       );
 
-      console.log('Calendar API response status:', response.status, response.statusText);
-
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Calendar API error response:', errorText);
 
         // Provide specific error messages for common issues
         if (response.status === 403) {
@@ -156,10 +140,8 @@ export class GoogleCalendarService {
       }
 
       const result = await response.json();
-      console.log('Successfully created calendar event:', result);
       return result;
     } catch (error) {
-      console.error('Error creating calendar event:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Failed to create calendar event: ${errorMessage}`);
     }
@@ -249,8 +231,6 @@ export class GoogleCalendarService {
       if (timeMin) params.append('timeMin', timeMin);
       if (timeMax) params.append('timeMax', timeMax);
 
-      console.log('Listing events from calendar:', calendarId);
-
       const response = await fetch(
         `${this.CALENDAR_API_URL}/calendars/${encodeURIComponent(calendarId)}/events?${params}`,
         {
@@ -291,7 +271,6 @@ export class GoogleCalendarService {
       }
 
       const result = await response.json();
-      console.log('Available calendars:', result);
       return result;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

@@ -34,20 +34,13 @@ const interestLoading = ref(false);
 // Get current user's RSVP status from store (reactive)
 const currentUserRSVP = computed(() => {
   const currentPlayer = authService.currentPlayer.value;
-  console.log('DEBUG: currentPlayer =', currentPlayer);
-  console.log('DEBUG: props.event.id =', props.event.id);
-  console.log('DEBUG: eventsStore.events.length =', eventsStore.events.length);
-
   if (!currentPlayer) return null;
 
   // Get the latest event data from the store
   const storeEvent = eventsStore.events.find(e => e.id === props.event.id);
-  console.log('DEBUG: storeEvent found =', !!storeEvent);
   if (!storeEvent) return null;
 
-  const rsvp = storeEvent.getPlayerRSVP(currentPlayer.id);
-  console.log('DEBUG: RSVP from store =', rsvp);
-  return rsvp;
+  return storeEvent.getPlayerRSVP(currentPlayer.id);
 });
 
 const isConfirmed = computed(() => {
@@ -78,9 +71,6 @@ const isHost = computed(() => {
 });
 
 const handleConfirm = async () => {
-  console.log('DEBUG: handleConfirm called, isConfirmed =', isConfirmed.value);
-  console.log('DEBUG: currentUserRSVP =', currentUserRSVP.value);
-
   if (!isAuthenticated.value) {
     $q.notify({
       type: 'negative',
@@ -116,9 +106,6 @@ const handleConfirm = async () => {
 };
 
 const handleCancel = async () => {
-  console.log('DEBUG: handleCancel called (UN-RSVP button clicked), isConfirmed =', isConfirmed.value);
-  console.log('DEBUG: currentUserRSVP =', currentUserRSVP.value);
-
   rsvpLoading.value = true;
   try {
     await eventsStore.leaveEvent(props.event);
@@ -137,9 +124,6 @@ const handleCancel = async () => {
 };
 
 const handleInterested = async () => {
-  console.log('DEBUG: handleInterested called, isInterested =', isInterested.value);
-  console.log('DEBUG: currentUserRSVP =', currentUserRSVP.value);
-
   if (!isAuthenticated.value) {
     $q.notify({
       type: 'negative',
@@ -150,9 +134,7 @@ const handleInterested = async () => {
 
   interestLoading.value = true;
   try {
-    console.log('🚀 About to call eventsStore.toggleInterest with event:', props.event.title);
     await eventsStore.toggleInterest(props.event);
-    console.log('✅ toggleInterest completed successfully');
     $q.notify({
       type: 'positive',
       message: isInterested.value ? t('interestRemoved') : t('interestAdded')
@@ -190,7 +172,7 @@ const handleInterested = async () => {
       <q-btn flat :loading="rsvpLoading" :color="isConfirmed ? 'green' : 'grey'" :size="size" dense
         :icon="isConfirmed ? 'mdi-calendar-check' : 'mdi-calendar-plus'"
         :label="showLabels ? (isConfirmed ? t('rsvpd') : t('rsvp')) : undefined"
-        @click.stop="() => { console.log('DEBUG: RSVP button clicked, isConfirmed =', isConfirmed); isConfirmed ? handleCancel() : handleConfirm(); }"
+        @click.stop="isConfirmed ? handleCancel() : handleConfirm()"
         :disabled="!isConfirmed && event.isFull() && !isInterested" unelevated>
         <q-tooltip v-if="!isConfirmed && event.isFull() && !isInterested">{{ t('eventIsFull') }}</q-tooltip>
         <q-tooltip v-else-if="isConfirmed">{{ t('clickToUnRsvp') }}</q-tooltip>
@@ -202,8 +184,7 @@ const handleInterested = async () => {
       <q-btn flat :loading="interestLoading" :color="isInterested ? 'orange' : 'grey-6'" :size="size" dense
         :icon="isInterested ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
         :label="showLabels ? (isInterested ? t('interested') : t('interest')) : undefined"
-        @click.stop="() => { console.log('DEBUG: Interest button clicked, isInterested =', isInterested); handleInterested(); }"
-        unelevated>
+        @click.stop="handleInterested" unelevated>
         <q-tooltip v-if="isInterested">{{ t('clickToRemoveInterest') }}</q-tooltip>
         <q-tooltip v-else>{{ t('clickToShowInterest') }}</q-tooltip>
       </q-btn>

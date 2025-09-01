@@ -101,7 +101,6 @@ export class Game {
 
   get url(): string {
     const urlFriendlyTitle = this.title;
-    console.log(`/${this.legacyId}/${urlFriendlyTitle}`);
     return `/${this.legacyId}/${urlFriendlyTitle}`;
   }
 
