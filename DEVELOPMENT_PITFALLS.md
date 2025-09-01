@@ -215,3 +215,30 @@ onSnapshot(collection, (snapshot) => {
 ```
 
 **Prevention**: Always test data migration scripts with Firebase emulators and verify timestamp field compatibility before production migrations.
+
+## Event Capacity Logic Inconsistencies
+
+**Problem**: Event `isFull()` method used legacy `currentPlayers` field instead of actual RSVP count, causing "Event is full" errors on empty events.
+
+**Solution**: Event model methods should use RSVP-based calculations:
+
+```typescript
+// WRONG - Legacy field approach
+isFull(): boolean {
+  return this.currentPlayers >= this.maxPlayers;
+}
+
+// CORRECT - Use actual RSVP count
+isFull(): boolean {
+  return this.getConfirmedCount() >= this.maxPlayers;
+}
+
+// CORRECT - Count confirmed RSVPs
+getConfirmedCount(): number {
+  return this.rsvps.filter((rsvp) => rsvp.status === 'confirmed').length;
+}
+```
+
+**Root Cause**: The Event model has both legacy `currentPlayers` (for migration compatibility) and modern `rsvps` array. Business logic should use the RSVP-based methods for accuracy.
+
+**Prevention**: Always use Event model's computed methods (`getConfirmedCount()`, `isFull()`) rather than raw fields for capacity calculations.

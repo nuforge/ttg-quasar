@@ -165,7 +165,7 @@ const selectEventDate = () => {
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ event.getConfirmedCount() }} / {{ event.maxPlayers }} {{ $t('player', 2)
-              }}</q-item-label>
+                }}</q-item-label>
               <q-item-label v-if="event.getInterestedCount() > 0" caption class="text-orange">
                 +{{ event.getInterestedCount() }} interested
               </q-item-label>
@@ -184,8 +184,8 @@ const selectEventDate = () => {
       <q-card-actions vertical v-if="game">
         <q-list dense class="text-grey-8">
           <q-item>
-            <q-tooltip class="bg-primary text-black">Players: {{ game.numberOfPlayers }}</q-tooltip>
-            <GameIcon category="players" :value="game.numberOfPlayers" size="xs" class="text-grey-9" />
+            <q-tooltip class="bg-primary text-black">RSVPs: {{ event.getConfirmedCount() }}</q-tooltip>
+            <GameIcon category="players" :value="event.getConfirmedCount().toString()" size="xs" class="text-grey-9" />
           </q-item>
 
           <q-item>

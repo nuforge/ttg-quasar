@@ -88,7 +88,7 @@ export class Event {
   }
 
   isFull(): boolean {
-    return this.currentPlayers >= this.maxPlayers;
+    return this.getConfirmedCount() >= this.maxPlayers;
   }
 
   isUpcoming(): boolean {
