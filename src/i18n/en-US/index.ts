@@ -225,6 +225,12 @@ export default {
 
   // Tooltips
   showQrCode: 'Show QR Code',
+  reserveGame: 'Reserve game',
+  removeReservation: 'Remove reservation',
+  bookmarkGame: 'Bookmark game',
+  shareGame: 'Share game',
+  checkOutThisGame: 'Check out this cool game: {description}',
+  openExternalLink: 'Open external link',
   confirmedRsvps: 'Confirmed RSVPs',
   playersShowingInterest: 'Players showing interest',
   clickToUnRsvp: 'Click to UN-RSVP',
@@ -337,6 +343,8 @@ export default {
   howItWorks: 'How It Works',
   ascending: 'Ascending',
   descending: 'Descending',
+  sortAscending: 'Sort ascending',
+  sortDescending: 'Sort descending',
   gameTitleRequired: 'Game title is required',
   navigation: 'Navigation',
   actions: 'Actions',

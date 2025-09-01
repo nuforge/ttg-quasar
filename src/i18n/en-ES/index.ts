@@ -226,6 +226,12 @@ export default {
 
   // Tooltips
   showQrCode: 'Mostrar Código QR',
+  reserveGame: 'Reservar juego',
+  removeReservation: 'Quitar reserva',
+  bookmarkGame: 'Marcar juego',
+  shareGame: 'Compartir juego',
+  checkOutThisGame: 'Echa un vistazo a este genial juego: {description}',
+  openExternalLink: 'Abrir enlace externo',
   confirmedRsvps: 'Confirmaciones de Asistencia',
   playersShowingInterest: 'Jugadores mostrando interés',
   clickToUnRsvp: 'Clic para cancelar confirmación',
@@ -292,6 +298,8 @@ export default {
   howItWorks: 'Cómo Funciona',
   ascending: 'Ascendente',
   descending: 'Descendente',
+  sortAscending: 'Ordenar ascendente',
+  sortDescending: 'Ordenar descendente',
   gameTitleRequired: 'El título del juego es requerido',
 
   // Tooltips

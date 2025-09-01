@@ -132,8 +132,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useLanguage } from 'src/composables/useLanguage';
 
 const { locale } = useI18n();
+const { setLanguage } = useLanguage();
 const currentLocale = ref(locale.value);
 const demoNotifications = ref(3);
 const demoTitle = ref('');
@@ -142,7 +144,12 @@ const demoAge = ref('');
 const demoGameFilter = ref(null);
 const demoSort = ref(null);
 
-const changeLanguage = (newLocale: string) => {
-    locale.value = newLocale;
+const changeLanguage = async (newLocale: string) => {
+    try {
+        await setLanguage(newLocale as 'en-US' | 'en-ES');
+        currentLocale.value = newLocale;
+    } catch (error) {
+        console.error('Failed to change language:', error);
+    }
 };
 </script>

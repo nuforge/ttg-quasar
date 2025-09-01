@@ -6,11 +6,12 @@ TTG Quasar implements comprehensive internationalization using Vue i18n v9, supp
 
 ## Current Language Support
 
-- **English (en-US)**: Primary language with 260+ translation keys
+- **English (en-US)**: Primary language with 270+ translation keys
 - **Spanish (en-ES)**: Complete Spanish translations matching English structure
 - **Browser Detection**: Automatic detection of user's preferred language
-- **User Preferences**: Firebase-backed personal language settings
+- **User Preferences**: Firebase-backed personal language settings with proper undefined handling
 - **Smart Fallbacks**: Graceful handling of unsupported languages
+- **Development Resilience**: Language preferences persist through hot reloads and code changes
 
 ## Architecture
 
@@ -157,6 +158,14 @@ Authenticated users can override browser detection with personal language prefer
 - Faster language application on subsequent visits
 - Reduces Firebase calls for better performance
 - Falls back to browser detection if no saved preference
+- Persists through development hot reloads and code changes
+- Always updated regardless of authentication status for development resilience
+
+**Firebase Integration Improvements:**
+
+- Proper handling of undefined values to prevent Firestore errors
+- Graceful fallback when Firebase operations fail
+- Optimistic UI updates with error handling
 
 ### Language Management Flow
 
@@ -204,6 +213,78 @@ Authenticated users can override browser detection with personal language prefer
     </q-item>
   </template>
 </q-select>
+```
+
+## Component Internationalization Examples
+
+### GamesPage Complete Implementation
+
+The GamesPage demonstrates comprehensive i18n integration:
+
+```vue
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+
+// Reactive sort options using i18n
+const sortOptions = computed(() => [
+  { label: t('title'), value: 'title' },
+  { label: t('genre'), value: 'genre' },
+  { label: t('players'), value: 'numberOfPlayers' },
+  { label: t('age'), value: 'recommendedAge' },
+  { label: t('playTime'), value: 'playTime' },
+]);
+</script>
+
+<template>
+  <!-- Filter section with i18n -->
+  <div class="filter-header">
+    <div class="text-subtitle2">{{ t('filters') }}</div>
+    <q-btn :label="t('clearAll')" @click="clearAllFilters" />
+  </div>
+
+  <!-- Filter controls -->
+  <q-select :placeholder="t('allGenres')" />
+  <q-select :placeholder="t('anyCount')" />
+  <q-select :placeholder="t('anyAge')" />
+
+  <!-- Tooltips with conditional translations -->
+  <q-tooltip>
+    {{ gameState.favorite ? t('removeFromFavorites') : t('addToFavorites') }}
+  </q-tooltip>
+</template>
+```
+
+### New Translation Keys Added
+
+**Game Actions:**
+
+```typescript
+// Tooltips and actions
+reserveGame: 'Reserve game',
+removeReservation: 'Remove reservation',
+shareGame: 'Share game',
+openExternalLink: 'Open external link',
+sortAscending: 'Sort ascending',
+sortDescending: 'Sort descending',
+
+// Parameterized messages
+checkOutThisGame: 'Check out this cool game: {description}',
+```
+
+**Filter and Sort Interface:**
+
+```typescript
+// All existing filter keys were leveraged:
+filters: 'filters',
+clearAll: 'clear all',
+sortBy: 'sort by',
+allGenres: 'all genres',
+anyCount: 'any count',
+anyAge: 'any age',
+anyDuration: 'any duration',
+anyComponents: 'any components',
 ```
 
 ## Usage Patterns
@@ -367,10 +448,31 @@ const updateLanguage = async (newLanguage: string) => {
 
 ### Language Detection Priority
 
-1. **User Preference** (if authenticated): Loads from Firebase user document
-2. **LocalStorage Cache**: Previously saved language preference
+1. **LocalStorage Cache**: Previously saved language preference (highest priority for development stability)
+2. **User Preference** (if authenticated): Loads from Firebase user document
 3. **Browser Detection**: `navigator.language` automatic detection
 4. **Default Fallback**: English (en-US) for unsupported languages
+
+### Recent Improvements (September 2025)
+
+**GamesPage Full Internationalization:**
+
+- Converted all hardcoded text to i18n keys
+- Added new translation keys for game actions and tooltips
+- Implemented proper sort option localization
+- Enhanced filter labels and placeholders with i18n
+
+**Firebase Error Resolution:**
+
+- Fixed undefined value errors in Firestore operations
+- Implemented proper optional field handling in UserPreferences model
+- Added robust error handling for language preference persistence
+
+**Development Experience:**
+
+- Enhanced hot reload stability for language preferences
+- Added debug logging for troubleshooting language issues
+- Improved I18nDemo component to use proper language management
 
 ## Testing i18n
 

@@ -4,7 +4,7 @@ export interface FirebaseUserPreferences {
   userId: string; // Firebase user ID
   favoriteGames: string[]; // Array of game document IDs
   bookmarkedGames: string[]; // Array of game document IDs
-  preferredLanguage?: string | undefined; // User's preferred language (e.g., 'en-US', 'en-ES')
+  preferredLanguage?: string; // User's preferred language (e.g., 'en-US', 'en-ES') - optional in Firebase
   eventNotificationPreferences: {
     [gameId: string]: {
       enabled: boolean;
@@ -48,7 +48,8 @@ export class UserPreferences {
     this.userId = userId;
     this.favoriteGames = data?.favoriteGames || [];
     this.bookmarkedGames = data?.bookmarkedGames || [];
-    this.preferredLanguage = data?.preferredLanguage;
+    // Default to browser language or en-US if no preference is set
+    this.preferredLanguage = data?.preferredLanguage || undefined;
     this.eventNotificationPreferences = data?.eventNotificationPreferences || {};
     this.globalNotificationSettings = data?.globalNotificationSettings || {
       emailNotifications: true,
@@ -85,15 +86,21 @@ export class UserPreferences {
 
   // Convert to Firebase format
   toFirebase(): FirebaseUserPreferences {
-    return {
+    const data: FirebaseUserPreferences = {
       userId: this.userId,
       favoriteGames: this.favoriteGames,
       bookmarkedGames: this.bookmarkedGames,
-      preferredLanguage: this.preferredLanguage,
       eventNotificationPreferences: this.eventNotificationPreferences,
       globalNotificationSettings: this.globalNotificationSettings,
       // Timestamps will be handled by Firebase
     };
+
+    // Only include preferredLanguage if it's not undefined (Firebase doesn't support undefined values)
+    if (this.preferredLanguage !== undefined) {
+      data.preferredLanguage = this.preferredLanguage;
+    }
+
+    return data;
   }
 
   // Create from Firebase data
