@@ -46,3 +46,9 @@ scripts/seed-*.js
 scripts/seed-*.mjs
 src/data/sample-games.ts
 src/services/featured-games-examples.ts
+
+# Firebase development files
+firebase-debug.log
+firestore-debug.log
+firebase/*.backup
+firebase/*.dev
