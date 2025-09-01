@@ -118,7 +118,7 @@ import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 
 ### Internationalization (`src/i18n/`)
 
-- **Complete i18n Implementation**: 220+ translation keys for English and Spanish
+- **Complete i18n Implementation**: 350+ translation keys for English and Spanish
 - **Vue i18n v9**: Reactive language switching with TypeScript support
 - **Language Files**: `en-US/index.ts` and `en-ES/index.ts` with matching key structures
 - **Component Usage**: Import `useI18n()` and use `t()` function for all user-facing text

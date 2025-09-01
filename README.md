@@ -251,7 +251,7 @@ src/
 
 The application features comprehensive internationalization with support for **English** and **Spanish**:
 
-- **270+ Translation Keys**: Complete coverage of all user-facing text including recent GamesPage additions
+- **350+ Translation Keys**: Complete coverage of all user-facing text including recent GamesPage and AccountPage additions
 - **Smart Language Detection**: Automatically detects browser language preference with localStorage priority
 - **User Preference Override**: Logged-in users can set personal language preference stored in Firebase
 - **Real-time Switching**: Instant language changes without page refresh
@@ -289,6 +289,7 @@ The application features comprehensive internationalization with support for **E
 - Game management features (fully internationalized GamesPage)
 - Event coordination
 - Admin panel functionality
+- Account management and user profiles (fully internationalized AccountPage)
 - Notification messages
 - Tooltips and help text
 - Error and success messages
@@ -298,6 +299,7 @@ The application features comprehensive internationalization with support for **E
 **Recent Improvements (September 2025):**
 
 - **GamesPage Full Internationalization**: All hardcoded text converted to i18n keys
+- **AccountPage Complete Translation**: User information, permissions, debug features, and admin tools fully internationalized
 - **Enhanced Filter System**: Sort options, filter labels, and placeholders localized
 - **Game Action Tooltips**: Reserve, bookmark, favorite, share actions fully internationalized
 - **Firebase Error Resolution**: Fixed undefined value handling in language preferences
@@ -327,7 +329,7 @@ $q.notify({
 src/i18n/
 ├── index.ts          # i18n configuration
 ├── en-US/           # English translations
-│   └── index.ts     # 260+ translation keys
+│   └── index.ts     # 350+ translation keys
 └── en-ES/           # Spanish translations
     └── index.ts     # Complete Spanish translations
 ```
@@ -455,7 +457,7 @@ export default {
   // Pluralization
   playersCount: '{count} player | {count} players',
 
-  // ... 220+ more keys
+  // ... 350+ more keys
 };
 ```
 

@@ -6,7 +6,7 @@ TTG Quasar implements comprehensive internationalization using Vue i18n v9, supp
 
 ## Current Language Support
 
-- **English (en-US)**: Primary language with 270+ translation keys
+- **English (en-US)**: Primary language with 350+ translation keys
 - **Spanish (en-ES)**: Complete Spanish translations matching English structure
 - **Browser Detection**: Automatic detection of user's preferred language
 - **User Preferences**: Firebase-backed personal language settings with proper undefined handling
@@ -21,9 +21,9 @@ TTG Quasar implements comprehensive internationalization using Vue i18n v9, supp
 src/i18n/
 ├── index.ts           # i18n configuration and setup
 ├── en-US/
-│   └── index.ts      # English translations (260+ keys)
+│   └── index.ts      # English translations (350+ keys)
 └── en-ES/
-    └── index.ts      # Spanish translations (260+ keys)
+    └── index.ts      # Spanish translations (350+ keys)
 
 src/composables/
 └── useLanguage.ts    # Language management composable
@@ -103,11 +103,12 @@ export default boot(({ app }) => {
 4. **RSVP & Events**: Event participation and status management
 5. **Forms & Validation**: Input labels and error messages
 6. **Admin Features**: Administrative interface elements
-7. **Status & States**: Loading, error, success states
+7. **Status & States**: Loading, error, success states (including yes/no)
 8. **Notifications**: Alert messages and feedback
 9. **Search & Filters**: Search interface and filtering options
 10. **Tooltips**: Contextual help and descriptions
 11. **Pluralization**: Dynamic count-based translations
+12. **Account Management**: User profile, permissions, and debug information
 
 ### Naming Conventions
 
@@ -285,6 +286,89 @@ anyCount: 'any count',
 anyAge: 'any age',
 anyDuration: 'any duration',
 anyComponents: 'any components',
+```
+
+### AccountPage Complete Implementation
+
+The AccountPage demonstrates comprehensive i18n integration for administrative and user management interfaces:
+
+```vue
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+</script>
+
+<template>
+  <!-- User Information Section -->
+  <q-card>
+    <q-card-section>
+      <div class="text-h6">{{ $t('userInformation') }}</div>
+    </q-card-section>
+    <q-card-section>
+      <q-item>
+        <q-item-section>
+          <q-item-label>{{ currentUser.displayName || $t('noDisplayName') }}</q-item-label>
+          <q-item-label caption>{{ $t('displayName') }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-card-section>
+  </q-card>
+
+  <!-- Permissions Debug Section -->
+  <q-card>
+    <q-card-section>
+      <div class="text-h6">{{ $t('permissionsAndRoles') }}</div>
+      <div class="text-caption">{{ $t('debugInformationPermissions') }}</div>
+    </q-card-section>
+  </q-card>
+
+  <!-- Dynamic status messages -->
+  <q-item-label>
+    {{ permissionsInfo.isAdmin ? $t('administrator') : $t('regularUser') }}
+  </q-item-label>
+
+  <!-- Parameterized count messages -->
+  <q-item-label>
+    {{ $t('yes') }}/{{ $t('no') }} ({{
+      $t('totalRolesInSystem', { count: permissionsInfo.totalRolesInSystem })
+    }})
+  </q-item-label>
+</template>
+```
+
+**New Account Management Translation Keys:**
+
+```typescript
+// User information
+userInformation: 'User Information',
+displayName: 'Display Name',
+noDisplayName: 'No display name',
+firebaseUid: 'Firebase UID',
+notSignedIn: 'Not signed in',
+
+// Permissions and roles
+permissionsAndRoles: 'Permissions & Roles',
+debugInformationPermissions: 'Debug information for your current permissions',
+administrator: 'Administrator',
+regularUser: 'Regular User',
+adminStatus: 'Admin Status',
+noPermissionsAssigned: 'No permissions assigned',
+yourPermissions: 'Your Permissions',
+roleName: 'Role Name',
+rolesDataLoaded: 'Roles Data Loaded',
+totalRolesInSystem: '{count} total roles in system',
+
+// Loading and debug states
+loadingPermissions: 'Loading permissions...',
+firebaseDebugInfo: 'Firebase Debug Info',
+developmentModeOnly: 'Development mode only - Raw Firebase data',
+
+// Status messages
+permissionsRefreshedSuccessfully: 'Permissions refreshed successfully',
+failedToRefreshPermissions: 'Failed to refresh permissions',
+yes: 'Yes',
+no: 'No',
 ```
 
 ## Usage Patterns
@@ -513,7 +597,7 @@ expect(wrapper.text()).toContain('Confirm');
 To add more languages:
 
 1. Create new language file (e.g., `src/i18n/fr-FR/index.ts`)
-2. Add all 260+ translation keys
+2. Add all 350+ translation keys
 3. Update `src/i18n/index.ts` to include new language
 4. Add language option to UI selectors
 
