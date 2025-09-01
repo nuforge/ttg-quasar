@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
@@ -10,6 +11,7 @@ import EventCard from 'src/components/events/EventCard.vue';
 import { type Game } from 'src/models/Game';
 import { UserPreferencesAnalyzer } from 'src/services/user-preferences-analyzer';
 
+const { t } = useI18n();
 const router = useRouter();
 const gamesStore = useGamesFirebaseStore();
 const eventsStore = useEventsFirebaseStore();
@@ -143,48 +145,48 @@ const navigateTo = async (path: string) => {
 
 const features = [
   {
-    title: 'Discover Games',
+    title: t('discoverGames'),
     icon: 'mdi-book-multiple',
     color: 'primary',
-    description: 'Browse our collection of tabletop games with detailed information.'
+    description: t('discoverGamesDesc')
   },
   {
-    title: 'Join Events',
+    title: t('joinEvents'),
     icon: 'mdi-calendar-month',
     color: 'secondary',
-    description: 'Find and RSVP to game sessions in your area.'
+    description: t('joinEventsDesc')
   },
   {
-    title: 'Connect Players',
+    title: t('connectPlayers'),
     icon: 'mdi-account-group',
     color: 'tertiary',
-    description: 'Meet other tabletop enthusiasts and form gaming groups.'
+    description: t('connectPlayersDesc')
   },
   {
-    title: 'Track Sessions',
+    title: t('trackSessions'),
     icon: 'mdi-clock-outline',
     color: 'accent',
-    description: 'Keep track of your gaming history and upcoming events.'
+    description: t('trackSessionsDesc')
   }
 ];
 
 const steps = [
   {
     step: 1,
-    title: 'Browse Games',
-    description: 'Explore our collection of tabletop games and find your favorites.',
+    title: t('browseGames'),
+    description: t('browseGamesStepDesc'),
     icon: 'mdi-magnify'
   },
   {
     step: 2,
-    title: 'Join Events',
-    description: 'RSVP to upcoming game sessions or create your own.',
+    title: t('joinEventsStep'),
+    description: t('joinEventsStepDesc'),
     icon: 'mdi-calendar-plus'
   },
   {
     step: 3,
-    title: 'Play Games',
-    description: 'Meet up with other players and enjoy your tabletop experience!',
+    title: t('playGames'),
+    description: t('playGamesDesc'),
     icon: 'mdi-gamepad-variant'
   }
 ];
@@ -196,7 +198,7 @@ const steps = [
     <section class="hero-section q-pa-md q-mb-lg">
       <q-parallax :height="300" src="/images/tabletop-hero.png">
         <div class="absolute-center text-center">
-          <div class="text-h4 text-weight-bold text-primary hero-title">Looking For Group</div>
+          <div class="text-h4 text-weight-bold text-primary hero-title">{{ t('lookingForGroup') }}</div>
           <div class="text-h5 q-mt-md text-white text-weight-medium">{{ $t('heroSubtitle') }}
           </div>
           <div class="q-mt-lg q-gutter-sm ">
@@ -210,7 +212,7 @@ const steps = [
 
     <!-- Features Section -->
     <section class="features-section q-pa-md q-mb-lg">
-      <div class="text-h2 text-center q-mb-lg">What We Offer</div>
+      <div class="text-h2 text-center q-mb-lg">{{ t('whatWeOffer') }}</div>
       <div class="row q-col-gutter-md justify-center">
         <div v-for="feature in features" :key="feature.title" class="col-xs-12 col-sm-6 col-md-3">
           <q-card class="feature-card" bordered>
@@ -283,8 +285,8 @@ const steps = [
     <section class="cta-section q-pa-xl q-mb-md text-center ">
       <q-card class="bg-surface ">
         <q-card-section>
-          <div class="text-h4 q-mb-md">Ready to Find Your Next Game?</div>
-          <div class="text-h6 q-mb-lg">Join our community of tabletop gamers today!</div>
+          <div class="text-h4 q-mb-md">{{ t('readyToFindGame') }}</div>
+          <div class="text-h6 q-mb-lg">{{ t('joinCommunityToday') }}</div>
           <q-btn color="primary" text-color="black" push :label="$t('getStarted')" size="lg"
             @click="navigateTo('/games')" />
         </q-card-section>
@@ -296,15 +298,15 @@ const steps = [
       <div class="row q-col-gutter-md">
         <div class="col-xs-12 col-sm-4">
           <div class="text-h3 text-primary">{{ gamesStore.approvedGames.length }}+</div>
-          <div class="text-subtitle1">Games Available</div>
+          <div class="text-subtitle1">{{ t('gamesAvailable') }}</div>
         </div>
         <div class="col-xs-12 col-sm-4">
           <div class="text-h3 text-secondary">{{ eventsStore.events.length }}+</div>
-          <div class="text-subtitle1">Events Organized</div>
+          <div class="text-subtitle1">{{ t('eventsOrganized') }}</div>
         </div>
         <div class="col-xs-12 col-sm-4">
           <div class="text-h3 text-tertiary">100+</div>
-          <div class="text-subtitle1">Active Players</div>
+          <div class="text-subtitle1">{{ t('activePlayers') }}</div>
         </div>
       </div>
     </section>

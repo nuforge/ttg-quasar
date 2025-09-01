@@ -3,10 +3,40 @@ import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import { ref, onMounted, watch } from 'vue'
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
+import { useLanguage } from 'src/composables/useLanguage';
 
-const { locale, availableLocales } = useI18n({ useScope: 'global' });
+const { t } = useI18n({ useScope: 'global' });
 const $q = useQuasar();
 const preferencesStore = useUserPreferencesStore();
+const { setLanguage } = useLanguage();
+
+// Language options for the selector
+const languageOptions = [
+  { label: 'English', value: 'en-US', flag: '🇺🇸' },
+  { label: 'Español', value: 'en-ES', flag: '🇪🇸' }
+];
+
+// Current language selection
+const selectedLanguage = ref<string>('en-US');
+
+// Update language function
+const updateLanguage = async (newLanguage: string) => {
+  try {
+    await setLanguage(newLanguage as 'en-US' | 'en-ES');
+    selectedLanguage.value = newLanguage;
+    $q.notify({
+      type: 'positive',
+      message: t('notifications.languageUpdated'),
+      position: 'top',
+    });
+  } catch {
+    $q.notify({
+      type: 'negative',
+      message: t('notifications.failedToUpdateLanguage'),
+      position: 'top',
+    });
+  }
+};
 
 // Create a ref for theme mode
 const themeMode = ref<string>('auto');
@@ -87,15 +117,19 @@ onMounted(() => {
     // Set initial value based on current Quasar dark mode setting
     themeMode.value = $q.dark.isActive ? 'dark' : ($q.dark.mode === 'auto' ? 'auto' : 'light');
   }
+
+  // Initialize language preference
+  const currentLanguage = localStorage.getItem('ttg-preferred-language') || 'en-US';
+  selectedLanguage.value = currentLanguage;
 });
 </script>
 
 <template>
   <q-page class="q-pa-md">
     <div class="q-mb-lg">
-      <h4 class="text-h4 q-mb-sm">Settings</h4>
+      <h4 class="text-h4 q-mb-sm">{{ t('settings.title') }}</h4>
       <p class="text-body1 text-grey-7">
-        Manage your app preferences, notifications, and display settings
+        {{ t('settings.description') }}
       </p>
     </div>
 
@@ -106,17 +140,42 @@ onMounted(() => {
           <q-card-section>
             <div class="text-h6 q-mb-md">
               <q-icon name="mdi-tune" class="q-mr-sm" />
-              App Settings
+              {{ t('settings.appSettings') }}
             </div>
 
             <div class="q-gutter-lg">
               <div>
-                <label class="text-subtitle2 q-mb-sm block">{{ $t('language') }}</label>
-                <q-select v-model="locale" :options="availableLocales" dense outlined />
+                <label class="text-subtitle2 q-mb-sm block">{{ t('settings.language') }}</label>
+                <q-select v-model="selectedLanguage" :options="languageOptions" @update:model-value="updateLanguage"
+                  dense outlined emit-value map-options>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section avatar>
+                        <span class="text-h6">{{ scope.opt.flag }}</span>
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+
+                  <template v-slot:selected>
+                    <q-item>
+                      <q-item-section avatar>
+                        <span class="text-h6">{{languageOptions.find(opt => opt.value === selectedLanguage)?.flag ||
+                          '🇺🇸'}}</span>
+                      </q-item-section>
+                      <q-item-section>
+                        <q-item-label>{{languageOptions.find(opt => opt.value === selectedLanguage)?.label || 'English'
+                        }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
               </div>
 
               <div>
-                <label class="text-subtitle2 q-mb-sm block">Theme</label>
+                <label class="text-subtitle2 q-mb-sm block">{{ t('settings.theme') }}</label>
                 <q-select v-model="themeMode" :options="themeOptions" @update:model-value="setThemeMode" dense outlined
                   emit-value map-options>
                   <!-- Custom display for the options -->
@@ -157,18 +216,18 @@ onMounted(() => {
           <q-card-section>
             <div class="text-h6 q-mb-md">
               <q-icon name="mdi-bell-cog" class="q-mr-sm" />
-              Notification Settings
+              {{ t('settings.notificationSettings') }}
             </div>
 
             <div class="q-gutter-md">
-              <q-toggle v-model="globalSettings.emailNotifications" label="Email notifications" :disable="saving"
-                @update:model-value="updateGlobalSettings" />
+              <q-toggle v-model="globalSettings.emailNotifications" :label="t('settings.emailNotifications')"
+                :disable="saving" @update:model-value="updateGlobalSettings" />
 
-              <q-toggle v-model="globalSettings.pushNotifications" label="Browser notifications" :disable="saving"
-                @update:model-value="updateGlobalSettings" />
+              <q-toggle v-model="globalSettings.pushNotifications" :label="t('settings.browserNotifications')"
+                :disable="saving" @update:model-value="updateGlobalSettings" />
 
               <div>
-                <q-field label="Default notification timing" stack-label borderless>
+                <q-field :label="t('settings.defaultNotificationTiming')" stack-label borderless>
                   <template v-slot:control>
                     <q-slider v-model="globalSettings.defaultNotifyDaysBefore" :min="1" :max="14" :step="1" label
                       :label-value="`${globalSettings.defaultNotifyDaysBefore} day${globalSettings.defaultNotifyDaysBefore !== 1 ? 's' : ''} before`"

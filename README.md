@@ -245,6 +245,86 @@ src/
 └── utils/            # Utility functions
 ```
 
+## 🌍 Internationalization (i18n)
+
+### Multi-Language Support
+
+The application features comprehensive internationalization with support for **English** and **Spanish**:
+
+- **260+ Translation Keys**: Complete coverage of all user-facing text
+- **Smart Language Detection**: Automatically detects browser language preference
+- **User Preference Override**: Logged-in users can set personal language preference
+- **Real-time Switching**: Instant language changes without page refresh
+- **Type-Safe Translations**: Full TypeScript integration with Vue i18n v9
+
+### Language Detection Flow
+
+1. **First Visit**:
+   - Detects browser's preferred language (`navigator.language`)
+   - Falls back to English for unsupported languages
+   - Supports language variants (e.g., `es-MX` → `en-ES`)
+
+2. **User Authentication**:
+   - Loads user's saved language preference from Firebase
+   - Overrides browser detection with account setting
+   - Syncs across all user devices
+
+3. **Manual Override**:
+   - Settings page provides elegant language selector with flag icons 🇺🇸 🇪🇸
+   - Changes saved to Firebase user preferences
+   - LocalStorage backup for faster subsequent loads
+
+### Translation Coverage
+
+**Complete Coverage Areas:**
+
+- Navigation and menus
+- Forms and validation messages
+- RSVP states and interactions
+- Game management features
+- Event coordination
+- Admin panel functionality
+- Notification messages
+- Tooltips and help text
+- Error and success messages
+
+**Usage in Components:**
+
+```typescript
+// Import in script section
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
+// Use in templates
+<q-btn :label="t('actions.save')" />
+<div>{{ t('events.rsvpConfirmed') }}</div>
+
+// Use in script sections
+$q.notify({
+  message: t('notifications.eventCreated'),
+  type: 'positive'
+});
+```
+
+### Language Files Structure
+
+```
+src/i18n/
+├── index.ts          # i18n configuration
+├── en-US/           # English translations
+│   └── index.ts     # 260+ translation keys
+└── en-ES/           # Spanish translations
+    └── index.ts     # Complete Spanish translations
+```
+
+### Adding New Languages
+
+1. Create new language file: `src/i18n/[locale]/index.ts`
+2. Copy structure from `en-US/index.ts`
+3. Translate all keys maintaining the same structure
+4. Add locale to boot file language detection
+5. Add option to Settings page language selector
+
 ## 🔐 Authentication
 
 The app uses VueFire for reactive Firebase authentication:

@@ -40,7 +40,18 @@ export default {
   games: 'Juegos',
   messages: 'Mensajes',
   accounts: 'Cuentas',
-  settings: 'Configuración',
+  settings: {
+    title: 'Configuración',
+    language: 'Idioma',
+    description:
+      'Gestiona tus preferencias de la aplicación, notificaciones y configuración de pantalla',
+    appSettings: 'Configuración de la Aplicación',
+    theme: 'Tema',
+    notificationSettings: 'Configuración de Notificaciones',
+    emailNotifications: 'Notificaciones por correo electrónico',
+    browserNotifications: 'Notificaciones del navegador',
+    defaultNotificationTiming: 'Tiempo de notificación predeterminado',
+  },
   notifications: 'Notificaciones',
 
   // Actions
@@ -319,6 +330,8 @@ export default {
   failedUpdateBringStatus: 'Error al actualizar el estado de traer. Inténtalo de nuevo.',
   failedUpdateNotifications:
     'Error al actualizar las notificaciones de eventos. Inténtalo de nuevo.',
+  languageUpdated: 'Idioma actualizado exitosamente',
+  failedToUpdateLanguage: 'Error al actualizar el idioma. Inténtalo de nuevo.',
   pleaseSignInBookmarks: 'Inicia sesión para marcar juegos',
   pleaseSignInCollection: 'Inicia sesión para gestionar tu colección de juegos',
   addedToCollection: 'agregado a tu colección!',
@@ -332,4 +345,26 @@ export default {
   navigation: 'Navegación',
   actions: 'Acciones',
   formFields: 'Campos del Formulario',
+
+  // Index page and drawer specific text
+  whatWeOffer: 'Lo Que Ofrecemos',
+  discoverGames: 'Descubre Juegos',
+  discoverGamesDesc: 'Navega por nuestra colección de juegos de mesa con información detallada.',
+  joinEvents: 'Únete a Eventos',
+  joinEventsDesc: 'Encuentra y confirma asistencia a sesiones de juego en tu área.',
+  connectPlayers: 'Conecta Jugadores',
+  connectPlayersDesc: 'Conoce a otros entusiastas de juegos de mesa y forma grupos de juego.',
+  trackSessions: 'Seguimiento de Sesiones',
+  trackSessionsDesc: 'Mantén registro de tu historial de juego y eventos próximos.',
+  browseGamesStepDesc: 'Explora nuestra colección de juegos de mesa y encuentra tus favoritos.',
+  joinEventsStep: 'Únete a Eventos',
+  joinEventsStepDesc: 'Confirma asistencia a sesiones próximas o crea las tuyas propias.',
+  playGames: 'Jugar Juegos',
+  playGamesDesc: '¡Reúnete con otros jugadores y disfruta tu experiencia de juegos de mesa!',
+  readyToFindGame: '¿Listo para Encontrar tu Próximo Juego?',
+  joinCommunityToday: '¡Únete a nuestra comunidad de jugadores de mesa hoy!',
+  gamesAvailable: 'Juegos Disponibles',
+  eventsOrganized: 'Eventos Organizados',
+  activePlayers: 'Jugadores Activos',
+  lookingForGroup: 'Buscando Grupo',
 };

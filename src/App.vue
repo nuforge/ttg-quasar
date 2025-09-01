@@ -2,11 +2,16 @@
 import { onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
+import { useLanguage } from 'src/composables/useLanguage';
 
 const $q = useQuasar();
+const { initializeLanguage } = useLanguage();
 
 // Initialize Firebase stores and theme on app startup
 onMounted(async () => {
+  // Initialize language detection and user preferences
+  await initializeLanguage();
+
   // Initialize theme from localStorage
   const savedTheme = localStorage.getItem('themeMode');
   if (savedTheme && ['auto', 'light', 'dark'].includes(savedTheme)) {

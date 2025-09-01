@@ -169,6 +169,24 @@ export const useUserPreferencesStore = defineStore('userPreferences', () => {
     }
   };
 
+  const updateLanguagePreference = async (language: string) => {
+    if (!currentUserId.value || !preferences.value) {
+      throw new Error('User not authenticated');
+    }
+
+    try {
+      await userPreferencesService.updateLanguagePreference(currentUserId.value, language);
+
+      // Optimistic update
+      preferences.value.preferredLanguage = language;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to update language preference';
+      error.value = errorMessage;
+      throw err;
+    }
+  };
+
   const clearPreferences = () => {
     preferences.value = null;
     error.value = null;
@@ -209,6 +227,7 @@ export const useUserPreferencesStore = defineStore('userPreferences', () => {
     toggleBookmark,
     toggleEventNotifications,
     updateGlobalSettings,
+    updateLanguagePreference,
     clearPreferences,
   };
 });

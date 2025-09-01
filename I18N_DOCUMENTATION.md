@@ -6,8 +6,11 @@ TTG Quasar implements comprehensive internationalization using Vue i18n v9, supp
 
 ## Current Language Support
 
-- **English (en-US)**: Primary language with 220+ translation keys
+- **English (en-US)**: Primary language with 260+ translation keys
 - **Spanish (en-ES)**: Complete Spanish translations matching English structure
+- **Browser Detection**: Automatic detection of user's preferred language
+- **User Preferences**: Firebase-backed personal language settings
+- **Smart Fallbacks**: Graceful handling of unsupported languages
 
 ## Architecture
 
@@ -17,22 +20,70 @@ TTG Quasar implements comprehensive internationalization using Vue i18n v9, supp
 src/i18n/
 ├── index.ts           # i18n configuration and setup
 ├── en-US/
-│   └── index.ts      # English translations (220+ keys)
+│   └── index.ts      # English translations (260+ keys)
 └── en-ES/
-    └── index.ts      # Spanish translations (220+ keys)
+    └── index.ts      # Spanish translations (260+ keys)
+
+src/composables/
+└── useLanguage.ts    # Language management composable
+
+src/models/
+└── UserPreferences.ts # User preferences with language support
+
+src/stores/
+└── user-preferences-store.ts # Language preference management
+
+src/services/
+└── user-preferences-service.ts # Firebase language persistence
 ```
 
 ### Configuration
 
-The i18n system is configured in `src/boot/i18n.ts` as a Quasar boot file:
+The i18n system is configured in `src/boot/i18n.ts` as a Quasar boot file with automatic language detection:
 
 ```typescript
 import { createI18n } from 'vue-i18n';
 import messages from 'src/i18n';
 
+/**
+ * Detect browser's preferred language
+ * Falls back to 'en-US' if browser language is not supported
+ */
+function detectBrowserLanguage(): MessageLanguages {
+  const browserLang = navigator.language;
+  const browserLangShort = browserLang.split('-')[0];
+
+  // Direct match with supported languages
+  if (browserLang in messages) {
+    return browserLang as MessageLanguages;
+  }
+
+  // Check for language variants (e.g., 'es-MX' -> 'en-ES')
+  if (browserLangShort === 'es') {
+    return 'en-ES';
+  }
+
+  // Default to English for unsupported languages
+  return 'en-US';
+}
+
+/**
+ * Get initial locale considering localStorage and browser preferences
+ */
+function getInitialLocale(): MessageLanguages {
+  // Check localStorage for previously saved preference
+  const savedLanguage = localStorage.getItem('ttg-preferred-language') as MessageLanguages;
+  if (savedLanguage && savedLanguage in messages) {
+    return savedLanguage;
+  }
+
+  // Fall back to browser language detection
+  return detectBrowserLanguage();
+}
+
 export default boot(({ app }) => {
   const i18n = createI18n({
-    locale: 'en-US',
+    locale: getInitialLocale(), // Smart initialization
     legacy: false,
     messages,
   });
@@ -63,6 +114,97 @@ export default boot(({ app }) => {
 - **Descriptive**: Keys describe the content or context (e.g., `confirmRSVP`, `toggleFavorite`)
 - **Hierarchical**: Grouped by feature area for easy organization
 - **Consistent**: Matching key structure across all language files
+
+## 🌍 Advanced Language Management
+
+### Browser Language Detection
+
+The application automatically detects and applies the user's browser language preference on first visit:
+
+```typescript
+// src/composables/useLanguage.ts
+function detectBrowserLanguage(): MessageLanguages {
+  const browserLang = navigator.language;
+  const browserLangShort = browserLang.split('-')[0];
+
+  // Direct match with supported languages
+  if (browserLang in messages) {
+    return browserLang as MessageLanguages;
+  }
+
+  // Language variants (e.g., 'es-MX' -> 'en-ES')
+  if (browserLangShort === 'es') {
+    return 'en-ES';
+  }
+
+  // Default to English for unsupported languages
+  return 'en-US';
+}
+```
+
+### User Preference Override System
+
+Authenticated users can override browser detection with personal language preferences:
+
+**Firebase Integration:**
+
+- Language preference stored in user's Firebase document
+- Real-time syncing across all user devices
+- Automatic loading on user authentication
+
+**LocalStorage Caching:**
+
+- Faster language application on subsequent visits
+- Reduces Firebase calls for better performance
+- Falls back to browser detection if no saved preference
+
+### Language Management Flow
+
+1. **App Initialization** (`src/App.vue`):
+
+   ```typescript
+   import { useLanguage } from 'src/composables/useLanguage';
+
+   onMounted(async () => {
+     await initializeLanguage(); // Detects and applies language
+   });
+   ```
+
+2. **Authentication Integration**:
+   - Watches for user login/logout
+   - Loads user preference from Firebase
+   - Updates language if different from current
+
+3. **Settings Page Integration**:
+   - Beautiful language selector with flag icons 🇺🇸 🇪🇸
+   - Real-time language switching
+   - Firebase preference persistence
+
+### Language Selector UI
+
+```vue
+<!-- Settings page language selector -->
+<q-select
+  v-model="selectedLanguage"
+  :options="languageOptions"
+  @update:model-value="updateLanguage"
+  dense
+  outlined
+  emit-value
+  map-options
+>
+  <template v-slot:option="scope">
+    <q-item v-bind="scope.itemProps">
+      <q-item-section avatar>
+        <span class="text-h6">{{ scope.opt.flag }}</span>
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>{{ scope.opt.label }}</q-item-label>
+      </q-item-section>
+    </q-item>
+  </template>
+</q-select>
+```
 
 ## Usage Patterns
 
@@ -190,24 +332,45 @@ const { t } = useI18n();
 
 Users can switch languages through:
 
-- Language selector in header menu
-- Settings page language dropdown
-- URL-based locale detection (future enhancement)
+- **Settings Page**: Elegant language selector with flag icons 🇺🇸 🇪🇸
+- **Automatic Detection**: Browser language detected on first visit
+- **User Preferences**: Personal language saved to Firebase account
+- **Real-time Updates**: Instant language switching without page refresh
 
-### Implementation
+### Implementation with User Preferences
 
 ```vue
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
+import { useLanguage } from 'src/composables/useLanguage';
 
-const { locale } = useI18n();
+const { setLanguage } = useLanguage();
 
-const switchLanguage = (newLocale: string) => {
-  locale.value = newLocale;
-  // Saves preference to localStorage automatically
+const updateLanguage = async (newLanguage: string) => {
+  try {
+    await setLanguage(newLanguage as 'en-US' | 'en-ES');
+    // Language updates immediately
+    // Saves to Firebase if user is authenticated
+    // Updates localStorage for performance
+    $q.notify({
+      type: 'positive',
+      message: t('notifications.languageUpdated'),
+    });
+  } catch {
+    $q.notify({
+      type: 'negative',
+      message: t('notifications.failedToUpdateLanguage'),
+    });
+  }
 };
 </script>
 ```
+
+### Language Detection Priority
+
+1. **User Preference** (if authenticated): Loads from Firebase user document
+2. **LocalStorage Cache**: Previously saved language preference
+3. **Browser Detection**: `navigator.language` automatic detection
+4. **Default Fallback**: English (en-US) for unsupported languages
 
 ## Testing i18n
 
@@ -248,7 +411,7 @@ expect(wrapper.text()).toContain('Confirm');
 To add more languages:
 
 1. Create new language file (e.g., `src/i18n/fr-FR/index.ts`)
-2. Add all 220+ translation keys
+2. Add all 260+ translation keys
 3. Update `src/i18n/index.ts` to include new language
 4. Add language option to UI selectors
 

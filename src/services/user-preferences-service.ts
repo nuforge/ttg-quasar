@@ -289,6 +289,24 @@ export class UserPreferencesService {
       throw error;
     }
   }
+
+  /**
+   * Update user's preferred language
+   */
+  async updateLanguagePreference(userId: string, language: string): Promise<void> {
+    try {
+      this.checkAuth(userId);
+      const docRef = doc(db, this.COLLECTION, userId);
+
+      await updateDoc(docRef, {
+        preferredLanguage: language,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('Error updating language preference:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance

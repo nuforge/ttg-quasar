@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import { useCalendarStore } from 'src/stores/calendar-store';
 import { authService } from 'src/services/auth-service';
 import EventCard from './events/EventCardMini.vue';
 import EventCalendar from './calendar/EventCalendar.vue';
+
+const { t } = useI18n();
 
 const rightDrawerOpen = ref(true);
 const eventsStore = useEventsFirebaseStore();
@@ -76,7 +79,7 @@ const selectedDateEvents = computed(() => {
 
         <!-- My Confirmed Events -->
         <q-expansion-item v-if="currentUserId && myConfirmedEvents.length > 0" v-model="showMyEvents"
-          icon="mdi-calendar-check" :label="`My Events (${myConfirmedEvents.length})`"
+          icon="mdi-calendar-check" :label="`${t('myEvents')} (${myConfirmedEvents.length})`"
           header-class="text-green text-weight-bold" class="q-ma-sm">
           <div class="q-pa-sm">
             <EventCard v-for="event in myConfirmedEvents" :key="event.id" :event="event" />
@@ -85,7 +88,7 @@ const selectedDateEvents = computed(() => {
 
         <!-- My Interested Events -->
         <q-expansion-item v-if="currentUserId && myInterestedEvents.length > 0" v-model="showInterestedEvents"
-          icon="mdi-heart" :label="`Interested (${myInterestedEvents.length})`"
+          icon="mdi-heart" :label="`${t('interested')} (${myInterestedEvents.length})`"
           header-class="text-orange text-weight-bold" class="q-ma-sm">
           <div class="q-pa-sm">
             <EventCard v-for="event in myInterestedEvents" :key="event.id" :event="event" />
@@ -94,7 +97,7 @@ const selectedDateEvents = computed(() => {
 
         <!-- All Upcoming Events -->
         <q-expansion-item v-model="showUpcomingEvents" icon="mdi-calendar-clock"
-          :label="`All Upcoming (${upcomingEvents.length})`" header-class="text-weight-bold" class="q-ma-sm">
+          :label="`${t('allUpcoming')} (${upcomingEvents.length})`" header-class="text-weight-bold" class="q-ma-sm">
           <div class="q-pa-sm">
             <EventCard v-for="event in upcomingEvents" :key="event.id" :event="event" />
           </div>
