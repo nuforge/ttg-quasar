@@ -125,10 +125,10 @@ onUnmounted(() => {
 video {
   width: 100%;
   max-width: 500px;
-  border: 2px solid #ccc;
+  border: 2px solid var(--q-color-separator);
   display: block;
   /* Removes extra spacing */
-  background: black;
+  background: var(--q-color-surface);
   /* Shows video area even when empty */
 }
 </style>

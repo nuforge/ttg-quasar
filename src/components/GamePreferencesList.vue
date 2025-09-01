@@ -125,6 +125,6 @@ const getActionLabel = () => {
 }
 
 .q-item:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: var(--q-color-surface-variant);
 }
 </style>

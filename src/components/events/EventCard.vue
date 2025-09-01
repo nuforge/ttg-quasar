@@ -123,8 +123,8 @@ const selectEventDate = () => {
 </script>
 
 <template>
-  <q-card :class="`${isUserConfirmed ? 'border-l-4 border-green' : isUserInterested ? 'border-l-4 border-orange' : ''}`"
-    dark>
+  <q-card
+    :class="`${isUserConfirmed ? 'border-l-4 border-green' : isUserInterested ? 'border-l-4 border-orange' : ''}`">
     <q-card-section class="q-pb-xs">
       <div class="row items-center justify-between">
 
@@ -165,7 +165,7 @@ const selectEventDate = () => {
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ event.getConfirmedCount() }} / {{ event.maxPlayers }} {{ $t('player', 2)
-              }}</q-item-label>
+                }}</q-item-label>
               <q-item-label v-if="event.getInterestedCount() > 0" caption class="text-orange">
                 +{{ event.getInterestedCount() }} interested
               </q-item-label>
@@ -222,10 +222,10 @@ const selectEventDate = () => {
 }
 
 .border-green {
-  border-left-color: #4caf50 !important;
+  border-left-color: var(--q-color-positive) !important;
 }
 
 .border-orange {
-  border-left-color: #ff9800 !important;
+  border-left-color: var(--q-color-warning) !important;
 }
 </style>

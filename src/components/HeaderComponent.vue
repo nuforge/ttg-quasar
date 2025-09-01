@@ -57,7 +57,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <q-header class="bg-dark-page">
+  <q-header class="header-theme-responsive">
     <q-toolbar>
       <q-btn flat dense round icon="menu" aria-label="Menu" @click="emit('toggleLeftDrawer')" />
 
@@ -157,3 +157,9 @@ onMounted(async () => {
     </q-toolbar>
   </q-header>
 </template>
+<style scoped>
+.header-theme-responsive {
+  background-color: var(--q-color-background);
+  color: var(--q-color-on-background);
+}
+</style>

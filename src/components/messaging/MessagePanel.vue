@@ -29,7 +29,7 @@ defineProps({
 
 <template>
   <q-card v-if="title">
-    <q-card-section class="bg-primary text-white">
+    <q-card-section class="message-panel-header">
       <div class="text-h6">{{ title }}</div>
     </q-card-section>
     <q-card-section class="q-pa-none">
@@ -41,3 +41,10 @@ defineProps({
     Select a conversation to view messages
   </div>
 </template>
+
+<style scoped>
+.message-panel-header {
+  background-color: var(--q-color-primary);
+  color: var(--q-color-on-primary);
+}
+</style>

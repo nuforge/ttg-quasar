@@ -27,20 +27,20 @@ const rsvpStatus = computed(() => {
 
 const statusConfig = computed(() => {
     if (!rsvpStatus.value) {
-        return { color: 'grey', icon: 'mdi-help', label: 'No RSVP' };
+        return { color: 'grey-6', icon: 'mdi-help', label: 'No RSVP' };
     }
 
     switch (rsvpStatus.value.status) {
         case 'confirmed':
-            return { color: 'green', icon: 'mdi-check-circle', label: 'Confirmed' };
+            return { color: 'positive', icon: 'mdi-check-circle', label: 'Confirmed' };
         case 'interested':
-            return { color: 'orange', icon: 'mdi-heart', label: 'Interested' };
+            return { color: 'warning', icon: 'mdi-heart', label: 'Interested' };
         case 'waiting':
-            return { color: 'blue', icon: 'mdi-clock-outline', label: 'Waiting' };
+            return { color: 'info', icon: 'mdi-clock-outline', label: 'Waiting' };
         case 'cancelled':
-            return { color: 'red', icon: 'mdi-close-circle', label: 'Cancelled' };
+            return { color: 'negative', icon: 'mdi-close-circle', label: 'Cancelled' };
         default:
-            return { color: 'grey', icon: 'mdi-help', label: 'Unknown' };
+            return { color: 'grey-6', icon: 'mdi-help', label: 'Unknown' };
     }
 });
 </script>

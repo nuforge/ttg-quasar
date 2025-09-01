@@ -155,6 +155,8 @@ const statusColor = computed(() => {
 .event-card {
   border-radius: 8px;
   transition: all 0.2s ease;
+  background-color: var(--q-color-surface);
+  color: var(--q-color-on-surface);
 }
 
 .event-card:hover {

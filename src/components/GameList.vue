@@ -406,7 +406,7 @@ watch(user, (newUser) => {
 
 <style scoped>
 .list-header {
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--q-color-separator);
     padding-bottom: 16px;
 }
 
@@ -425,11 +425,11 @@ watch(user, (newUser) => {
 
 .game-title-link {
     text-decoration: none;
-    color: inherit;
+    color: var(--q-color-on-surface);
 }
 
 .game-title-link:hover {
-    color: var(--q-primary);
+    color: var(--q-color-primary);
 }
 
 .meta-row {
@@ -444,8 +444,8 @@ watch(user, (newUser) => {
 }
 
 .age-badge {
-    background: var(--q-secondary);
-    color: white;
+    background: var(--q-color-secondary);
+    color: var(--q-color-on-secondary);
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 0.75rem;

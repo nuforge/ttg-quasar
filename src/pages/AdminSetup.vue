@@ -146,7 +146,7 @@ const setupAdmin = async () => {
       caption: `Welcome, ${adminUser.name}`,
       timeout: 5000,
       actions: [
-        { label: 'Dismiss', color: 'white' }
+        { label: 'Dismiss', color: 'dark' }
       ]
     });
 
@@ -177,7 +177,7 @@ const setupAdmin = async () => {
       caption: errorMessage,
       timeout: 10000,
       actions: [
-        { label: 'Dismiss', color: 'white' }
+        { label: 'Dismiss', color: 'dark' }
       ]
     });
   } finally {

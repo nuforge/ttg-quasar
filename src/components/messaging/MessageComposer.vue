@@ -77,6 +77,6 @@ const sendMessage = async () => {
 
 <style scoped>
 .message-composer {
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--q-color-separator);
 }
 </style>

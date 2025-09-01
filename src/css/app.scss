@@ -12,7 +12,7 @@
 
 // Global override to make all q-card components flat by default
 .q-card {
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  box-shadow: 2px 2px 4px var(--q-dark);
 }
 
 a {

@@ -59,7 +59,7 @@ const selectedDateEvents = computed(() => {
 </script>
 
 <template>
-  <q-drawer v-model="rightDrawerOpen" side="right" persistent show-if-above dark class="ng-page-dark">
+  <q-drawer v-model="rightDrawerOpen" side="right" persistent show-if-above class="drawer-theme-responsive">
     <!-- drawer content -->
     <div class="drawer-content-container">
       <EventCalendar flat />
@@ -94,7 +94,7 @@ const selectedDateEvents = computed(() => {
 
         <!-- All Upcoming Events -->
         <q-expansion-item v-model="showUpcomingEvents" icon="mdi-calendar-clock"
-          :label="`All Upcoming (${upcomingEvents.length})`" header-class="text-white text-weight-bold" class="q-ma-sm">
+          :label="`All Upcoming (${upcomingEvents.length})`" header-class="text-weight-bold" class="q-ma-sm">
           <div class="q-pa-sm">
             <EventCard v-for="event in upcomingEvents" :key="event.id" :event="event" />
           </div>
@@ -105,11 +105,17 @@ const selectedDateEvents = computed(() => {
 </template>
 
 <style scoped>
+.drawer-theme-responsive {
+  background-color: var(--q-color-surface);
+  color: var(--q-color-on-surface);
+}
+
 .drawer-content-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--q-dark-page);
+  background-color: var(--q-color-surface);
+  color: var(--q-color-on-surface);
 }
 
 .q-expansion-item {

@@ -77,12 +77,12 @@ const formattedTime = computed(() => {
 }
 
 .sent {
-  background-color: #dcf8c6;
-  color: #000;
+  background-color: var(--q-color-primary);
+  color: var(--q-color-on-primary);
 }
 
 .received {
-  background-color: #f1f0f0;
-  color: #000;
+  background-color: var(--q-color-surface-variant);
+  color: var(--q-color-on-surface);
 }
 </style>
