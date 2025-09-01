@@ -256,34 +256,15 @@ onMounted(() => {
 
 <template>
   <q-card class="game-card q-px-sm" dark>
-    <q-card-section class="q-pa-sm justify-between row ">
-      <router-link :to="createGameUrl(game.id, game.title)"
-        class="game-card-title text-h5 text-uppercase no-underline ">
+    <q-card-section class="q-pa-sm justify-between row">
+      <router-link :to="createGameUrl(game.id, game.title)" class="game-card-title text-h5 text-uppercase no-underline">
         {{ game.title }}
       </router-link>
-      <div>
-        <q-btn :icon="`mdi-calendar-clock${reserved ? '' : '-outline'}`" @click="handleToggleReserved()"
-          :color="reserved ? 'primary' : 'grey-9'" round flat :loading="loading">
-          <q-tooltip class="bg-primary text-black">
-            {{ reserved ? 'Event notifications enabled' : 'Get notified about events' }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn :icon="`mdi-bookmark${bookmark ? '' : '-outline'}`" @click="handleToggleBookmark()"
-          :color="bookmark ? 'accent' : 'grey-9'" round flat :loading="loading">
-          <q-tooltip class="bg-accent text-black">
-            {{ bookmark ? 'Remove from bookmarks' : 'Add to bookmarks' }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn :icon="`mdi-star${favorite ? '' : '-outline'}`" @click="handleToggleFavorite()"
-          :color="favorite ? 'secondary' : 'grey-9'" round flat :loading="loading">
-          <q-tooltip class="bg-secondary text-black">
-            {{ favorite ? 'Remove from favorites' : 'Add to favorites' }}
-          </q-tooltip>
-        </q-btn>
-        <q-btn :icon="`mdi-package${ownsGame ? '' : '-variant'}`" @click="handleToggleOwnership()"
-          :color="ownsGame ? 'positive' : 'grey-9'" round flat :loading="ownershipLoading">
+      <div v-if="ownsGame">
+        <q-btn :icon="`mdi-briefcase${canBringGame ? '' : '-outline'}`" @click="handleToggleCanBring()"
+          :color="canBringGame ? 'positive' : 'grey-9'" round dense size="sm" flat :loading="ownershipLoading">
           <q-tooltip class="bg-positive text-black">
-            {{ ownsGame ? 'Remove from collection' : 'Add to collection' }}
+            {{ canBringGame ? 'Can bring to events' : 'Cannot bring to events' }}
           </q-tooltip>
         </q-btn>
       </div>
@@ -324,18 +305,36 @@ onMounted(() => {
 
     <q-card-actions class="justify-between">
       <div>
+        <q-btn :icon="`mdi-bookmark${bookmark ? '' : '-outline'}`" @click="handleToggleBookmark()"
+          :color="bookmark ? 'accent' : 'grey-9'" round flat :loading="loading">
+          <q-tooltip class="bg-accent text-black">
+            {{ bookmark ? 'Remove from bookmarks' : 'Add to bookmarks' }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn :icon="`mdi-star${favorite ? '' : '-outline'}`" @click="handleToggleFavorite()"
+          :color="favorite ? 'secondary' : 'grey-9'" round flat :loading="loading">
+          <q-tooltip class="bg-secondary text-black">
+            {{ favorite ? 'Remove from favorites' : 'Add to favorites' }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn :icon="`mdi-package${ownsGame ? '' : '-variant'}`" @click="handleToggleOwnership()"
+          :color="ownsGame ? 'positive' : 'grey-9'" round flat :loading="ownershipLoading">
+          <q-tooltip class="bg-positive text-black">
+            {{ ownsGame ? 'Remove from collection' : 'Add to collection' }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn :icon="`mdi-calendar-clock${reserved ? '' : '-outline'}`" @click="handleToggleReserved()"
+          :color="reserved ? 'primary' : 'grey-9'" round flat :loading="loading">
+          <q-tooltip class="bg-primary text-black">
+            {{ reserved ? 'Event notifications enabled' : 'Get notified about events' }}
+          </q-tooltip>
+        </q-btn>
+      </div>
+      <div>
         <q-btn icon="mdi-qrcode" @click="toggleQR()" size="md" color="grey-9" flat />
         <q-btn icon="mdi-share" @click="nativeShare(game)" size="md" color="grey-9" flat />
         <q-btn v-if="game.link" icon="mdi-open-in-new" :href="game.link" target="_blank" size="md" color="grey-9"
           flat />
-      </div>
-      <div v-if="ownsGame">
-        <q-btn :icon="`mdi-briefcase${canBringGame ? '' : '-outline'}`" @click="handleToggleCanBring()"
-          :color="canBringGame ? 'positive' : 'grey-9'" size="md" flat :loading="ownershipLoading">
-          <q-tooltip class="bg-positive text-black">
-            {{ canBringGame ? 'Can bring to events' : 'Cannot bring to events' }}
-          </q-tooltip>
-        </q-btn>
       </div>
     </q-card-actions>
 
