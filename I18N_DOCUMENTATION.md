@@ -1,4 +1,4 @@
-# Internationalization (i18n) Documentation
+# Intern- **English (en-US)**: Primary language with 365+ translation keystionalization (i18n) Documentation
 
 ## Overview
 
@@ -21,9 +21,9 @@ TTG Quasar implements comprehensive internationalization using Vue i18n v9, supp
 src/i18n/
 ├── index.ts           # i18n configuration and setup
 ├── en-US/
-│   └── index.ts      # English translations (350+ keys)
+│   └── index.ts      # English translations (365+ keys)
 └── en-ES/
-    └── index.ts      # Spanish translations (350+ keys)
+    └── index.ts      # Spanish translations (365+ keys)
 
 src/composables/
 └── useLanguage.ts    # Language management composable
@@ -618,7 +618,7 @@ expect(wrapper.text()).toContain('Confirm');
 To add more languages:
 
 1. Create new language file (e.g., `src/i18n/fr-FR/index.ts`)
-2. Add all 350+ translation keys
+2. Add all 365+ translation keys
 3. Update `src/i18n/index.ts` to include new language
 4. Add language option to UI selectors
 

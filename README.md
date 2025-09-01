@@ -253,7 +253,7 @@ src/
 
 The application features comprehensive internationalization with support for **English** and **Spanish**:
 
-- **350+ Translation Keys**: Complete coverage of all user-facing text including recent GamesPage and AccountPage additions
+- **365+ Translation Keys**: Complete coverage of all user-facing text including recent GamesPage and AccountPage additions
 - **Smart Language Detection**: Automatically detects browser language preference with localStorage priority
 - **User Preference Override**: Logged-in users can set personal language preference stored in Firebase
 - **Real-time Switching**: Instant language changes without page refresh
@@ -331,7 +331,7 @@ $q.notify({
 src/i18n/
 ├── index.ts          # i18n configuration
 ├── en-US/           # English translations
-│   └── index.ts     # 350+ translation keys
+│   └── index.ts     # 365+ translation keys
 └── en-ES/           # Spanish translations
     └── index.ts     # Complete Spanish translations
 ```
@@ -459,7 +459,7 @@ export default {
   // Pluralization
   playersCount: '{count} player | {count} players',
 
-  // ... 350+ more keys
+  // ... 365+ more keys
 };
 ```
 

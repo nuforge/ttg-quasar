@@ -402,12 +402,20 @@ const getRoleColor = (role: string): string => {
   }
 };
 
-const formatDate = (date: Date): string => {
+const formatDate = (date: Date | null | undefined): string => {
+  if (!date) return 'N/A';
+
+  const dateObj = date instanceof Date ? date : new Date(date);
+
+  if (isNaN(dateObj.getTime())) {
+    return 'Invalid Date';
+  }
+
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
-  }).format(date);
+  }).format(dateObj);
 };
 
 const refreshUsers = async () => {
