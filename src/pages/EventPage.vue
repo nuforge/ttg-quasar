@@ -50,7 +50,7 @@ const interestedPlayers = computed<Player[]>(() => {
   if (!eventId.value) return [];
 
   // Get fresh event data from store to ensure reactivity to interest changes
-  const freshEvent = eventsStore.events.find(e => e.id === parseInt(eventId.value || '0', 10));
+  const freshEvent = eventsStore.events.find(e => e.firebaseDocId === eventId.value);
   if (!freshEvent) return [];
 
   const interestedRSVPs = freshEvent.getRSVPsByStatus('interested');
@@ -63,8 +63,15 @@ const confirmedCount = computed(() => {
   if (!eventId.value) return 0;
 
   // Get fresh event data from store to ensure reactivity to RSVP changes
-  const freshEvent = eventsStore.events.find(e => e.id === parseInt(eventId.value || '0', 10));
-  return freshEvent ? freshEvent.getConfirmedCount() : 0;
+  const freshEvent = eventsStore.events.find(e => e.firebaseDocId === eventId.value);
+  if (!freshEvent) return 0;
+
+  // DEBUG: Log the RSVP data to see what's happening
+  console.log('Event RSVPs for debug:', freshEvent.title, freshEvent.rsvps);
+  const count = freshEvent.getConfirmedCount();
+  console.log('Confirmed count:', count);
+
+  return count;
 });
 
 // Get reactive interested count
@@ -72,7 +79,7 @@ const interestedCount = computed(() => {
   if (!eventId.value) return 0;
 
   // Get fresh event data from store to ensure reactivity to interest changes
-  const freshEvent = eventsStore.events.find(e => e.id === parseInt(eventId.value || '0', 10));
+  const freshEvent = eventsStore.events.find(e => e.firebaseDocId === eventId.value);
   return freshEvent ? freshEvent.getInterestedCount() : 0;
 });
 

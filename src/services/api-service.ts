@@ -7,9 +7,7 @@
  */
 
 import type { Game } from 'src/models/Game';
-import type { GameSubmission } from 'src/models/GameSubmission';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
-import { useGameSubmissionsStore } from 'src/stores/game-submissions-store';
 
 export interface GameSearchParams {
   query?: string;
@@ -43,7 +41,6 @@ export interface GameSubmissionData {
  */
 class GamesApiService {
   private firebaseStore = useGamesFirebaseStore();
-  private submissionsStore = useGameSubmissionsStore();
 
   /**
    * Get all games with optional filtering and pagination
@@ -131,29 +128,29 @@ class GamesApiService {
    * Submit a new game for approval
    */
   async submitGame(gameData: GameSubmissionData): Promise<void> {
-    await this.submissionsStore.submitGame(gameData);
+    await this.firebaseStore.submitGame(gameData);
   }
 
   /**
-   * Get all game submissions (admin only)
+   * Get all pending game submissions (admin only)
    */
-  async getGameSubmissions(): Promise<GameSubmission[]> {
-    await this.submissionsStore.loadSubmissions();
-    return this.submissionsStore.submissions;
+  async getGameSubmissions(): Promise<Game[]> {
+    await this.firebaseStore.loadGames();
+    return this.firebaseStore.pendingGames;
   }
 
   /**
    * Approve a game submission
    */
-  async approveGameSubmission(submissionId: string, reviewNotes?: string): Promise<void> {
-    await this.submissionsStore.approveSubmission(submissionId, reviewNotes);
+  async approveGameSubmission(gameId: string): Promise<void> {
+    await this.firebaseStore.approveGame(gameId);
   }
 
   /**
    * Reject a game submission
    */
-  async rejectGameSubmission(submissionId: string, reason: string): Promise<void> {
-    await this.submissionsStore.rejectSubmission(submissionId, reason);
+  async rejectGameSubmission(gameId: string): Promise<void> {
+    await this.firebaseStore.rejectGame(gameId);
   }
 
   /**
@@ -210,17 +207,10 @@ class GamesApiService {
   }
 
   /**
-   * Subscribe to real-time game updates
+   * Subscribe to real-time game updates (including pending submissions)
    */
   subscribeToGames(): () => void {
     return this.firebaseStore.subscribeToGames();
-  }
-
-  /**
-   * Subscribe to real-time submission updates
-   */
-  subscribeToSubmissions(): () => void {
-    return this.submissionsStore.subscribeToSubmissions();
   }
 }
 

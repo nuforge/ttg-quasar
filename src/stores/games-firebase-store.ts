@@ -17,6 +17,7 @@ import {
 import { db } from 'src/boot/firebase';
 import { Game, type FirebaseGame } from 'src/models/Game';
 import { type Event } from 'src/models/Event';
+import { type GameSubmissionData } from 'src/models/GameSubmission';
 import { authService } from 'src/services/auth-service';
 import { FeaturedGamesService } from 'src/services/featured-games-service';
 
@@ -30,6 +31,10 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
   // Getters
   const approvedGames = computed(() => {
     return games.value.filter((game) => game.approved && game.status === 'active');
+  });
+
+  const pendingGames = computed(() => {
+    return games.value.filter((game) => !game.approved && game.status === 'pending');
   });
 
   const gamesByGenre = computed(() => {
@@ -121,6 +126,40 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
   };
 
   // Actions
+  const submitGame = async (gameData: GameSubmissionData) => {
+    if (!authService.isAuthenticated.value || !authService.currentUserId.value) {
+      throw new Error('Must be authenticated to submit games');
+    }
+
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const authUser = authService.currentUser.value;
+      if (!authUser) {
+        throw new Error('User authentication data not found');
+      }
+
+      const newGameData: FirebaseGame = {
+        legacyId: Date.now(), // Generate a legacy ID
+        ...gameData,
+        createdAt: serverTimestamp() as unknown as Timestamp,
+        updatedAt: serverTimestamp() as unknown as Timestamp,
+        createdBy: authService.currentUserId.value,
+        approved: false, // Submissions need approval
+        status: 'pending', // Pending approval
+      } as FirebaseGame;
+
+      await addDoc(collection(db, 'games'), newGameData);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      error.value = `Failed to submit game: ${errorMessage}`;
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const createGame = async (gameData: Partial<FirebaseGame>) => {
     if (!authService.isAuthenticated.value || !authService.currentUserId.value) {
       throw new Error('Must be authenticated to create games');
@@ -320,6 +359,7 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
 
     // Getters
     approvedGames,
+    pendingGames,
     featuredGames,
     gamesByGenre,
     getGameById,
@@ -327,6 +367,7 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     searchGames,
 
     // Actions
+    submitGame,
     createGame,
     updateGame,
     deleteGame,

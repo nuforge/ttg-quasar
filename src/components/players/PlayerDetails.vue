@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Event } from 'src/models/Event';
+import { createEventUrl } from 'src/utils/slug';
 import PlayerAvatar from 'src/components/PlayerAvatar.vue';
 
 interface PlayerLike {
@@ -59,7 +60,8 @@ defineProps({
     <q-card-section>
       <div class="text-subtitle2">{{ $t('event', 2) }}</div>
       <q-list dense>
-        <q-item v-for="event in playerEvents" :key="event.id" clickable :to="`/events/${event.id}`">
+        <q-item v-for="event in playerEvents" :key="event.id" clickable
+          :to="event.firebaseDocId ? createEventUrl(event.firebaseDocId, event.title) : `/events/${event.id}`">
           <q-item-section>
             <q-item-label>{{ event.title }}</q-item-label>
             <q-item-label caption>{{ event.getFormattedDate() }}</q-item-label>

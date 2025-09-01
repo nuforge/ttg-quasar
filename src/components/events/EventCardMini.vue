@@ -46,7 +46,7 @@ const formattedDate = computed(() => {
 
 // Add playerStatus computed property
 const playerStatus = computed(() => {
-  const currentPlayers = props.event.currentPlayers;
+  const currentPlayers = props.event.getConfirmedCount();
   const maxPlayers = props.event.maxPlayers;
 
   // Simple check based on event capacity, not game requirements
@@ -127,7 +127,7 @@ const statusColor = computed(() => {
             <q-icon name="mdi-dice-multiple" size="xs" />
             <router-link :to="createGameUrl(game.id, game.title)" class="text-grey-6 no-underline" @click.stop>{{
               game.title
-              }}</router-link>
+            }}</router-link>
           </div>
         </div>
 

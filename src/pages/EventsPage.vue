@@ -80,7 +80,7 @@ const sortedEvents = computed(() => {
     } else if (sortBy.value === 'title') {
       comparison = a.title.localeCompare(b.title);
     } else if (sortBy.value === 'players') {
-      comparison = a.currentPlayers - b.currentPlayers;
+      comparison = a.getConfirmedCount() - b.getConfirmedCount();
     }
 
     return sortDirection.value === 'asc' ? comparison : -comparison;

@@ -2,60 +2,19 @@
   <q-page padding class="admin-games">
     <div class="page-header q-mb-md">
       <div class="text-h4">Game Administration</div>
-      <div class="text-body1 text-grey-6">Manage game submissions and data migration</div>
+      <div class="text-body1 text-grey-6">Manage game submissions and approvals</div>
     </div>
 
     <div class="row q-gutter-lg">
-      <!-- Migration Panel -->
-      <div class="col-12 col-md-6">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">
-              <q-icon name="mdi-database-sync" class="q-mr-sm" />
-              Data Migration
-            </div>
-            <div class="text-body2 text-grey-6 q-mt-sm">
-              Migrate games from JSON files to Firebase
-            </div>
-          </q-card-section>
-
-          <q-card-section class="q-pt-none">
-            <div class="q-gutter-sm">
-              <q-btn color="primary" icon="mdi-check-circle" label="Check Migration Status"
-                @click="checkMigrationStatus" :loading="migrationLoading" />
-
-              <q-btn color="positive" icon="mdi-upload" label="Run Migration" @click="confirmMigration"
-                :loading="migrationLoading" :disable="migrationComplete" />
-
-              <q-btn v-if="migrationComplete" color="negative" icon="mdi-delete" label="Rollback Migration"
-                @click="confirmRollback" :loading="migrationLoading" outline />
-            </div>
-
-            <div v-if="migrationStatus" class="q-mt-md">
-              <q-chip :color="migrationComplete ? 'positive' : 'warning'"
-                :icon="migrationComplete ? 'mdi-check' : 'mdi-clock'" text-color="white"
-                :label="migrationComplete ? 'Migration Complete' : 'Migration Pending'" />
-
-              <div v-if="migrationResult" class="q-mt-sm text-caption">
-                Total: {{ migrationResult.total }},
-                Successful: {{ migrationResult.successful }},
-                Failed: {{ migrationResult.total - migrationResult.successful }}
-              </div>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-
       <!-- Game Submissions Panel -->
-      <div class="col-12 col-md-6">
+      <div class="col-12">
         <q-card>
           <q-card-section>
             <div class="text-h6">
               <q-icon name="mdi-inbox" class="q-mr-sm" />
               Game Submissions
-              <q-chip v-if="gameSubmissionsStore.pendingSubmissions.length > 0"
-                :label="gameSubmissionsStore.pendingSubmissions.length" color="orange" text-color="white" size="sm"
-                class="q-ml-sm" />
+              <q-chip v-if="gamesStore.pendingGames.length > 0" :label="gamesStore.pendingGames.length" color="orange"
+                text-color="white" size="sm" class="q-ml-sm" />
             </div>
             <div class="text-body2 text-grey-6 q-mt-sm">
               Review and approve submitted games
@@ -64,9 +23,9 @@
 
           <q-card-section class="q-pt-none">
             <q-btn color="primary" icon="mdi-refresh" label="Refresh Submissions" @click="loadSubmissions"
-              :loading="gameSubmissionsStore.loading" />
+              :loading="gamesStore.loading" />
 
-            <div v-if="gameSubmissionsStore.pendingSubmissions.length === 0" class="q-mt-md text-center text-grey-6">
+            <div v-if="gamesStore.pendingGames.length === 0" class="q-mt-md text-center text-grey-6">
               <q-icon name="mdi-inbox-outline" size="2em" />
               <div class="q-mt-sm">No pending submissions</div>
             </div>
@@ -76,40 +35,47 @@
     </div>
 
     <!-- Pending Submissions List -->
-    <div v-if="gameSubmissionsStore.pendingSubmissions.length > 0" class="q-mt-lg">
+    <div v-if="gamesStore.pendingGames.length > 0" class="q-mt-lg">
       <q-card>
         <q-card-section>
           <div class="text-h6">Pending Game Submissions</div>
         </q-card-section>
 
         <q-list separator>
-          <q-item v-for="submission in gameSubmissionsStore.pendingSubmissions" :key="submission.id">
+          <q-item v-for="game in gamesStore.pendingGames" :key="game.id">
             <q-item-section>
-              <q-item-label class="text-weight-bold">{{ submission.title }}</q-item-label>
+              <q-item-label class="text-weight-bold">{{ game.title }}</q-item-label>
               <q-item-label caption>
-                Genre: {{ submission.genre }} |
-                Players: {{ submission.numberOfPlayers }} |
-                Age: {{ submission.recommendedAge }}
+                <strong>Genre:</strong> {{ game.genre }} |
+                <strong>Players:</strong> {{ game.numberOfPlayers }} |
+                <strong>Age:</strong> {{ game.recommendedAge }}
               </q-item-label>
               <q-item-label caption class="q-mt-xs">
-                {{ submission.description }}
+                <strong>Description:</strong> {{ game.description }}
               </q-item-label>
               <q-item-label caption class="q-mt-xs text-grey-6">
-                Submitted by {{ submission.submittedBy.userName }} on
-                {{ submission.submittedAt.toLocaleDateString() }}
+                <q-icon name="mdi-account" size="xs" class="q-mr-xs" />
+                <strong>Submitted by:</strong> {{ game.createdBy || 'Unknown' }}
+              </q-item-label>
+              <q-item-label caption class="text-grey-6">
+                <q-icon name="mdi-calendar" size="xs" class="q-mr-xs" />
+                <strong>Submitted on:</strong> {{ game.createdAt?.toLocaleDateString() || 'Unknown date' }}
               </q-item-label>
             </q-item-section>
 
             <q-item-section side>
-              <div class="q-gutter-xs">
-                <q-btn color="positive" icon="mdi-check" size="sm" round @click="approveSubmission(submission.id)"
-                  :loading="gameSubmissionsStore.loading">
-                  <q-tooltip>Approve</q-tooltip>
-                </q-btn>
-                <q-btn color="negative" icon="mdi-close" size="sm" round @click="rejectSubmission(submission.id)"
-                  :loading="gameSubmissionsStore.loading">
-                  <q-tooltip>Reject</q-tooltip>
-                </q-btn>
+              <div class="column q-gutter-xs">
+                <q-chip color="orange" label="Pending Review" text-color="white" size="sm" />
+                <div class="row q-gutter-xs">
+                  <q-btn color="positive" icon="mdi-check" size="sm" round @click="approveSubmission(game.id)"
+                    :loading="gamesStore.loading">
+                    <q-tooltip>Approve Submission</q-tooltip>
+                  </q-btn>
+                  <q-btn color="negative" icon="mdi-close" size="sm" round @click="rejectSubmission(game.id)"
+                    :loading="gamesStore.loading">
+                    <q-tooltip>Reject Submission</q-tooltip>
+                  </q-btn>
+                </div>
               </div>
             </q-item-section>
           </q-item>
@@ -123,8 +89,7 @@
         <q-card-section>
           <div class="text-h6">
             Current Games
-            <q-chip :label="gamesStore.approvedGames.length" color="primary" text-color="white" size="sm"
-              class="q-ml-sm" />
+            <q-chip :label="gamesStore.games.length" color="primary" text-color="white" size="sm" class="q-ml-sm" />
           </div>
         </q-card-section>
 
@@ -138,21 +103,47 @@
           <div class="q-mt-sm text-negative">{{ gamesStore.error }}</div>
         </q-card-section>
 
-        <q-list v-else-if="gamesStore.approvedGames.length > 0" separator>
-          <q-item v-for="game in gamesStore.approvedGames.slice(0, 10)" :key="game.id">
+        <q-list v-else-if="gamesStore.games.length > 0" separator>
+          <q-item v-for="game in gamesStore.games" :key="game.id">
             <q-item-section>
               <q-item-label class="text-weight-bold">{{ game.title }}</q-item-label>
-              <q-item-label caption>{{ game.genre }} | {{ game.numberOfPlayers }} players</q-item-label>
+              <q-item-label caption>
+                <strong>Genre:</strong> {{ game.genre }} |
+                <strong>Players:</strong> {{ game.numberOfPlayers }} |
+                <strong>ID:</strong> {{ game.id.substring(0, 8) }}...
+              </q-item-label>
+              <q-item-label caption class="q-mt-xs text-grey-6">
+                <q-icon name="mdi-calendar-plus" size="xs" class="q-mr-xs" />
+                <strong>Added:</strong> {{ game.createdAt?.toLocaleDateString() || 'Unknown' }}
+                <span v-if="game.createdBy" class="q-ml-md">
+                  <q-icon name="mdi-account" size="xs" class="q-mr-xs" />
+                  <strong>By:</strong> {{ game.createdBy }}
+                </span>
+              </q-item-label>
             </q-item-section>
             <q-item-section side>
-              <q-chip :color="game.status === 'active' ? 'positive' : 'warning'" :label="game.status" text-color="white"
-                size="sm" />
+              <div class="row items-center q-gutter-xs">
+                <q-chip :color="game.approved ? 'positive' : (game.status === 'pending' ? 'orange' : 'warning')"
+                  :label="game.approved ? 'Approved' : game.status" text-color="white" size="sm" />
+
+                <!-- Show approve/reject buttons for unapproved games -->
+                <div v-if="!game.approved" class="q-gutter-xs">
+                  <q-btn color="positive" icon="mdi-check" size="sm" round @click="approveGameInList(game.id)"
+                    :loading="gamesStore.loading">
+                    <q-tooltip>Approve Game</q-tooltip>
+                  </q-btn>
+                  <q-btn color="negative" icon="mdi-close" size="sm" round @click="rejectGameInList(game.id)"
+                    :loading="gamesStore.loading">
+                    <q-tooltip>Reject Game</q-tooltip>
+                  </q-btn>
+                </div>
+              </div>
             </q-item-section>
           </q-item>
 
-          <q-item v-if="gamesStore.approvedGames.length > 10">
+          <q-item v-if="gamesStore.games.length > 10">
             <q-item-section class="text-center text-grey-6">
-              ... and {{ gamesStore.approvedGames.length - 10 }} more games
+              ... and {{ gamesStore.games.length - 10 }} more games
             </q-item-section>
           </q-item>
         </q-list>
@@ -167,169 +158,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
-import { useGameSubmissionsStore } from 'src/stores/game-submissions-store';
-import { gameMigrationService, type MigrationResult } from 'src/services/game-migration-service';
 import { authService } from 'src/services/auth-service';
 
 const $q = useQuasar();
 const gamesStore = useGamesFirebaseStore();
-const gameSubmissionsStore = useGameSubmissionsStore();
-
-// State
-const migrationLoading = ref(false);
-const migrationComplete = ref(false);
-const migrationStatus = ref(false);
-const migrationResult = ref<MigrationResult | null>(null);
 
 // Methods
-const checkMigrationStatus = async () => {
-  migrationLoading.value = true;
-  try {
-    const isComplete = await gameMigrationService.checkMigrationStatus();
-    migrationComplete.value = isComplete;
-    migrationStatus.value = true;
-
-    $q.notify({
-      type: isComplete ? 'positive' : 'info',
-      message: isComplete ? 'Migration is complete' : 'Migration is pending',
-    });
-
-    if (isComplete) {
-      await gamesStore.loadGames();
-    }
-  } catch (error) {
-    console.error('Failed to check migration status:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Failed to check migration status',
-    });
-  } finally {
-    migrationLoading.value = false;
-  }
-};
-
-const confirmMigration = () => {
-  $q.dialog({
-    title: 'Confirm Migration',
-    message: 'This will migrate all games from local JSON files to Firebase. This action cannot be undone easily. Continue?',
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    void runMigration();
-  });
-};
-
-const runMigration = async () => {
-  if (!authService.isAuthenticated.value || !authService.currentUserId.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'You must be authenticated to run migration',
-    });
-    return;
-  }
-
-  migrationLoading.value = true;
-  try {
-    const result = gameMigrationService.migrateGamesToFirebase($q);
-
-    migrationResult.value = result;
-    migrationComplete.value = true;
-    migrationStatus.value = true;
-
-    $q.notify({
-      type: result.errors.length === 0 ? 'positive' : 'warning',
-      message: `Migration completed: ${result.successful}/${result.total} games migrated`,
-      timeout: 5000,
-    });
-
-    if (result.errors.length > 0) {
-      console.warn('Migration errors:', result.errors);
-      $q.notify({
-        type: 'warning',
-        message: `${result.errors.length} games had errors during migration. Check console for details.`,
-        timeout: 3000,
-      });
-    }
-
-    await gamesStore.loadGames();
-  } catch (error) {
-    console.error('Migration failed:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Migration failed. Check console for details.',
-    });
-  } finally {
-    migrationLoading.value = false;
-  }
-};
-
-const confirmRollback = () => {
-  $q.dialog({
-    title: 'Confirm Rollback',
-    message: 'This will delete all games from Firebase. This action cannot be undone! Are you sure?',
-    cancel: true,
-    persistent: true,
-    color: 'negative'
-  }).onOk(() => {
-    void runRollback();
-  });
-};
-
-const runRollback = async () => {
-  migrationLoading.value = true;
-  try {
-    const result = gameMigrationService.rollbackMigration($q);
-
-    migrationComplete.value = false;
-    migrationStatus.value = false;
-    migrationResult.value = null;
-
-    $q.notify({
-      type: result.errors.length === 0 ? 'positive' : 'warning',
-      message: `Rollback completed: ${result.deleted} games deleted`,
-      timeout: 5000,
-    });
-
-    if (result.errors.length > 0) {
-      console.warn('Rollback errors:', result.errors);
-    }
-
-    await gamesStore.loadGames();
-  } catch (error) {
-    console.error('Rollback failed:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Rollback failed. Check console for details.',
-    });
-  } finally {
-    migrationLoading.value = false;
-  }
-};
-
 const loadSubmissions = async () => {
   try {
-    await gameSubmissionsStore.loadSubmissions();
+    await gamesStore.loadGames(); // Load all games including pending ones
   } catch (error) {
-    console.error('Failed to load submissions:', error);
+    console.error('Failed to load games:', error);
     $q.notify({
       type: 'negative',
-      message: 'Failed to load submissions',
+      message: 'Failed to load games',
     });
   }
 };
 
-const approveSubmission = async (submissionId: string) => {
+const approveSubmission = async (gameId: string) => {
   try {
-    await gameSubmissionsStore.approveSubmission(submissionId);
+    await gamesStore.approveGame(gameId);
     $q.notify({
       type: 'positive',
       message: 'Game approved and added to collection!',
     });
-    // Reload games to show the new one
-    await gamesStore.loadGames();
   } catch (error) {
     console.error('Failed to approve submission:', error);
     $q.notify({
@@ -339,7 +195,7 @@ const approveSubmission = async (submissionId: string) => {
   }
 };
 
-const rejectSubmission = (submissionId: string) => {
+const rejectSubmission = (gameId: string) => {
   $q.dialog({
     title: 'Reject Submission',
     message: 'Why is this submission being rejected?',
@@ -351,7 +207,8 @@ const rejectSubmission = (submissionId: string) => {
   }).onOk((reason: string) => {
     void (async () => {
       try {
-        await gameSubmissionsStore.rejectSubmission(submissionId, reason);
+        await gamesStore.rejectGame(gameId);
+        console.log('Game submission rejected with reason:', reason);
         $q.notify({
           type: 'info',
           message: 'Submission rejected',
@@ -361,6 +218,53 @@ const rejectSubmission = (submissionId: string) => {
         $q.notify({
           type: 'negative',
           message: 'Failed to reject submission',
+        });
+      }
+    })();
+  });
+};
+
+// Game approval/rejection methods for main games list
+const approveGameInList = async (gameId: string) => {
+  try {
+    await gamesStore.approveGame(gameId);
+    $q.notify({
+      type: 'positive',
+      message: 'Game approved!',
+    });
+  } catch (error) {
+    console.error('Failed to approve game:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Failed to approve game',
+    });
+  }
+};
+
+const rejectGameInList = (gameId: string) => {
+  $q.dialog({
+    title: 'Reject Game',
+    message: 'Why is this game being rejected?',
+    prompt: {
+      model: '',
+      type: 'text'
+    },
+    cancel: true,
+  }).onOk((reason: string) => {
+    void (async () => {
+      try {
+        // TODO: Store rejection reason in game metadata
+        await gamesStore.rejectGame(gameId);
+        console.log('Game rejected with reason:', reason);
+        $q.notify({
+          type: 'info',
+          message: 'Game rejected',
+        });
+      } catch (error) {
+        console.error('Failed to reject game:', error);
+        $q.notify({
+          type: 'negative',
+          message: 'Failed to reject game',
         });
       }
     })();
@@ -378,10 +282,7 @@ onMounted(async () => {
   }
 
   // Load initial data
-  await Promise.all([
-    checkMigrationStatus(),
-    loadSubmissions(),
-  ]);
+  await gamesStore.loadGames(); // Load all games including pending ones
 });
 </script>
 

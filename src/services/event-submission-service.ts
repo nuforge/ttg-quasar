@@ -218,7 +218,6 @@ class EventSubmissionService {
               status: 'upcoming',
               minPlayers: 1,
               maxPlayers: 99,
-              currentPlayers: 1,
               rsvps: [],
               host: {
                 name: submission.submittedBy.displayName || 'Unknown',

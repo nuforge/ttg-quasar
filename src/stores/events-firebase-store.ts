@@ -92,7 +92,6 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
         status: 'upcoming',
         minPlayers: eventData.minPlayers,
         maxPlayers: eventData.maxPlayers,
-        currentPlayers: 1, // Host is automatically joined
         description: eventData.description || '',
         notes: eventData.notes || '',
         host: {
@@ -284,7 +283,6 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
 
       await updateDoc(eventRef, {
         rsvps: arrayUnion(newRsvp),
-        currentPlayers: storeEvent.currentPlayers + 1,
         updatedAt: serverTimestamp(),
       });
     } catch (err) {
@@ -333,7 +331,6 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
       console.log('🗑️ leaveEvent: Removing RSVP from Firebase:', confirmedRSVP);
       await updateDoc(eventRef, {
         rsvps: arrayRemove(confirmedRSVP),
-        currentPlayers: storeEvent.currentPlayers - 1,
         updatedAt: serverTimestamp(),
       });
       console.log('✅ leaveEvent: Successfully removed RSVP from Firebase');

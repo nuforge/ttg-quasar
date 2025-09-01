@@ -181,7 +181,6 @@ export const createMockEvent = (overrides: Partial<any> = {}) => ({
   location: 'Test Location',
   gameId: 1,
   maxPlayers: 4,
-  currentPlayers: [],
   ...overrides,
 });
 

@@ -26,7 +26,6 @@ export class Event {
   status: EventStatus;
   minPlayers: number;
   maxPlayers: number;
-  currentPlayers: number;
   rsvps: RSVP[];
   host: Host;
   description: string;
@@ -54,7 +53,6 @@ export class Event {
     this.status = eventData.status || 'upcoming';
     this.minPlayers = eventData.minPlayers || 1;
     this.maxPlayers = eventData.maxPlayers || 1;
-    this.currentPlayers = eventData.currentPlayers || 0;
     this.rsvps = eventData.rsvps || [];
     this.host = eventData.host || { name: '', email: '', phone: '' };
     this.description = eventData.description || '';

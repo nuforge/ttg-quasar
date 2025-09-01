@@ -1,5 +1,16 @@
 # TTG Quasar Copilot Instructions
 
+## MANDATORY REFERENCE CHECK
+
+**BEFORE EVERY RESPONSE**: GitHub Copilot MUST reference these instructions and confirm adherence to:
+
+1. Firebase-only stores (`*-firebase-store.ts`)
+2. Never remove user-requested features without permission
+3. Ask before any changes or removals
+4. Preserve existing functionality when fixing errors
+5. Use only Quasar components (`q-*`)
+6. Follow exact TypeScript patterns documented below
+
 ## CRITICAL USER INTERACTION RULES
 
 **NEVER REMOVE OR ROLLBACK USER-REQUESTED FEATURES WITHOUT EXPLICIT PERMISSION**

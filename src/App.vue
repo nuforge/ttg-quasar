@@ -1,9 +1,28 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
+import { useQuasar } from 'quasar';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 
-// Initialize Firebase stores on app startup
+const $q = useQuasar();
+
+// Initialize Firebase stores and theme on app startup
 onMounted(async () => {
+  // Initialize theme from localStorage
+  const savedTheme = localStorage.getItem('themeMode');
+  if (savedTheme && ['auto', 'light', 'dark'].includes(savedTheme)) {
+    if (savedTheme === 'auto') {
+      $q.dark.set('auto');
+    } else if (savedTheme === 'dark') {
+      $q.dark.set(true);
+    } else {
+      $q.dark.set(false);
+    }
+  } else {
+    // Default to auto if no preference saved
+    $q.dark.set('auto');
+  }
+
+  // Initialize Firebase stores
   try {
     const playersStore = usePlayersFirebaseStore();
     // Firebase store is automatically connected - just ensure data is loaded
