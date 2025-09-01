@@ -154,3 +154,64 @@ import { createEventUrl, createGameUrl } from 'src/utils/slug';
 const eventId = computed(() => route.params.id);
 const event = eventsStore.events.find((e) => e.firebaseDocId === eventId.value);
 ```
+
+## Firebase Timestamp vs JavaScript Date Compatibility
+
+**Problem**: Production data migration converts Firebase Timestamps to JavaScript Date objects, but models expect Timestamp objects with `.toDate()` method. This causes runtime errors like "data.createdAt?.toDate is not a function".
+
+**Root Cause**: Firebase migration scripts serialize Timestamps to Date objects, but TypeScript models still expect Firebase Timestamp interfaces.
+
+**Solution**: Handle both Timestamp and Date objects in model conversion:
+
+```typescript
+// In Model classes (Game.ts, Event.ts, etc.)
+private static convertTimestamp(value: any): Date {
+  if (!value) return new Date();
+
+  // Firebase Timestamp object
+  if (value.toDate && typeof value.toDate === 'function') {
+    return value.toDate();
+  }
+
+  // JavaScript Date object (from migration)
+  if (value instanceof Date) {
+    return value;
+  }
+
+  // Fallback for other formats
+  return new Date(value);
+}
+
+// Usage in fromFirebase()
+static fromFirebase(data: any): Game {
+  return new Game({
+    // ...other fields
+    createdAt: Game.convertTimestamp(data.createdAt),
+    updatedAt: Game.convertTimestamp(data.updatedAt),
+  });
+}
+```
+
+**Store Enhancement** for handling mixed timestamp formats:
+
+```typescript
+// In Firebase stores (*-firebase-store.ts)
+onSnapshot(collection, (snapshot) => {
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+
+    // Convert Date objects back to Timestamps for consistency
+    if (data.createdAt instanceof Date) {
+      data.createdAt = Timestamp.fromDate(data.createdAt);
+    }
+    if (data.updatedAt instanceof Date) {
+      data.updatedAt = Timestamp.fromDate(data.updatedAt);
+    }
+
+    const model = Model.fromFirebase({ ...data, firebaseDocId: doc.id });
+    // ...rest of handling
+  });
+});
+```
+
+**Prevention**: Always test data migration scripts with Firebase emulators and verify timestamp field compatibility before production migrations.

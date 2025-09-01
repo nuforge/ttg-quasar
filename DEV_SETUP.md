@@ -114,6 +114,18 @@ USE_FIREBASE_EMULATOR=false
    npm run dev
    ```
 
+#### Firebase Emulator Authentication
+
+**Google Sign-in in Emulator**: The Firebase Auth Emulator doesn't connect to real Google accounts. Instead:
+
+1. **Open Emulator UI**: Go to `http://localhost:4000`
+2. **Don't manually create Google users** in the Authentication tab
+3. **Use your app's Google sign-in**: Click "Sign in with Google" in your app
+4. **Emulator intercepts**: Shows fake Google sign-in dialog with test account options
+5. **Pick or create**: Select existing test user or create new fake Google account
+
+The emulator automatically handles Google OAuth simulation - just use the sign-in button in your app!
+
 ## Additional Configuration
 
 For full functionality, ensure:

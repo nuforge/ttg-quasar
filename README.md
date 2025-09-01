@@ -15,7 +15,7 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 
 - **Multi-Provider Sign-In**: Google, Facebook, and Email/Password authentication
 - **VueFire Integration**: Reactive authentication state management
-- **Route Protection**: Secure pages with authentication guards
+- **Flexible Access**: Public browsing for games/events, authentication for interactions
 - **User Profiles**: Automatic player profile creation and management
 
 ### 📅 Event Management
@@ -258,14 +258,24 @@ const isAuthenticated = computed(() => !!user.value);
 
 ### Route Protection
 
-Routes are protected using authentication guards:
+Routes use flexible authentication - public browsing with auth for interactions:
 
 ```typescript
-// Protected route example
+// Public browsing routes (no auth required)
+{
+  path: '/games',
+  component: GamesPage // Browse games publicly
+},
 {
   path: '/events',
+  component: EventsPage // Browse events publicly
+},
+
+// Protected routes (auth required)
+{
+  path: '/account',
   beforeEnter: requireAuth,
-  component: EventsPage
+  component: AccountPage
 }
 ```
 
@@ -295,7 +305,7 @@ Routes are protected using authentication guards:
 ## 🔒 Security
 
 - **Firestore Security Rules**: Row-level security for all collections
-- **Authentication Required**: Protected routes and API calls
+- **Flexible Authentication**: Public browsing for discovery, auth required for interactions (RSVPs, messaging, admin)
 - **Data Validation**: Client and server-side validation
 - **Storage Rules**: Secure file uploads with size limits
 
