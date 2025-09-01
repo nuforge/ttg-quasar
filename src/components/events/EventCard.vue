@@ -137,7 +137,7 @@ const selectEventDate = () => {
         </q-badge>
       </div>
     </q-card-section>
-    <q-card-section class="text-grey-5 q-px-md " horizontal>
+    <q-card-section class="text-grey-5 q-px-md justify-between" horizontal>
       <div class=" text-body2">
         {{ event.description }}
         <q-list dense class="q-mt-sm">
@@ -165,7 +165,7 @@ const selectEventDate = () => {
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ event.getConfirmedCount() }} / {{ event.maxPlayers }} {{ $t('player', 2)
-                }}</q-item-label>
+              }}</q-item-label>
               <q-item-label v-if="event.getInterestedCount() > 0" caption class="text-orange">
                 +{{ event.getInterestedCount() }} interested
               </q-item-label>
@@ -180,35 +180,35 @@ const selectEventDate = () => {
           </q-item>
         </q-list>
       </div>
-
-      <q-card-actions vertical v-if="game">
-        <q-list dense class="text-grey-8">
-          <q-item>
-            <q-tooltip class="bg-primary text-black">RSVPs: {{ event.getConfirmedCount() }}</q-tooltip>
-            <GameIcon category="players" :value="event.getConfirmedCount().toString()" size="xs" class="text-grey-9" />
-          </q-item>
-
-          <q-item>
-            <q-tooltip class="bg-secondary text-black">Age: {{ game.recommendedAge }}</q-tooltip>
-            <span class="font-aldrich text-grey-9 text-bold non-selectable">{{ game.recommendedAge }}</span>
-          </q-item>
-
-          <q-item>
-            <q-tooltip class="bg-accent text-black">Genre: {{ game.genre }}</q-tooltip>
-            <GameIcon category="genres" :value="game.genre" size="xs" class="text-grey-9" />
-          </q-item>
-
-          <q-item v-for="(component, index) in mainGameComponents" :key="index">
-            <q-tooltip class="bg-info text-black">{{ component.original }}</q-tooltip>
-            <GameIcon category="components" :value="component.category" size="xs" class="text-grey-9" />
-          </q-item>
-        </q-list>
+      <!-- RSVP Actions -->
+      <q-card-actions class="q-pt-none q-pb-sm q-pr-md row justify-between">
+        <EventRSVPButtons :event="event" :show-labels="false" size="md" />
       </q-card-actions>
+
     </q-card-section>
 
-    <!-- RSVP Actions -->
-    <q-card-actions align="right" class="q-pt-none q-pb-sm q-pr-md">
-      <EventRSVPButtons :event="event" :show-labels="false" size="sm" />
+    <q-card-actions v-if="game">
+      <q-list dense class=" row text-grey-8 full-width justify-between">
+        <q-item>
+          <q-tooltip class="bg-primary text-black">RSVPs: {{ event.getConfirmedCount() }}</q-tooltip>
+          <GameIcon category="players" :value="event.getConfirmedCount().toString()" size="xs" class="text-grey-9" />
+        </q-item>
+
+        <q-item>
+          <q-tooltip class="bg-secondary text-black">Age: {{ game.recommendedAge }}</q-tooltip>
+          <span class="font-aldrich text-grey-9 text-bold non-selectable">{{ game.recommendedAge }}</span>
+        </q-item>
+
+        <q-item>
+          <q-tooltip class="bg-accent text-black">Genre: {{ game.genre }}</q-tooltip>
+          <GameIcon category="genres" :value="game.genre" size="xs" class="text-grey-9" />
+        </q-item>
+
+        <q-item v-for="(component, index) in mainGameComponents" :key="index">
+          <q-tooltip class="bg-info text-black">{{ component.original }}</q-tooltip>
+          <GameIcon category="components" :value="component.category" size="xs" class="text-grey-9" />
+        </q-item>
+      </q-list>
     </q-card-actions>
 
     <!-- Players Dialog - replaced with reusable component -->
