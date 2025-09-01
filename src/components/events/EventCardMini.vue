@@ -130,7 +130,7 @@ const statusColor = computed(() => {
             <q-icon name="mdi-dice-multiple" size="xs" />
             <router-link :to="createGameUrl(game.id, game.title)" class="no-underline" @click.stop>{{
               game.title
-            }}</router-link>
+              }}</router-link>
           </div>
         </div>
         <!-- Right: Action buttons (horizontal) -->
