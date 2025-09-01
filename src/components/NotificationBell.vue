@@ -6,7 +6,7 @@
         <q-menu>
             <q-card style="width: 350px; max-height: 400px;">
                 <q-card-section class="row items-center justify-between q-pb-none">
-                    <div class="text-h6">{{ $t('notifications') }}</div>
+                    <div class="text-h6">{{ $t('notifications.title') }}</div>
                     <div>
                         <q-btn v-if="hasUnread" flat dense size="sm" :label="$t('markAllRead')"
                             @click="markAllAsRead" />

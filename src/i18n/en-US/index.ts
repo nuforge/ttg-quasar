@@ -51,7 +51,11 @@ export default {
     browserNotifications: 'Browser notifications',
     defaultNotificationTiming: 'Default notification timing',
   },
-  notifications: 'Notifications',
+  notifications: {
+    title: 'Notifications',
+    languageUpdated: 'Language updated successfully',
+    failedToUpdateLanguage: 'Failed to update language. Please try again.',
+  },
 
   // Actions
   create: 'Create',
@@ -289,6 +293,21 @@ export default {
 
   // Additional interface elements
   gameShelf: 'Game Shelf',
+  gameShelfDescription:
+    'Manage your game collection, favorites, bookmarks, and notification preferences',
+  yourStats: 'Your Stats',
+  ownedGames: 'Owned Games',
+  favorites: 'Favorites',
+  bookmarks: 'Bookmarks',
+  ownedGamesCount: '{count} owned games',
+  favoriteGamesCount: '{count} favorite games',
+  bookmarkedGamesCount: '{count} bookmarked games',
+  gamesWithNotifications: '{count} games with notifications',
+  ownedGamesEmptyMessage:
+    'Games you mark as owned will appear here. Use the package icon on game cards to add games to your collection.',
+  favoriteGamesEmptyMessage: 'Games you mark as favorites will appear here',
+  bookmarkedGamesEmptyMessage: 'Games you bookmark will appear here',
+  notificationGamesEmptyMessage: 'Games with event notifications enabled will appear here',
   adminGames: 'Admin Games',
   adminUsers: 'Admin Users',
   noNotifications: 'No notifications yet',
@@ -328,8 +347,6 @@ export default {
   failedUpdateGameCollection: 'Failed to update game collection. Please try again.',
   failedUpdateBringStatus: 'Failed to update bring status. Please try again.',
   failedUpdateNotifications: 'Failed to update event notifications. Please try again.',
-  languageUpdated: 'Language updated successfully',
-  failedToUpdateLanguage: 'Failed to update language. Please try again.',
   pleaseSignInBookmarks: 'Please sign in to bookmark games',
   pleaseSignInCollection: 'Please sign in to manage your game collection',
   addedToCollection: 'added to your collection!',
