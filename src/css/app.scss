@@ -2,9 +2,17 @@
 @use './reset' as *;
 @use './typography' as *;
 
+// Import Quasar variables to access theme colors
+@import 'quasar.variables.scss';
+
+// Custom background color classes using theme variables
+.bg-dark-page {
+  background-color: $dark-page !important;
+}
+
 // Global override to make all q-card components flat by default
 .q-card {
-  box-shadow: none !important;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 a {

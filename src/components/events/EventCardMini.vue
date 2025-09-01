@@ -110,36 +110,39 @@ const statusColor = computed(() => {
           <q-badge :color="statusColor">
             {{ event.getConfirmedCount() }}/{{ event.maxPlayers }}
           </q-badge>
+
         </div>
       </div>
     </q-card-section>
 
     <q-card-section class="q-py-xs">
-      <div class="row items-center justify-between">
+      <div class="row items-center justify-between q-gutter-md">
+
         <!-- Left: Event info (compact) -->
         <div class="col-auto">
-          <div class="row items-center q-gutter-xs text-body2">
-            <q-icon name="mdi-calendar" size="xs" />
-            <span>{{ formattedDate }}</span>
-            <span class="text-grey-6">{{ timeDisplay }}</span>
+          <div class="items-center q-gutter-xs text-body2">
+            <div>
+              <q-icon name="mdi-calendar" size="xs" /> {{ formattedDate }}
+            </div>
+            <div class="text-grey-6 text-caption">{{ timeDisplay }}</div>
           </div>
-          <div v-if="game" class="row items-center q-gutter-xs text-caption text-grey-6 q-mt-xs">
+          <div v-if="game" class="row items-center q-gutter-xs q-mt-xs">
             <q-icon name="mdi-dice-multiple" size="xs" />
-            <router-link :to="createGameUrl(game.id, game.title)" class="text-grey-6 no-underline" @click.stop>{{
+            <router-link :to="createGameUrl(game.id, game.title)" class="no-underline" @click.stop>{{
               game.title
             }}</router-link>
           </div>
         </div>
-
         <!-- Right: Action buttons (horizontal) -->
-        <div class="col-auto" @click.stop>
-          <div class="row items-center q-gutter-xs">
-            <EventRSVPButtons :event="event" :show-labels="false" size="sm" />
-            <q-btn flat dense icon="mdi-qrcode" @click="toggleQR()" size="sm" color="grey-6">
+        <div class="" @click.stop>
+          <div class="col wrap justify-between q-gutter-xs">
+            <EventRSVPButtons :event="event" :show-labels="false" size="md" />
+            <q-btn flat dense icon="mdi-qrcode" @click="toggleQR()" size="md" color="grey-6">
               <q-tooltip>Show QR Code</q-tooltip>
             </q-btn>
           </div>
         </div>
+
       </div>
     </q-card-section>
 

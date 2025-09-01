@@ -183,13 +183,13 @@ const handleInterested = async () => {
     </div>
 
     <!-- RSVP and Interest Buttons -->
-    <div v-else class="row q-gutter-xs">
+    <div v-else class="column wrap q-gutter-xs">
       <!-- RSVP Button -->
-      <q-btn :loading="rsvpLoading" :color="isConfirmed ? 'green' : 'grey'" :size="size"
+      <q-btn flat :loading="rsvpLoading" :color="isConfirmed ? 'green' : 'grey'" :size="size" dense
         :icon="isConfirmed ? 'mdi-calendar-check' : 'mdi-calendar-plus'"
         :label="showLabels ? (isConfirmed ? 'RSVP\'d' : 'RSVP') : undefined"
         @click.stop="() => { console.log('DEBUG: RSVP button clicked, isConfirmed =', isConfirmed); isConfirmed ? handleCancel() : handleConfirm(); }"
-        :disabled="!isConfirmed && event.isFull() && !isInterested" unelevated :outline="!isConfirmed">
+        :disabled="!isConfirmed && event.isFull() && !isInterested" unelevated>
         <q-tooltip v-if="!isConfirmed && event.isFull() && !isInterested">Event is full</q-tooltip>
         <q-tooltip v-else-if="isConfirmed">Click to UN-RSVP</q-tooltip>
         <q-tooltip v-else-if="isInterested">Click to RSVP (upgrade from interested)</q-tooltip>
@@ -197,11 +197,11 @@ const handleInterested = async () => {
       </q-btn>
 
       <!-- Interested Button -->
-      <q-btn :loading="interestLoading" :color="isInterested ? 'orange' : 'grey-6'" :size="size"
-        :icon="isInterested ? 'mdi-star' : 'mdi-star-outline'"
+      <q-btn flat :loading="interestLoading" :color="isInterested ? 'orange' : 'grey-6'" :size="size" dense
+        :icon="isInterested ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
         :label="showLabels ? (isInterested ? 'Interested' : 'Interest') : undefined"
         @click.stop="() => { console.log('DEBUG: Interest button clicked, isInterested =', isInterested); handleInterested(); }"
-        unelevated :outline="!isInterested">
+        unelevated>
         <q-tooltip v-if="isInterested">Click to remove interest</q-tooltip>
         <q-tooltip v-else>Click to show interest (no commitment)</q-tooltip>
       </q-btn>

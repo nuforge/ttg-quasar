@@ -59,9 +59,9 @@ const selectedDateEvents = computed(() => {
 </script>
 
 <template>
-  <q-drawer v-model="rightDrawerOpen" side="right" persistent show-if-above>
+  <q-drawer v-model="rightDrawerOpen" side="right" persistent show-if-above dark class="ng-page-dark">
     <!-- drawer content -->
-    <div class="drawer-content-container" style="display: flex; flex-direction: column; height: 100%;">
+    <div class="drawer-content-container">
       <EventCalendar flat />
 
       <q-scroll-area class="flex-grow" style="flex: 1;">
@@ -103,3 +103,16 @@ const selectedDateEvents = computed(() => {
     </div>
   </q-drawer>
 </template>
+
+<style scoped>
+.drawer-content-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--q-dark-page);
+}
+
+.q-expansion-item {
+  margin: 0.5rem 0;
+}
+</style>

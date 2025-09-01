@@ -57,7 +57,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <q-header class="bg-dark">
+  <q-header class="bg-dark-page">
     <q-toolbar>
       <q-btn flat dense round icon="menu" aria-label="Menu" @click="emit('toggleLeftDrawer')" />
 

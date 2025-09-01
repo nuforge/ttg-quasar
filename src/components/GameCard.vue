@@ -345,7 +345,8 @@ onMounted(() => {
 
 <style scoped>
 .game-card {
-  border-top: 2px solid var(--q-dark);
+  background: var(--q-dark-page);
+  border-top: 4px solid var(--q-dark);
 }
 
 .game-card-title {
