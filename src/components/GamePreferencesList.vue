@@ -18,7 +18,7 @@
         <q-list v-else bordered separator>
             <q-item v-for="game in games" :key="game.id" class="q-pa-md">
                 <q-item-section avatar>
-                    <q-img :src="getGameImageUrl(game.image)" style="width: 60px; height: 60px;" fit="cover"
+                    <q-img :src="getGameImageUrl(game.image, game.title)" style="width: 60px; height: 60px;" fit="cover"
                         @error="($event.target as HTMLImageElement).src = '/images/games/default.svg'" />
                 </q-item-section>
 
@@ -81,6 +81,8 @@ const getActionIcon = () => {
             return 'mdi-bookmark-remove';
         case 'notifications':
             return 'mdi-bell-off';
+        case 'owned':
+            return 'mdi-package-variant-remove';
         default:
             return 'mdi-close';
     }
@@ -93,6 +95,8 @@ const getActionColor = () => {
         case 'bookmarks':
             return 'grey-7';
         case 'notifications':
+            return 'grey-7';
+        case 'owned':
             return 'grey-7';
         default:
             return 'grey-7';
@@ -107,6 +111,8 @@ const getActionLabel = () => {
             return 'Remove';
         case 'notifications':
             return 'Disable';
+        case 'owned':
+            return 'Remove';
         default:
             return 'Remove';
     }

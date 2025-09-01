@@ -66,6 +66,10 @@ export const useGameOwnershipsStore = defineStore('gameOwnerships', () => {
     }
   };
 
+  const updateCanBring = async (ownershipId: string, canBring: boolean) => {
+    await updateOwnership(ownershipId, { canBring });
+  };
+
   const removeOwnership = async (ownershipId: string) => {
     loading.value = true;
     try {
@@ -84,6 +88,7 @@ export const useGameOwnershipsStore = defineStore('gameOwnerships', () => {
     subscribeToPlayerOwnerships,
     addOwnership,
     updateOwnership,
+    updateCanBring,
     removeOwnership,
   };
 });

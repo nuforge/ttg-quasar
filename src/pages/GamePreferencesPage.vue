@@ -84,33 +84,33 @@
                 <q-tab-panels v-model="activeTab" animated>
                     <!-- Owned Games Tab -->
                     <q-tab-panel name="owned">
-                        <GamePreferencesList :games="ownedGameObjects" :loading="gamesLoading" type="owned"
+                        <GameList :games="ownedGameObjects" :loading="gamesLoading" type="owned"
+                            :show-ownership-actions="true" :show-preference-actions="true"
                             empty-icon="mdi-package-variant-closed" empty-title="No owned games yet"
-                            empty-message="Games you mark as owned will appear here. Use the package icon on game cards to add games to your collection."
-                            @toggle="handleToggleOwnership" />
+                            empty-message="Games you mark as owned will appear here. Use the package icon on game cards to add games to your collection." />
                     </q-tab-panel>
 
                     <!-- Favorites Tab -->
                     <q-tab-panel name="favorites">
-                        <GamePreferencesList :games="favoriteGameObjects" :loading="gamesLoading" type="favorites"
-                            empty-icon="mdi-star-off" empty-title="No favorite games yet"
-                            empty-message="Games you mark as favorites will appear here"
-                            @toggle="handleToggleFavorite" />
+                        <GameList :games="favoriteGameObjects" :loading="gamesLoading" type="favorites"
+                            :show-ownership-actions="true" :show-preference-actions="true" empty-icon="mdi-star-off"
+                            empty-title="No favorite games yet"
+                            empty-message="Games you mark as favorites will appear here" />
                     </q-tab-panel>
 
                     <!-- Bookmarks Tab -->
                     <q-tab-panel name="bookmarks">
-                        <GamePreferencesList :games="bookmarkedGameObjects" :loading="gamesLoading" type="bookmarks"
-                            empty-icon="mdi-bookmark-off" empty-title="No bookmarked games yet"
-                            empty-message="Games you bookmark will appear here" @toggle="handleToggleBookmark" />
+                        <GameList :games="bookmarkedGameObjects" :loading="gamesLoading" type="bookmarks"
+                            :show-ownership-actions="true" :show-preference-actions="true" empty-icon="mdi-bookmark-off"
+                            empty-title="No bookmarked games yet" empty-message="Games you bookmark will appear here" />
                     </q-tab-panel>
 
                     <!-- Notifications Tab -->
                     <q-tab-panel name="notifications">
-                        <GamePreferencesList :games="notificationGameObjects" :loading="gamesLoading"
-                            type="notifications" empty-icon="mdi-bell-off" empty-title="No notification preferences set"
-                            empty-message="Games with event notifications enabled will appear here"
-                            @toggle="handleToggleNotifications" @configure="handleConfigureNotifications" />
+                        <GameList :games="notificationGameObjects" :loading="gamesLoading" type="notifications"
+                            :show-ownership-actions="true" :show-preference-actions="true" empty-icon="mdi-bell-off"
+                            empty-title="No notification preferences set"
+                            empty-message="Games with event notifications enabled will appear here" />
                     </q-tab-panel>
                 </q-tab-panels>
             </div>
@@ -125,7 +125,7 @@ import { useCurrentUser } from 'vuefire';
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import { useGameOwnershipsStore } from 'src/stores/game-ownerships-store';
-import GamePreferencesList from 'src/components/GamePreferencesList.vue';
+import GameList from 'src/components/GameList.vue';
 
 const $q = useQuasar();
 const user = useCurrentUser();
@@ -209,107 +209,6 @@ const updateGlobalSettings = async () => {
     } finally {
         saving.value = false;
     }
-};
-
-const handleToggleFavorite = async (gameId: string) => {
-    try {
-        await preferencesStore.toggleFavorite(gameId);
-    } catch {
-        $q.notify({
-            type: 'negative',
-            message: 'Failed to update favorites',
-            position: 'top',
-        });
-    }
-};
-
-const handleToggleBookmark = async (gameId: string) => {
-    try {
-        await preferencesStore.toggleBookmark(gameId);
-    } catch {
-        $q.notify({
-            type: 'negative',
-            message: 'Failed to update bookmarks',
-            position: 'top',
-        });
-    }
-};
-
-const handleToggleNotifications = async (gameId: string) => {
-    try {
-        await preferencesStore.toggleEventNotifications(gameId);
-    } catch {
-        $q.notify({
-            type: 'negative',
-            message: 'Failed to update notifications',
-            position: 'top',
-        });
-    }
-};
-
-const handleToggleOwnership = async (gameId: string) => {
-    if (!user.value) return;
-
-    try {
-        const ownership = ownershipStore.getOwnership(gameId);
-        if (ownership) {
-            await ownershipStore.removeOwnership(ownership.id);
-            $q.notify({
-                type: 'positive',
-                message: 'Game removed from your collection',
-                position: 'top',
-            });
-        } else {
-            await ownershipStore.addOwnership(gameId, user.value.uid);
-            $q.notify({
-                type: 'positive',
-                message: 'Game added to your collection',
-                position: 'top',
-            });
-        }
-    } catch {
-        $q.notify({
-            type: 'negative',
-            message: 'Failed to update game ownership',
-            position: 'top',
-        });
-    }
-};
-
-const handleConfigureNotifications = (gameId: string) => {
-    const currentSettings = preferencesStore.getEventNotificationSettings(gameId);
-
-    $q.dialog({
-        title: 'Configure Notifications',
-        message: 'How many days before events should we notify you?',
-        prompt: {
-            model: (currentSettings?.notifyDaysBefore || globalSettings.value.defaultNotifyDaysBefore).toString(),
-            type: 'number',
-        },
-        cancel: true,
-    }).onOk((days: string) => {
-        void (async () => {
-            try {
-                const notifyDaysBefore = parseInt(days, 10) || 3;
-                await preferencesStore.toggleEventNotifications(gameId, {
-                    notifyDaysBefore,
-                    notifyOnNewEvents: true,
-                    notifyOnUpdates: true,
-                });
-                $q.notify({
-                    type: 'positive',
-                    message: 'Notification settings updated',
-                    position: 'top',
-                });
-            } catch {
-                $q.notify({
-                    type: 'negative',
-                    message: 'Failed to update notification settings',
-                    position: 'top',
-                });
-            }
-        })();
-    });
 };
 
 // Watchers

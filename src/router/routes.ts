@@ -72,6 +72,16 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/make-me-admin',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/MakeMeAdmin.vue'),
+      },
+    ],
+  },
+  {
     path: '/admin',
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: requireAuth,

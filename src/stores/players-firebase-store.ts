@@ -101,25 +101,24 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
     }
   };
 
-  const fetchPlayerRoles = async () => {
-    // Remove the admin check here to avoid circular dependency
-    // We need to load roles first to determine admin status
+  const fetchPlayerRoles = () => {
+    // Use real-time listener for user roles so admin permissions update automatically
     try {
-      const rolesSnapshot = await getDocs(collection(db, 'userRoles'));
-      const rolesMap = new Map<string, PlayerRole>();
+      onSnapshot(collection(db, 'userRoles'), (snapshot) => {
+        const rolesMap = new Map<string, PlayerRole>();
 
-      rolesSnapshot.forEach((doc) => {
-        const roleData = { id: doc.id, ...doc.data() } as PlayerRole;
-        rolesMap.set(doc.id, roleData);
+        snapshot.forEach((doc) => {
+          const roleData = { id: doc.id, ...doc.data() } as PlayerRole;
+          rolesMap.set(doc.id, roleData);
+        });
+
+        userRoles.value = rolesMap;
+        console.log('✅ Real-time loaded', rolesMap.size, 'user roles');
       });
-
-      userRoles.value = rolesMap;
-      console.log('✅ Loaded', rolesMap.size, 'user roles');
     } catch (err) {
-      console.error('❌ Error fetching user roles:', err);
+      console.error('❌ Error setting up user roles listener:', err);
     }
   };
-
   const fetchUserStatuses = async () => {
     // Remove admin check to avoid circular dependency
     try {
@@ -315,7 +314,8 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
   // Initialize admin data when needed
   const initializeAdminData = async () => {
     // Always fetch roles and statuses to determine admin status
-    await Promise.all([fetchPlayerRoles(), fetchUserStatuses()]);
+    fetchPlayerRoles(); // Remove await since it's no longer async
+    await fetchUserStatuses();
   };
 
   return {
