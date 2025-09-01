@@ -39,3 +39,10 @@ yarn-error.log*
 .env
 COMMIT_MESSAGE.md
 ttgaming-dd3c0-firebase-adminsdk-fbsvc-defb0cbb77.json
+
+# Development and testing data files
+scripts/sample-games.json
+scripts/seed-*.js
+scripts/seed-*.mjs
+src/data/sample-games.ts
+src/services/featured-games-examples.ts
