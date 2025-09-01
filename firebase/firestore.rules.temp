@@ -1,6 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // TEMPORARY OPEN RULES FOR DATA MIGRATION
+    // Allow all reads and writes during emulator data migration
     match /{document=**} {
       allow read, write: if true;
     }

@@ -10,6 +10,10 @@
 4. Preserve existing functionality when fixing errors
 5. Use only Quasar components (`q-*`)
 6. Follow exact TypeScript patterns documented below
+7. NEVER SAY THE WORD 'perfect.' EVER!!
+8. Always read the current file state first before making any edits
+9. Use smaller, more targeted edits instead of trying to replace large sections
+10. Double-check the exact formatting including line breaks and indentation
 
 ## CRITICAL USER INTERACTION RULES
 
@@ -20,6 +24,32 @@
 - **NO COMMITS**: Never commit code unless the user specifically asks for it
 - **USER APPROVAL**: Always ask "Should I commit these changes?" before any git operations
 - **PRESERVE WORK**: If there are errors, fix them - don't delete the user's requested functionality
+
+## THOROUGH PLANNING AND PREREQUISITE CHECKING
+
+**BEFORE EXECUTING ANY COMMANDS OR SUGGESTING SOLUTIONS:**
+
+- **VERIFY PREREQUISITES**: Always check all required dependencies, services, and authentication BEFORE starting any process
+- **SEQUENCE PROPERLY**: List ALL steps in logical order, especially authentication and initialization steps
+- **READ ERROR MESSAGES**: Thoroughly analyze error messages before proceeding with next steps
+- **NO SKIPPED STEPS**: Never skip "obvious" steps like login or authentication requirements
+- **CHECK ENVIRONMENT**: Verify environment setup, including required environment variables and configuration files
+- **CHECK INITIALIZATION**: ALWAYS verify if CLI tools (Firebase, etc.) need initialization before running their commands
+- **EXPLAIN REASONING**: Clearly explain why each step is necessary, especially for prerequisites
+- **BACKUP FIRST**: Always suggest data backup steps before any destructive or state-changing operations
+- **TEST INCREMENTALLY**: Verify success at each step before proceeding to the next
+- **USE EXISTING TERMINALS**: ALWAYS use existing terminals when sequential commands are related - NEVER open new terminals unnecessarily
+- **CHECK TERMINAL HISTORY**: Review terminal history and output before running new commands in the same context
+- **VERIFY COMMANDS EXIST**: NEVER suggest commands without confirming they exist - use `command --help` or documentation first
+- **NO MADE-UP COMMANDS**: If unsure about a command, say "I need to check what commands are available" instead of guessing
+- **FIREBASE CLI COMMANDS**: Reference the complete Firebase CLI command list:
+  - `emulators:export <path>` - export data from running emulators
+  - `emulators:start [options]` - start the local Firebase emulators
+  - `auth:export/import` - export/import Firebase Auth users
+  - NO `firestore:export` or `firestore:import` commands exist
+  - Use `emulators:export/import` for emulator data transfer
+- **READ ENTIRE FILE CONTEXT**: ALWAYS read the full file structure before making edits to understand line counts and content
+- **VERIFY EDIT SCOPE**: Ensure replacement strings match the exact content and don't leave orphaned text
 
 ## Project Overview
 
@@ -133,9 +163,10 @@ The project includes comprehensive Firebase emulator support for isolated develo
 
 1. **Java Auto-Install**: Run `./setup-java.ps1` (already included in project)
 2. **Enable Emulators**: Set `USE_FIREBASE_EMULATOR=true` in `.env`
-3. **Start Emulators**: `firebase emulators:start --only auth,firestore,storage`
-4. **Emulator UI**: Access at `http://localhost:4000` for data inspection
-5. **App Development**: `npm run dev` in separate terminal
+3. **CRITICAL - Initialization Check**: ALWAYS run `firebase init emulators` first if emulators aren't already configured
+4. **Start Emulators**: Only after initialization, run `firebase emulators:start --only auth,firestore,storage`
+5. **Emulator UI**: Access at `http://localhost:4000` for data inspection
+6. **App Development**: `npm run dev` in separate terminal
 
 **Emulator Ports (configured in `firebase.json`):**
 
@@ -149,6 +180,9 @@ The project includes comprehensive Firebase emulator support for isolated develo
 - **Fresh Start**: Stop emulators to reset all data
 - **Seed Data**: Import/export data via emulator UI
 - **Real-time Testing**: Multiple browser windows sync via local Firestore
+- **CRITICAL - BACKUP DATA**: ALWAYS create backups before suggesting emulator restarts or resets
+- **PRESERVE EMULATOR STATE**: Never casually suggest restarting emulators without warning about data loss
+- **DATA PERSISTENCE**: Use backup-emulator-data.cjs to save state and restore-production-data.cjs for restoring
 
 ### Code Quality
 
