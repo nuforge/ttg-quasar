@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import type { Player } from 'src/models/Player';
 import PlayerAvatar from 'src/components/PlayerAvatar.vue';
+
+const { t } = useI18n();
 
 defineOptions({
   name: 'PlayerCardMini',
@@ -42,7 +45,7 @@ const emit = defineEmits(['click']);
       <q-item-label>{{ player.name }}</q-item-label>
       <q-item-label v-if="showEmail" caption>{{ player.email }}</q-item-label>
       <q-item-label v-if="player.joinDate && !showEmail" caption>
-        Member since {{ player.getFormattedJoinDate() }}
+        {{ t('memberSince') }} {{ player.getFormattedJoinDate() }}
       </q-item-label>
     </q-item-section>
   </q-item>

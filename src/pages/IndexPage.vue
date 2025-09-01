@@ -197,11 +197,12 @@ const steps = [
       <q-parallax :height="300" src="/images/tabletop-hero.png">
         <div class="absolute-center text-center">
           <div class="text-h4 text-weight-bold text-primary hero-title">Looking For Group</div>
-          <div class="text-h5 q-mt-md text-white text-weight-medium">Find tabletop gaming sessions and players near you
+          <div class="text-h5 q-mt-md text-white text-weight-medium">{{ $t('heroSubtitle') }}
           </div>
           <div class="q-mt-lg q-gutter-sm ">
-            <q-btn size="md" color="primary" text-color="black" label="Explore Games" @click="navigateTo('/games')" />
-            <q-btn size="md" outline color="white" label="Browse Events" @click="navigateTo('/events')" />
+            <q-btn size="md" color="primary" text-color="black" :label="$t('exploreGames')"
+              @click="navigateTo('/games')" />
+            <q-btn size="md" outline color="white" :label="$t('browseEvents')" @click="navigateTo('/events')" />
           </div>
         </div>
       </q-parallax>
@@ -235,8 +236,8 @@ const steps = [
     -->
     <section class="games-section q-pa-md q-mb-lg">
       <div class="section-header row items-center justify-between q-mb-md">
-        <div class="text-h4">Featured Games</div>
-        <q-btn color="primary" outline label="View All Games" @click="navigateTo('/games')" />
+        <div class="text-h4">{{ $t('featuredGames') }}</div>
+        <q-btn color="primary" outline :label="$t('viewAllGames')" @click="navigateTo('/games')" />
       </div>
 
       <div class="row q-col-gutter-md">
@@ -249,8 +250,8 @@ const steps = [
     <!-- Upcoming Events Section -->
     <section class="events-section q-pa-md q-mb-lg">
       <div class="section-header row items-center justify-between q-mb-md">
-        <div class="text-h4">Upcoming Events</div>
-        <q-btn color="secondary" outline label="View All Events" @click="navigateTo('/events')" />
+        <div class="text-h4">{{ $t('upcomingEvents') }}</div>
+        <q-btn color="secondary" outline :label="$t('viewAllEvents')" @click="navigateTo('/events')" />
       </div>
 
       <div class="row q-col-gutter-md">
@@ -262,7 +263,7 @@ const steps = [
 
     <!-- How It Works Section -->
     <section class="how-it-works q-pa-md q-mb-lg">
-      <div class="text-h4 text-center q-mb-lg">How It Works</div>
+      <div class="text-h4 text-center q-mb-lg">{{ $t('howItWorks') }}</div>
 
       <div class="row q-col-gutter-xl justify-center">
         <div v-for="item in steps" :key="item.step" class="col-xs-12 col-sm-4 text-center">
@@ -284,7 +285,8 @@ const steps = [
         <q-card-section>
           <div class="text-h4 q-mb-md">Ready to Find Your Next Game?</div>
           <div class="text-h6 q-mb-lg">Join our community of tabletop gamers today!</div>
-          <q-btn color="primary" text-color="black" push label="Get Started" size="lg" @click="navigateTo('/games')" />
+          <q-btn color="primary" text-color="black" push :label="$t('getStarted')" size="lg"
+            @click="navigateTo('/games')" />
         </q-card-section>
       </q-card>
     </section>

@@ -8,8 +8,8 @@
 
             <div class="header-actions">
                 <!-- Submit Game Button -->
-                <q-btn v-if="authService.isAuthenticated.value" color="positive" icon="mdi-plus" label="Submit Game"
-                    @click="showGameSubmission = true" flat />
+                <q-btn v-if="authService.isAuthenticated.value" color="positive" icon="mdi-plus"
+                    :label="$t('submitGame')" @click="showGameSubmission = true" flat />
             </div>
         </div>
 

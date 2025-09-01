@@ -161,6 +161,28 @@ For full functionality, ensure:
 - Comment system for each game
 - Integration with event creation
 
+### 🌍 Internationalization (i18n)
+
+- **Full Bilingual Support**: English and Spanish throughout the application
+- **220+ Translation Keys**: Comprehensive coverage of all UI elements
+- **Vue i18n Integration**: Reactive language switching with TypeScript support
+- **Type Safety**: Translation keys are type-checked across all language files
+- **Component Integration**: All major components support internationalization
+- **User Language Switching**: Dynamic language selection with instant UI updates
+
+#### Available Languages
+
+- **English (en-US)**: Primary language with complete translations
+- **Spanish (en-ES)**: Full Spanish translations for all interface elements
+
+#### Translation Categories
+
+- Navigation, Actions, RSVP States, Form Fields, Admin Features
+- Notifications, Status Messages, Tooltips, Error Messages
+- Search & Filters, Pluralization helpers
+
+See `I18N_DOCUMENTATION.md` for detailed implementation guide.
+
 ## Development Commands
 
 ```bash

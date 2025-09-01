@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { Game } from 'src/models/Game';
 import QRCode from './qrcode/QRCode.vue';
 import GameIcon from './GameIcon.vue';
@@ -24,6 +25,7 @@ const {
 
 // Game ownership functionality
 const user = useCurrentUser();
+const { t } = useI18n();
 const ownershipStore = useGameOwnershipsStore();
 const ownershipLoading = ref(false);
 
@@ -68,7 +70,7 @@ const handleToggleFavorite = async () => {
   if (!isAuthenticated.value) {
     Notify.create({
       type: 'warning',
-      message: 'Please sign in to add games to favorites',
+      message: t('pleaseSignInFavorites'),
       position: 'top',
     });
     return;
@@ -79,14 +81,14 @@ const handleToggleFavorite = async () => {
     Notify.create({
       type: 'positive',
       message: favorite.value
-        ? `${props.game.title} added to favorites!`
-        : `${props.game.title} removed from favorites`,
+        ? `${props.game.title} ${t('addedToFavorites')}`
+        : `${props.game.title} ${t('removedFromFavorites')}`,
       position: 'top',
     });
   } catch {
     Notify.create({
       type: 'negative',
-      message: 'Failed to update favorites. Please try again.',
+      message: t('failedUpdateFavorites'),
       position: 'top',
     });
   }
@@ -96,7 +98,7 @@ const handleToggleBookmark = async () => {
   if (!isAuthenticated.value) {
     Notify.create({
       type: 'warning',
-      message: 'Please sign in to bookmark games',
+      message: t('pleaseSignInBookmarks'),
       position: 'top',
     });
     return;
@@ -107,14 +109,14 @@ const handleToggleBookmark = async () => {
     Notify.create({
       type: 'positive',
       message: bookmark.value
-        ? `${props.game.title} bookmarked!`
-        : `${props.game.title} removed from bookmarks`,
+        ? `${props.game.title} ${t('bookmarkAdded')}`
+        : `${props.game.title} ${t('bookmarkRemoved')}`,
       position: 'top',
     });
   } catch {
     Notify.create({
       type: 'negative',
-      message: 'Failed to update bookmarks. Please try again.',
+      message: t('updateFailed'),
       position: 'top',
     });
   }
@@ -124,7 +126,7 @@ const handleToggleReserved = async () => {
   if (!isAuthenticated.value) {
     Notify.create({
       type: 'warning',
-      message: 'Please sign in to get event notifications',
+      message: t('loginRequiredNotifications'),
       position: 'top',
     });
     return;
@@ -139,14 +141,14 @@ const handleToggleReserved = async () => {
     Notify.create({
       type: 'positive',
       message: reserved.value
-        ? `You'll be notified about events for ${props.game.title}!`
-        : `Event notifications disabled for ${props.game.title}`,
+        ? t('notifyAboutEvents', { game: props.game.title })
+        : t('notificationsDisabledFor', { game: props.game.title }),
       position: 'top',
     });
   } catch {
     Notify.create({
       type: 'negative',
-      message: 'Failed to update event notifications. Please try again.',
+      message: t('failedUpdateNotifications'),
       position: 'top',
     });
   }
@@ -168,7 +170,7 @@ const handleToggleOwnership = async () => {
   if (!isAuthenticated.value || !user.value) {
     Notify.create({
       type: 'warning',
-      message: 'Please sign in to manage your game collection',
+      message: t('pleaseSignInCollection'),
       position: 'top',
     });
     return;
@@ -183,7 +185,7 @@ const handleToggleOwnership = async () => {
         await ownershipStore.removeOwnership(currentOwnership.id);
         Notify.create({
           type: 'positive',
-          message: `${props.game.title} removed from your collection`,
+          message: `${props.game.title} ${t('removedFromCollection')}`,
           position: 'top',
         });
       }
@@ -191,14 +193,14 @@ const handleToggleOwnership = async () => {
       await ownershipStore.addOwnership(props.game.id, user.value.uid, true);
       Notify.create({
         type: 'positive',
-        message: `${props.game.title} added to your collection!`,
+        message: `${props.game.title} ${t('addedToCollection')}`,
         position: 'top',
       });
     }
   } catch {
     Notify.create({
       type: 'negative',
-      message: 'Failed to update game collection. Please try again.',
+      message: t('failedUpdateGameCollection'),
       position: 'top',
     });
   } finally {
@@ -210,7 +212,7 @@ const handleToggleCanBring = async () => {
   if (!ownsGame.value || !ownership.value) {
     Notify.create({
       type: 'warning',
-      message: 'You must own this game to toggle bring status',
+      message: t('ownGameToToggleBring'),
       position: 'top',
     });
     return;
@@ -228,15 +230,15 @@ const handleToggleCanBring = async () => {
       Notify.create({
         type: 'positive',
         message: canBringGame.value
-          ? `You can no longer bring ${props.game.title} to events`
-          : `You can now bring ${props.game.title} to events!`,
+          ? t('youCanNoLongerBring', { game: props.game.title })
+          : t('youCanNowBring', { game: props.game.title }),
         position: 'top',
       });
     }
   } catch {
     Notify.create({
       type: 'negative',
-      message: 'Failed to update bring status. Please try again.',
+      message: t('failedUpdateBringStatus'),
       position: 'top',
     });
   } finally {
@@ -264,7 +266,7 @@ onMounted(() => {
         <q-btn :icon="`mdi-briefcase${canBringGame ? '' : '-outline'}`" @click="handleToggleCanBring()"
           :color="canBringGame ? 'positive' : 'grey-9'" round dense size="sm" flat :loading="ownershipLoading">
           <q-tooltip class="bg-positive text-black">
-            {{ canBringGame ? 'Can bring to events' : 'Cannot bring to events' }}
+            {{ canBringGame ? t('canBringToEventsTooltip') : t('cannotBringToEvents') }}
           </q-tooltip>
         </q-btn>
       </div>
@@ -273,16 +275,16 @@ onMounted(() => {
     <q-card-section class="q-px-sm q-py-xs">
       <q-list dense class="d-flex row full-width justify-between">
         <q-item>
-          <q-tooltip class="bg-primary text-black">Genre: {{ game.genre }}</q-tooltip>
+          <q-tooltip class="bg-primary text-black">{{ t('genre') }}: {{ game.genre }}</q-tooltip>
           <GameIcon category="genres" :value="game.genre" size="xs" class="text-primary" />
         </q-item>
         <q-item>
-          <q-tooltip class="bg-secondary text-black">Players: {{ game.numberOfPlayers }}</q-tooltip>
+          <q-tooltip class="bg-secondary text-black">{{ t('players') }}: {{ game.numberOfPlayers }}</q-tooltip>
           <GameIcon category="players" :value="game.numberOfPlayers" size="xs" class="text-secondary" />
         </q-item>
 
         <q-item>
-          <q-tooltip class="bg-accent text-black">Age: {{ game.recommendedAge }}</q-tooltip>
+          <q-tooltip class="bg-accent text-black">{{ t('age') }}: {{ game.recommendedAge }}</q-tooltip>
           <span class="font-aldrich text-accent text-bold non-selectable	">{{ game.recommendedAge }}</span>
         </q-item>
 
@@ -308,25 +310,25 @@ onMounted(() => {
         <q-btn :icon="`mdi-bookmark${bookmark ? '' : '-outline'}`" @click="handleToggleBookmark()"
           :color="bookmark ? 'accent' : 'grey-7'" round flat :loading="loading">
           <q-tooltip class="bg-accent text-black">
-            {{ bookmark ? 'Remove from bookmarks' : 'Add to bookmarks' }}
+            {{ bookmark ? t('removeFromBookmarks') : t('addToBookmarks') }}
           </q-tooltip>
         </q-btn>
         <q-btn :icon="`mdi-star${favorite ? '' : '-outline'}`" @click="handleToggleFavorite()"
           :color="favorite ? 'secondary' : 'grey-7'" round flat :loading="loading">
           <q-tooltip class="bg-secondary text-black">
-            {{ favorite ? 'Remove from favorites' : 'Add to favorites' }}
+            {{ favorite ? t('removeFromFavorites') : t('addToFavorites') }}
           </q-tooltip>
         </q-btn>
         <q-btn :icon="`mdi-package${ownsGame ? '' : '-variant'}`" @click="handleToggleOwnership()"
           :color="ownsGame ? 'positive' : 'grey-7'" round flat :loading="ownershipLoading">
           <q-tooltip class="bg-positive text-black">
-            {{ ownsGame ? 'Remove from collection' : 'Add to collection' }}
+            {{ ownsGame ? t('removeFromCollection') : t('addToCollection') }}
           </q-tooltip>
         </q-btn>
         <q-btn :icon="`mdi-calendar-clock${reserved ? '' : '-outline'}`" @click="handleToggleReserved()"
           :color="reserved ? 'primary' : 'grey-7'" round flat :loading="loading">
           <q-tooltip class="bg-primary text-black">
-            {{ reserved ? 'Event notifications enabled' : 'Get notified about events' }}
+            {{ reserved ? t('eventNotificationsEnabled') : t('getNotifiedAboutEvents') }}
           </q-tooltip>
         </q-btn>
       </div>

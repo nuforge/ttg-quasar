@@ -16,35 +16,36 @@
           <!-- Basic Game Information -->
           <div class="row q-gutter-md">
             <div class="col">
-              <q-input v-model="gameData.title" label="Game Title *" outlined dense
-                :rules="[val => !!val || 'Game title is required']" lazy-rules />
+              <q-input v-model="gameData.title" :label="$t('gameTitle') + ' *'" outlined dense
+                :rules="[val => !!val || $t('gameTitleRequired')]" lazy-rules />
             </div>
             <div class="col">
-              <q-input v-model="gameData.publisher" label="Publisher" outlined dense hint="Optional - Game publisher" />
+              <q-input v-model="gameData.publisher" :label="$t('publisher')" outlined dense
+                :hint="$t('hint.publisher')" />
             </div>
           </div>
 
           <!-- Genre and Difficulty -->
           <div class="row q-gutter-md">
             <div class="col">
-              <q-select v-model="gameData.genre" :options="genreOptions" label="Genre *" outlined dense use-input
-                fill-input hide-selected input-debounce="0" new-value-mode="add-unique"
+              <q-select v-model="gameData.genre" :options="genreOptions" :label="t('genre') + ' *'" outlined dense
+                use-input fill-input hide-selected input-debounce="0" new-value-mode="add-unique"
                 :rules="[val => !!val || 'Genre is required']" lazy-rules />
             </div>
             <div class="col">
-              <q-select v-model="gameData.difficulty" :options="difficultyOptions" label="Difficulty" outlined dense
-                hint="Optional - Game difficulty level" />
+              <q-select v-model="gameData.difficulty" :options="difficultyOptions" :label="t('difficulty')" outlined
+                dense hint="Optional - Game difficulty level" />
             </div>
           </div>
 
           <!-- Players and Age -->
           <div class="row q-gutter-md">
             <div class="col">
-              <q-input v-model="gameData.numberOfPlayers" label="Number of Players *" outlined dense
+              <q-input v-model="gameData.numberOfPlayers" :label="t('numberOfPlayers') + ' *'" outlined dense
                 hint="e.g., '2-4', '3+', '1-6'" :rules="[val => !!val || 'Number of players is required']" lazy-rules />
             </div>
             <div class="col">
-              <q-input v-model="gameData.recommendedAge" label="Recommended Age *" outlined dense
+              <q-input v-model="gameData.recommendedAge" :label="t('recommendedAge') + ' *'" outlined dense
                 hint="e.g., '8+', '12+', '16+'" :rules="[val => !!val || 'Recommended age is required']" lazy-rules />
             </div>
           </div>
@@ -52,12 +53,12 @@
           <!-- Play Time and Release Year -->
           <div class="row q-gutter-md">
             <div class="col">
-              <q-input v-model="gameData.playTime" label="Play Time *" outlined dense
+              <q-input v-model="gameData.playTime" :label="t('playTime') + ' *'" outlined dense
                 hint="e.g., '30-60 minutes', '1-2 hours'" :rules="[val => !!val || 'Play time is required']"
                 lazy-rules />
             </div>
             <div class="col">
-              <q-input v-model.number="gameData.releaseYear" label="Release Year" outlined dense type="number"
+              <q-input v-model.number="gameData.releaseYear" :label="t('releaseYear')" outlined dense type="number"
                 hint="Optional - Year the game was released"
                 :rules="[val => !val || (val >= 1800 && val <= new Date().getFullYear()) || 'Please enter a valid year']"
                 lazy-rules />
@@ -65,29 +66,29 @@
           </div>
 
           <!-- Components -->
-          <q-select v-model="gameData.components" :options="componentOptions" label="Game Components *" outlined dense
-            multiple use-chips use-input fill-input hide-selected input-debounce="0" new-value-mode="add-unique"
-            hint="Select or add game components"
+          <q-select v-model="gameData.components" :options="componentOptions" :label="t('gameComponents') + ' *'"
+            outlined dense multiple use-chips use-input fill-input hide-selected input-debounce="0"
+            new-value-mode="add-unique" hint="Select or add game components"
             :rules="[val => val.length > 0 || 'At least one component is required']" lazy-rules />
 
           <!-- Description -->
-          <q-input v-model="gameData.description" label="Description *" outlined type="textarea" rows="4"
+          <q-input v-model="gameData.description" :label="t('description') + ' *'" outlined type="textarea" rows="4"
             hint="Describe the game, its mechanics, and what makes it fun"
             :rules="[val => !!val || 'Description is required']" lazy-rules />
 
           <!-- Tags -->
-          <q-select v-model="gameData.tags" :options="tagOptions" label="Tags" outlined dense multiple use-chips
+          <q-select v-model="gameData.tags" :options="tagOptions" :label="t('tags')" outlined dense multiple use-chips
             use-input fill-input hide-selected input-debounce="0" new-value-mode="add-unique"
             hint="Add tags to help with searching (optional)" />
 
           <!-- Links -->
           <div class="row q-gutter-md">
             <div class="col">
-              <q-input v-model="gameData.link" label="BoardGameGeek Link" outlined dense
+              <q-input v-model="gameData.link" :label="t('boardGameGeekLink')" outlined dense
                 hint="Optional - Link to BoardGameGeek page" type="url" />
             </div>
             <div class="col">
-              <q-input v-model="gameData.image" label="Image URL" outlined dense hint="Optional - Link to game image"
+              <q-input v-model="gameData.image" :label="t('imageUrl')" outlined dense :hint="t('hint.imageUrl')"
                 type="url" />
             </div>
           </div>
@@ -95,8 +96,9 @@
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat color="grey-7" label="Cancel" @click="closeDialog" :disable="loading" />
-        <q-btn color="primary" label="Submit Game" @click="submitGame" :loading="loading" :disable="!isFormValid" />
+        <q-btn flat color="grey-7" :label="t('cancel')" @click="closeDialog" :disable="loading" />
+        <q-btn color="primary" :label="t('submitGame')" @click="submitGame" :loading="loading"
+          :disable="!isFormValid" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -105,10 +107,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { GameSubmissionData } from 'src/models/GameSubmission';
 
 const $q = useQuasar();
+const { t } = useI18n();
 const gamesStore = useGamesFirebaseStore();
 
 // Props
@@ -251,7 +255,7 @@ const submitGame = async () => {
   if (!isFormValid.value) {
     $q.notify({
       type: 'negative',
-      message: 'Please fill in all required fields',
+      message: t('pleaseFillAllRequiredFields'),
     });
     return;
   }
