@@ -31,7 +31,7 @@ const props = defineProps<{
   game: Game;
 }>();
 
-const gameImageUrl = computed(() => getGameImageUrl(props.game.image));
+const gameImageUrl = computed(() => getGameImageUrl(props.game.image, props.game.title));
 
 // Computed properties for game state based on user preferences
 const favorite = computed(() => isFavorite(props.game.id));

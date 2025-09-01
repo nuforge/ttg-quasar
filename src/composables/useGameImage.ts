@@ -4,6 +4,83 @@ import type { Ref } from 'vue';
 // Cache for loaded images to avoid re-downloading
 const imageCache = new Map<string, string>();
 
+/**
+ * Mapping of game titles to their local image filenames
+ * Only includes games that actually have local image files
+ */
+const titleToImageMap: Record<string, string> = {
+  Bananagrams: 'bananagrams.webp',
+  'Bears vs Babies': 'bears_vs_babies.webp',
+  Boggle: 'boggle.webp',
+  Carcassonne: 'carcassonne.webp',
+  'Cards Against Humanity': 'cards_against_humanity_bigger_blacker_box.webp',
+  Catan: 'catan.webp',
+  Chess: 'chess.webp',
+  'Clue (Legend of Zelda)': 'clue_legend_of_zelda.webp',
+  Codenames: 'codenames.webp',
+  Concept: 'concept.webp',
+  Coup: 'coup.webp',
+  Cranium: 'cranium.webp',
+  'Cthulhu Fluxx': 'cthulhu_fluxx.webp',
+  Curios: 'curios.webp',
+  Decrypto: 'decrypto.webp',
+  Dominion: 'dominion.webp',
+  'Dungeons & Dragons': 'dungeons_dragons.jpg',
+  'Epic Spell Wars: Duel at Mt. Skullzfyre': 'epic_spell_wars.webp',
+  'Exploding Kittens': 'exploding_kittens.webp',
+  Fluxx: 'fluxx.webp',
+  'Fluxx: The Board Game': 'fluxx_the_board_game.webp',
+  'Forbidden Island': 'forbidden_island.webp',
+  Gloom: 'gloom.webp',
+  Hanabi: 'hanabi.webp',
+  'In a Pickle': 'in_a_pickle.webp',
+  'Joking Hazard': 'joking_hazard.webp',
+  'Love Letter': 'love_letter.webp',
+  'Magic: The Gathering': 'magic_the_gathering.webp',
+  'Mancala (Solid Wood)': 'mancala.webp',
+  Munchkin: 'munchkin.webp',
+  'Munchkin Gloom': 'munchkin_gloom.webp',
+  'My Little Pony CCG': 'my_little_pony_collectible_card_game.webp',
+  'One Night Ultimate Werewolf': 'one_night_ultimate_werewolf.webp',
+  Pandemic: 'pandemic.webp',
+  PDQ: 'pdq.webp',
+  'Phase 10': 'phase_10.webp',
+  'Phase 10 Twist': 'phase_10_twist.webp',
+  'Pictionary Card Game': 'pictionary_card_game.webp',
+  'Play on Words': 'play_on_words.webp',
+  Qwirkle: 'qwirkle.webp',
+  'Rack-O': 'rack-o.webp',
+  'Rick & Morty: Anatomy Park': 'rick_and_morty_anatomy_park.webp',
+  'Rick & Morty: The Ricks Must Be Crazy': 'rick_and_morty_the_ricks_must_be_crazy.webp',
+  'Rick & Morty: Total Rickall': 'rick_and_morty_total_rickall.webp',
+  'Say Anything: Family Edition': 'say_anything_family_edition.webp',
+  'Scattergories Junior': 'scattergories_junior.webp',
+  Scrabble: 'scrabble.webp',
+  'Scrabble Slam': 'scrabble_slam.webp',
+  'Skip-Bo': 'skip-bo.webp',
+  Spaceteam: 'spaceteam.webp',
+  'Spot It (Dobble)': 'spot_it.webp',
+  'Star Fluxx': 'star_fluxx.webp',
+  'Star Trek Adventures': 'star_trek_adventures.jpg',
+  'Star Trek CCG': 'star_trek_customizable_card_game.webp',
+  'Star Wars CCG': 'star_wars_customizable_card_game.webp',
+  'Superfight: The Loot Crate Deck': 'superfight.webp',
+  'Sushi Go!': 'sushi_go.webp',
+  'Telepathy: Magic Minds': 'telepathy_magic_minds.webp',
+  'The Resistance': 'the_resistance.webp',
+  'Ticket to Ride': 'ticket_to_ride.webp',
+  Tokaido: 'tokaido.webp',
+  'Tsuro of the Seas': 'tsuro_of_the_seas.webp',
+  'UNO Ultimate (DC Edition)': 'uno_ultimate_dc.webp',
+  'Unstable Unicorns': 'unstable_unicorns.webp',
+  "We Didn't Playtest This At All": 'we_didnt_playtest_this_at_all.webp',
+  'Wheel of Fortune: Card Game': 'wheel_of_fortune_card_game.webp',
+  Yahtzee: 'yahtzee.webp',
+  Zombicide: 'zombicide.webp',
+  'Zombie Dice': 'zombie_dice.webp',
+  'Zombie Dice Deluxe': 'zombie_dice_deluxe.webp',
+};
+
 export function useGameImage(imageValue: Ref<string | undefined>) {
   const isLoading = ref(false);
   const hasError = ref(false);
@@ -123,24 +200,33 @@ export function useGameImage(imageValue: Ref<string | undefined>) {
  * Simple helper function to get the correct image URL
  * without reactive behavior - useful for templates
  */
-export function getGameImageUrl(imageValue: string | undefined): string {
-  if (!imageValue) return '';
+export function getGameImageUrl(imageValue: string | undefined, gameTitle?: string): string {
+  // If we have a valid image value, use it
+  if (imageValue) {
+    // Firebase Storage URL
+    if (imageValue.startsWith('https://firebasestorage.googleapis.com/')) {
+      return imageValue;
+    }
 
-  // Firebase Storage URL
-  if (imageValue.startsWith('https://firebasestorage.googleapis.com/')) {
-    return imageValue;
+    // Full HTTP URL
+    if (imageValue.startsWith('http')) {
+      return imageValue;
+    }
+
+    // Absolute path
+    if (imageValue.startsWith('/')) {
+      return imageValue;
+    }
+
+    // Filename only - assume local games folder
+    return `/images/games/${imageValue}`;
   }
 
-  // Full HTTP URL
-  if (imageValue.startsWith('http')) {
-    return imageValue;
+  // If no image value but we have a game title, try to map it
+  if (gameTitle && titleToImageMap[gameTitle]) {
+    return `/images/games/${titleToImageMap[gameTitle]}`;
   }
 
-  // Absolute path
-  if (imageValue.startsWith('/')) {
-    return imageValue;
-  }
-
-  // Filename only - assume local games folder
-  return `/images/games/${imageValue}`;
+  // Fallback to default image
+  return '/images/games/default.svg';
 }
