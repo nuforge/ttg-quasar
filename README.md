@@ -96,6 +96,7 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Language**: TypeScript with strict type checking
 - **Backend**: Firebase v12.1.0 (Firestore, Authentication, Storage)
 - **State Management**: Pinia + VueFire v3.2.2
+- **Internationalization**: Vue i18n v9 with English and Spanish support
 - **Routing**: Vue Router with authentication guards
 - **Styling**: SCSS + Quasar components
 - **Icons**: Material Design Icons + Material Design Icons (mdi-v7)
@@ -244,6 +245,86 @@ src/
 └── utils/            # Utility functions
 ```
 
+## 🌍 Internationalization (i18n)
+
+### Multi-Language Support
+
+The application features comprehensive internationalization with support for **English** and **Spanish**:
+
+- **260+ Translation Keys**: Complete coverage of all user-facing text
+- **Smart Language Detection**: Automatically detects browser language preference
+- **User Preference Override**: Logged-in users can set personal language preference
+- **Real-time Switching**: Instant language changes without page refresh
+- **Type-Safe Translations**: Full TypeScript integration with Vue i18n v9
+
+### Language Detection Flow
+
+1. **First Visit**:
+   - Detects browser's preferred language (`navigator.language`)
+   - Falls back to English for unsupported languages
+   - Supports language variants (e.g., `es-MX` → `en-ES`)
+
+2. **User Authentication**:
+   - Loads user's saved language preference from Firebase
+   - Overrides browser detection with account setting
+   - Syncs across all user devices
+
+3. **Manual Override**:
+   - Settings page provides elegant language selector with flag icons 🇺🇸 🇪🇸
+   - Changes saved to Firebase user preferences
+   - LocalStorage backup for faster subsequent loads
+
+### Translation Coverage
+
+**Complete Coverage Areas:**
+
+- Navigation and menus
+- Forms and validation messages
+- RSVP states and interactions
+- Game management features
+- Event coordination
+- Admin panel functionality
+- Notification messages
+- Tooltips and help text
+- Error and success messages
+
+**Usage in Components:**
+
+```typescript
+// Import in script section
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
+// Use in templates
+<q-btn :label="t('actions.save')" />
+<div>{{ t('events.rsvpConfirmed') }}</div>
+
+// Use in script sections
+$q.notify({
+  message: t('notifications.eventCreated'),
+  type: 'positive'
+});
+```
+
+### Language Files Structure
+
+```
+src/i18n/
+├── index.ts          # i18n configuration
+├── en-US/           # English translations
+│   └── index.ts     # 260+ translation keys
+└── en-ES/           # Spanish translations
+    └── index.ts     # Complete Spanish translations
+```
+
+### Adding New Languages
+
+1. Create new language file: `src/i18n/[locale]/index.ts`
+2. Copy structure from `en-US/index.ts`
+3. Translate all keys maintaining the same structure
+4. Add locale to boot file language detection
+5. Add option to Settings page language selector
+
 ## 🔐 Authentication
 
 The app uses VueFire for reactive Firebase authentication:
@@ -301,6 +382,90 @@ Routes use flexible authentication - public browsing with auth for interactions:
 - Intelligent icon mapping
 - Event creation from game pages
 - Rich game details and artwork
+
+## 🌍 Internationalization (i18n)
+
+TTG Quasar supports full internationalization with comprehensive language support:
+
+### Supported Languages
+
+- **English (en-US)**: Primary language with complete translations
+- **Spanish (en-ES)**: Full Spanish translations for all UI elements
+
+### i18n Features
+
+- **Complete UI Translation**: 250+ translation keys covering all interface elements
+- **Vue i18n Integration**: Reactive language switching using Vue i18n v9
+- **Pluralization Support**: Smart pluralization for counts and dynamic content
+- **Type Safety**: TypeScript ensures translation key consistency across languages
+- **Dynamic Language Switching**: Users can switch languages seamlessly
+- **SEO-Friendly**: Supports locale-specific routing and meta tags
+- **Comprehensive Coverage**: All user-visible text translated, including notifications and tooltips
+
+### Translation Coverage
+
+- **Navigation**: All menu items, page titles, and navigation elements
+- **Actions**: Buttons, form actions, and interactive elements
+- **RSVP States**: Event participation status and feedback messages
+- **Form Fields**: Input labels, validation messages, and placeholders
+- **Admin Features**: Administrative interface and management tools
+- **Notifications**: Alert messages, confirmations, and status updates including game collection management
+- **Tooltips**: Help text and contextual information for all interactive elements
+- **Error Messages**: User-friendly error handling and validation
+- **Search & Filters**: Search placeholders and filter options
+- **Status Indicators**: Loading states, success messages, and progress indicators
+- **Game Interactions**: Favorites, bookmarks, ownership, and notification preferences
+- **User Feedback**: Success/error messages for all user actions with dynamic content
+
+### Language File Structure
+
+```typescript
+// src/i18n/en-US/index.ts
+export default {
+  // Navigation
+  home: 'Home',
+  events: 'Events',
+  games: 'Games',
+
+  // Actions
+  create: 'Create',
+  edit: 'Edit',
+  save: 'Save',
+
+  // RSVP States
+  confirmed: 'Confirmed',
+  interested: 'Interested',
+  pending: 'Pending',
+
+  // Pluralization
+  playersCount: '{count} player | {count} players',
+
+  // ... 220+ more keys
+};
+```
+
+### Adding New Translations
+
+1. **Add to English**: Add new keys to `src/i18n/en-US/index.ts`
+2. **Add to Spanish**: Add corresponding translations to `src/i18n/en-ES/index.ts`
+3. **Use in Components**: Import and use via `useI18n()` composable
+
+```vue
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
+</script>
+
+<template>
+  <q-btn :label="t('create')" />
+  <p>{{ t('playersCount', { count: playerCount }) }}</p>
+</template>
+```
+
+### Language Switching
+
+Users can switch languages through the language selector in the settings or header menu. The entire application interface will update immediately to reflect the selected language.
 
 ## 🔒 Security
 

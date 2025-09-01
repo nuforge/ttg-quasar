@@ -18,7 +18,7 @@ const qrdialog = ref(false);
             </q-avatar>
           </q-item-section>
           <q-item-section>
-            Home
+            {{ $t('home') }}
           </q-item-section>
         </q-item>
 

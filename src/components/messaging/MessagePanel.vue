@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import MessageList from './MessageList.vue';
 import MessageComposer from './MessageComposer.vue';
 import type { Message } from 'src/models/Message';
+
+const { t } = useI18n();
 
 defineProps({
   title: {
@@ -38,7 +41,7 @@ defineProps({
     <MessageComposer v-if="recipientId || groupName" :recipient-id="recipientId" :group-name="groupName" />
   </q-card>
   <div v-else class="text-center q-pa-lg text-grey">
-    Select a conversation to view messages
+    {{ t('selectConversationToView') }}
   </div>
 </template>
 

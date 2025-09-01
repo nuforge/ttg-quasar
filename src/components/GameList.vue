@@ -18,8 +18,8 @@
                     ]" outline color="primary" toggle-color="primary" />
 
                     <!-- Search -->
-                    <q-input v-model="searchQuery" placeholder="Search games..." outlined dense debounce="300" clearable
-                        style="min-width: 200px">
+                    <q-input v-model="searchQuery" :placeholder="$t('searchGames') + '...'" outlined dense
+                        debounce="300" clearable style="min-width: 200px">
                         <template v-slot:prepend>
                             <q-icon name="mdi-magnify" />
                         </template>
@@ -79,7 +79,7 @@
             <q-icon :name="emptyIcon" size="64px" color="grey-5" />
             <h6 class="text-h6 q-mt-md q-mb-sm">{{ emptyTitle }}</h6>
             <p class="text-body2 text-grey-6 q-mb-md">{{ emptyMessage }}</p>
-            <q-btn v-if="!hideEmptyAction" flat color="primary" label="Browse All Games" to="/games" />
+            <q-btn v-if="!hideEmptyAction" flat color="primary" :label="t('browseAllGames')" to="/games" />
         </q-card>
 
         <!-- Games Grid/List -->
@@ -125,14 +125,14 @@
                                         :icon="ownsGame(game.id) ? 'mdi-package-variant' : 'mdi-package-variant-plus'"
                                         :color="ownsGame(game.id) ? 'positive' : 'grey-6'" size="sm" flat round
                                         @click="handleToggleOwnership(game.id)" :loading="ownershipLoading">
-                                        <q-tooltip>Toggle ownership</q-tooltip>
+                                        <q-tooltip>{{ t('toggleOwnership') }}</q-tooltip>
                                     </q-btn>
 
                                     <q-btn v-if="ownsGame(game.id)"
                                         :icon="canBringGame(game.id) ? 'mdi-briefcase-check' : 'mdi-briefcase-plus'"
                                         :color="canBringGame(game.id) ? 'secondary' : 'grey-6'" size="sm" flat round
                                         @click="handleToggleCanBring(game.id)" :loading="ownershipLoading">
-                                        <q-tooltip>Can bring to events</q-tooltip>
+                                        <q-tooltip>{{ t('canBringToEvents') }}</q-tooltip>
                                     </q-btn>
                                 </div>
 
@@ -141,13 +141,13 @@
                                     <q-btn :icon="isFavorite(game.id) ? 'mdi-star' : 'mdi-star-outline'"
                                         :color="isFavorite(game.id) ? 'secondary' : 'grey-6'" size="sm" flat round
                                         @click="handleToggleFavorite(game.id)">
-                                        <q-tooltip>Toggle favorite</q-tooltip>
+                                        <q-tooltip>{{ t('toggleFavorite') }}</q-tooltip>
                                     </q-btn>
 
                                     <q-btn :icon="isBookmarked(game.id) ? 'mdi-bookmark' : 'mdi-bookmark-outline'"
                                         :color="isBookmarked(game.id) ? 'accent' : 'grey-6'" size="sm" flat round
                                         @click="handleToggleBookmark(game.id)">
-                                        <q-tooltip>Toggle bookmark</q-tooltip>
+                                        <q-tooltip>{{ t('toggleBookmark') }}</q-tooltip>
                                     </q-btn>
                                 </div>
 
@@ -167,6 +167,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useCurrentUser } from 'vuefire';
 import { useQuasar } from 'quasar';
 import type { Game } from 'src/models/Game';
@@ -175,6 +176,8 @@ import { getGameImageUrl } from 'src/composables/useGameImage';
 import { createGameUrl } from 'src/utils/slug';
 import { useGamePreferences } from 'src/composables/useGamePreferences';
 import { useGameOwnershipsStore } from 'src/stores/game-ownerships-store';
+
+const { t } = useI18n();
 
 // Props
 const props = withDefaults(defineProps<{

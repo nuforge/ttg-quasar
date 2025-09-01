@@ -67,7 +67,7 @@ const sendMessage = async () => {
             </template>
         </q-banner>
         <q-form @submit.prevent="sendMessage" class="row items-center q-gutter-sm">
-            <q-input v-model="messageContent" dense outlined class="col" placeholder="Type a message..."
+            <q-input v-model="messageContent" dense outlined class="col" :placeholder="$t('typeMessage')"
                 :disable="sending" @keydown.enter.prevent="sendMessage" />
             <q-btn :loading="sending" type="submit" color="primary" icon="send" flat round
                 :disable="!messageContent.trim()" />

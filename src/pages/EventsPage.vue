@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import EventCard from 'src/components/events/EventCard.vue';
 
+const { t } = useI18n();
 const eventsStore = useEventsFirebaseStore();
 const gamesStore = useGamesFirebaseStore();
 
@@ -111,7 +113,7 @@ const clearFilters = () => {
       <div class="row q-col-gutter-md">
         <!-- Search bar -->
         <div class="col-12 col-md-4">
-          <q-input v-model="search" outlined dense placeholder="Search events" clearable>
+          <q-input v-model="search" outlined dense :placeholder="$t('searchEvents')" clearable>
             <template v-slot:append>
               <q-icon name="search" />
             </template>
@@ -120,13 +122,13 @@ const clearFilters = () => {
 
         <!-- Game filter -->
         <div class="col-12 col-md-4">
-          <q-select v-model="selectedGameId" :options="gameOptions" outlined dense label="Filter by Game" clearable
+          <q-select v-model="selectedGameId" :options="gameOptions" outlined dense :label="$t('filterByGame')" clearable
             emit-value map-options />
         </div>
 
         <!-- Status filter -->
         <div class="col-12 col-md-4">
-          <q-select v-model="selectedStatus" :options="statuses" outlined dense label="Filter by Status" clearable
+          <q-select v-model="selectedStatus" :options="statuses" outlined dense :label="$t('filterByStatus')" clearable
             emit-value map-options />
         </div>
       </div>
@@ -134,15 +136,15 @@ const clearFilters = () => {
       <div class="row q-col-gutter-md q-mt-sm">
         <!-- Min players filter -->
         <div class="col-12 col-md-4">
-          <q-input v-model.number="minPlayers" type="number" outlined dense label="Min Players" clearable />
+          <q-input v-model.number="minPlayers" type="number" outlined dense :label="$t('minPlayers')" clearable />
         </div>
 
         <!-- Sort options -->
         <div class="col-12 col-md-4">
-          <q-select v-model="sortBy" outlined dense label="Sort by" :options="[
-            { label: 'Date', value: 'date' },
-            { label: 'Title', value: 'title' },
-            { label: 'Players', value: 'players' }
+          <q-select v-model="sortBy" outlined dense :label="$t('sortBy')" :options="[
+            { label: $t('date'), value: 'date' },
+            { label: $t('title'), value: 'title' },
+            { label: $t('players'), value: 'players' }
           ]" map-options emit-value />
         </div>
 
@@ -150,15 +152,15 @@ const clearFilters = () => {
         <div class="col-12 col-md-4">
           <q-btn-toggle v-model="sortDirection" toggle-color="primary" text-color="primary" color="black"
             toggle-text-color="black" :options="[
-              { label: 'Ascending', value: 'asc' },
-              { label: 'Descending', value: 'desc' }
+              { label: $t('ascending'), value: 'asc' },
+              { label: $t('descending'), value: 'desc' }
             ]" spread no-caps unelevated />
         </div>
       </div>
 
       <!-- Clear filters button -->
       <div class="row q-mt-sm">
-        <q-btn label="Clear Filters" color="secondary" flat @click="clearFilters" />
+        <q-btn :label="$t('clearFilters')" color="secondary" flat @click="clearFilters" />
       </div>
     </div>
 
@@ -172,7 +174,7 @@ const clearFilters = () => {
     <!-- No results message -->
     <div v-else class="text-center q-mt-xl">
       <q-icon name="sentiment_dissatisfied" size="3rem" color="grey-7" />
-      <p class="text-grey-7 q-mt-sm">No events match your criteria.</p>
+      <p class="text-grey-7 q-mt-sm">{{ t('noEventsMatchCriteria') }}</p>
     </div>
   </q-page>
 </template>

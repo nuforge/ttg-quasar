@@ -6,9 +6,10 @@
         <q-menu>
             <q-card style="width: 350px; max-height: 400px;">
                 <q-card-section class="row items-center justify-between q-pb-none">
-                    <div class="text-h6">Game Notifications</div>
+                    <div class="text-h6">{{ $t('notifications') }}</div>
                     <div>
-                        <q-btn v-if="hasUnread" flat dense size="sm" label="Mark all read" @click="markAllAsRead" />
+                        <q-btn v-if="hasUnread" flat dense size="sm" :label="$t('markAllRead')"
+                            @click="markAllAsRead" />
                     </div>
                 </q-card-section>
 
@@ -16,12 +17,12 @@
 
                 <q-card-section v-if="loading" class="text-center q-pa-md">
                     <q-spinner size="md" />
-                    <div class="q-mt-sm text-body2">Loading notifications...</div>
+                    <div class="q-mt-sm text-body2">{{ $t('loading') }}...</div>
                 </q-card-section>
 
                 <q-card-section v-else-if="notifications.length === 0" class="text-center q-pa-md text-grey-6">
                     <q-icon name="mdi-bell-off" size="md" class="q-mb-sm" />
-                    <div>No notifications yet</div>
+                    <div>{{ $t('noNotifications') }}</div>
                 </q-card-section>
 
                 <q-scroll-area v-else style="height: 300px;">
@@ -60,7 +61,7 @@
                 <q-separator />
 
                 <q-card-actions align="center">
-                    <q-btn flat dense size="sm" label="View All" @click="$router.push('/notifications')" />
+                    <q-btn flat dense size="sm" :label="$t('viewAll')" @click="$router.push('/notifications')" />
                 </q-card-actions>
             </q-card>
         </q-menu>

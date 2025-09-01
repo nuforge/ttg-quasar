@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const props = defineProps({
   id: {
     type: [Number, String],
@@ -49,7 +52,7 @@ const selectItem = () => {
     <q-item-section>
       <q-item-label>{{ name }}</q-item-label>
       <q-item-label caption lines="1" :class="unreadCount > 0 ? 'text-weight-bold' : ''">
-        {{ lastMessage || 'No messages yet' }}
+        {{ lastMessage || t('noMessagesYet') }}
       </q-item-label>
     </q-item-section>
 

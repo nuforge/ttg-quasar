@@ -54,7 +54,7 @@ watch(() => dialogVisible.value, (newVal) => {
           :background="qrback" :foreground="primaryColor" />
       </q-card-section>
       <q-card-actions align="center">
-        <q-btn class="full-width" label="Close" @click="dialogVisible = false" flat />
+        <q-btn class="full-width" :label="$t('close')" @click="dialogVisible = false" flat />
       </q-card-actions>
     </q-card>
   </q-dialog>

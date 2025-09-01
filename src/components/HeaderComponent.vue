@@ -59,7 +59,7 @@ onMounted(async () => {
 <template>
   <q-header class="header-theme-responsive">
     <q-toolbar>
-      <q-btn flat dense round icon="menu" aria-label="Menu" @click="emit('toggleLeftDrawer')" />
+      <q-btn flat dense round icon="menu" :aria-label="$t('menu')" @click="emit('toggleLeftDrawer')" />
 
       <q-toolbar-title class="text-uppercase text-primary font-aldrich">
         Looking For Group
@@ -75,14 +75,14 @@ onMounted(async () => {
           {{ (user?.displayName || 'U').charAt(0).toUpperCase() }}
         </q-avatar>
 
-        <q-btn-dropdown flat no-caps :label="user?.displayName || 'User'">
+        <q-btn-dropdown flat no-caps :label="user?.displayName || $t('user')">
           <q-list>
             <q-item clickable v-close-popup to="/account">
               <q-item-section avatar>
                 <q-icon name="account_circle" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Account</q-item-label>
+                <q-item-label>{{ $t('account') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -91,7 +91,7 @@ onMounted(async () => {
                 <q-icon name="settings" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Settings</q-item-label>
+                <q-item-label>{{ $t('settings') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -100,7 +100,7 @@ onMounted(async () => {
                 <q-icon name="mdi-bookshelf" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Game Shelf</q-item-label>
+                <q-item-label>{{ $t('gameShelf') }}</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -113,7 +113,7 @@ onMounted(async () => {
                   <q-icon name="dashboard" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Admin Dashboard</q-item-label>
+                  <q-item-label>{{ $t('adminDashboard') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -122,7 +122,7 @@ onMounted(async () => {
                   <q-icon name="mdi-dice-6" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Admin Games</q-item-label>
+                  <q-item-label>{{ $t('adminGames') }}</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -131,7 +131,7 @@ onMounted(async () => {
                   <q-icon name="group" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Admin Users</q-item-label>
+                  <q-item-label>{{ $t('adminUsers') }}</q-item-label>
                 </q-item-section>
               </q-item>
             </template>
@@ -143,7 +143,7 @@ onMounted(async () => {
                 <q-icon name="logout" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Sign Out</q-item-label>
+                <q-item-label>{{ $t('logout') }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -151,9 +151,10 @@ onMounted(async () => {
       </div>
 
       <!-- Sign in button for guests -->
-      <q-btn v-else flat to="/login" label="Sign In" />
+      <q-btn v-else flat to="/login" :label="$t('login')" />
 
-      <q-btn flat dense round icon="mdi-calendar-clock" aria-label="Notifications" @click="emit('toggleRightDrawer')" />
+      <q-btn flat dense round icon="mdi-calendar-clock" :aria-label="$t('notifications')"
+        @click="emit('toggleRightDrawer')" />
     </q-toolbar>
   </q-header>
 </template>

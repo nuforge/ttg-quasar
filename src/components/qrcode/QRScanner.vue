@@ -114,10 +114,11 @@ onUnmounted(() => {
     <div v-if="result">{{ result }}</div>
 
     <!-- Toggle Camera -->
-    <q-btn @click="toggleCamera" :label="isCameraActive ? 'Stop' : 'Start'" />
+    <q-btn @click="toggleCamera" :label="isCameraActive ? $t('stop') : $t('start')" />
 
     <!-- File Upload -->
-    <q-file label="Upload QR Image" v-model="uploadedFile" @update:model-value="handleFileUpload" accept="image/*" />
+    <q-file :label="$t('uploadQrImage')" v-model="uploadedFile" @update:model-value="handleFileUpload"
+      accept="image/*" />
   </div>
 </template>
 

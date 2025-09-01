@@ -3,7 +3,7 @@
         <!-- Loading State -->
         <div v-if="loading" class="text-center q-pa-lg">
             <q-spinner size="lg" color="primary" />
-            <div class="q-mt-md">Loading games...</div>
+            <div class="q-mt-md">{{ t('loading') }}...</div>
         </div>
 
         <!-- Empty State -->
@@ -11,7 +11,7 @@
             <q-icon :name="emptyIcon" size="64px" color="grey-5" />
             <h6 class="text-h6 q-mt-md q-mb-sm">{{ emptyTitle }}</h6>
             <p class="text-body2 text-grey-6 q-mb-md">{{ emptyMessage }}</p>
-            <q-btn flat color="primary" label="Browse Games" to="/games" />
+            <q-btn flat color="primary" :label="t('browseGames')" to="/games" />
         </q-card>
 
         <!-- Games List -->
@@ -28,7 +28,9 @@
 
                     <div class="row items-center q-gutter-sm q-mt-xs">
                         <q-chip :label="game.genre" size="sm" color="primary" text-color="white" dense />
-                        <q-chip :label="`${game.numberOfPlayers} players`" size="sm" outline dense />
+                        <q-chip
+                            :label="t('playersCount', { count: parseInt(game.numberOfPlayers) }, parseInt(game.numberOfPlayers))"
+                            size="sm" outline dense />
                         <q-chip :label="game.playTime" size="sm" outline dense />
                     </div>
                 </q-item-section>
@@ -44,7 +46,8 @@
                             flat @click="$emit('configure', game.id)" />
 
                         <!-- View game button -->
-                        <q-btn flat dense size="sm" label="View" icon="mdi-open-in-new" :to="`/games/${game.id}`" />
+                        <q-btn flat dense size="sm" :label="t('view')" icon="mdi-open-in-new"
+                            :to="`/games/${game.id}`" />
                     </div>
                 </q-item-section>
             </q-item>
@@ -53,8 +56,11 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import type { Game } from 'src/models/Game';
 import { getGameImageUrl } from 'src/composables/useGameImage';
+
+const { t } = useI18n();
 
 // Props
 const props = defineProps<{
@@ -106,15 +112,15 @@ const getActionColor = () => {
 const getActionLabel = () => {
     switch (props.type) {
         case 'favorites':
-            return 'Remove';
+            return t('remove');
         case 'bookmarks':
-            return 'Remove';
+            return t('remove');
         case 'notifications':
-            return 'Disable';
+            return t('disable');
         case 'owned':
-            return 'Remove';
+            return t('remove');
         default:
-            return 'Remove';
+            return t('remove');
     }
 };
 </script>
