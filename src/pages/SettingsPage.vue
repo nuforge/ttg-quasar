@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
-import { ref, onMounted, computed, watch } from 'vue'
-import { useCurrentUser } from 'vuefire';
+import { ref, onMounted, watch } from 'vue'
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
 
 const { locale, availableLocales } = useI18n({ useScope: 'global' });
 const $q = useQuasar();
-const user = useCurrentUser();
 const preferencesStore = useUserPreferencesStore();
 
 // Create a ref for theme mode
@@ -142,7 +140,7 @@ onMounted(() => {
                       </q-item-section>
                       <q-item-section>
                         <q-item-label>{{themeOptions.find(opt => opt.value === themeMode)?.label || 'Auto (System)'
-                        }}</q-item-label>
+                          }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </template>
