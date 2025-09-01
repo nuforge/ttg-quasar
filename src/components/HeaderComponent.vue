@@ -95,7 +95,7 @@ onMounted(async () => {
               </q-item-section>
             </q-item>
 
-            <q-item clickable v-close-popup to="/preferences">
+            <q-item clickable v-close-popup to="/game-shelf">
               <q-item-section avatar>
                 <q-icon name="mdi-bookshelf" />
               </q-item-section>
@@ -153,7 +153,7 @@ onMounted(async () => {
       <!-- Sign in button for guests -->
       <q-btn v-else flat to="/login" :label="$t('login')" />
 
-      <q-btn flat dense round icon="mdi-calendar-clock" :aria-label="$t('notifications')"
+      <q-btn flat dense round icon="mdi-calendar-clock" :aria-label="$t('notifications.title')"
         @click="emit('toggleRightDrawer')" />
     </q-toolbar>
   </q-header>

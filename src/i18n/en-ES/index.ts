@@ -52,7 +52,11 @@ export default {
     browserNotifications: 'Notificaciones del navegador',
     defaultNotificationTiming: 'Tiempo de notificación predeterminado',
   },
-  notifications: 'Notificaciones',
+  notifications: {
+    title: 'Notificaciones',
+    languageUpdated: 'Idioma actualizado exitosamente',
+    failedToUpdateLanguage: 'Error al actualizar idioma. Por favor intenta de nuevo.',
+  },
 
   // Actions
   create: 'Crear',
@@ -290,6 +294,22 @@ export default {
 
   // Additional interface elements
   gameShelf: 'Estantería de Juegos',
+  gameShelfDescription:
+    'Gestiona tu colección de juegos, favoritos, marcadores y preferencias de notificación',
+  yourStats: 'Tus Estadísticas',
+  ownedGames: 'Juegos en Propiedad',
+  favorites: 'Favoritos',
+  bookmarks: 'Marcadores',
+  ownedGamesCount: '{count} juegos en propiedad',
+  favoriteGamesCount: '{count} juegos favoritos',
+  bookmarkedGamesCount: '{count} juegos marcados',
+  gamesWithNotifications: '{count} juegos con notificaciones',
+  ownedGamesEmptyMessage:
+    'Los juegos que marques como propios aparecerán aquí. Usa el ícono de paquete en las tarjetas de juego para agregar juegos a tu colección.',
+  favoriteGamesEmptyMessage: 'Los juegos que marques como favoritos aparecerán aquí',
+  bookmarkedGamesEmptyMessage: 'Los juegos que marques aparecerán aquí',
+  notificationGamesEmptyMessage:
+    'Los juegos con notificaciones de eventos habilitadas aparecerán aquí',
   adminGames: 'Administrar Juegos',
   adminUsers: 'Administrar Usuarios',
   noNotifications: 'Aún no hay notificaciones',
@@ -340,8 +360,6 @@ export default {
   failedUpdateBringStatus: 'Error al actualizar el estado de traer. Inténtalo de nuevo.',
   failedUpdateNotifications:
     'Error al actualizar las notificaciones de eventos. Inténtalo de nuevo.',
-  languageUpdated: 'Idioma actualizado exitosamente',
-  failedToUpdateLanguage: 'Error al actualizar el idioma. Inténtalo de nuevo.',
   pleaseSignInBookmarks: 'Inicia sesión para marcar juegos',
   pleaseSignInCollection: 'Inicia sesión para gestionar tu colección de juegos',
   addedToCollection: 'agregado a tu colección!',

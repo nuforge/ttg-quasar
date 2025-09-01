@@ -79,7 +79,7 @@
                 <div class="col-12 col-md-6">
                     <q-card class="q-pa-md">
                         <q-card-section>
-                            <div class="text-h5 q-mb-md">{{ $t('notifications') }}</div>
+                            <div class="text-h5 q-mb-md">{{ $t('notifications.title') }}</div>
                             <div class="q-gutter-sm">
                                 <q-btn flat color="primary" :label="$t('markAllRead')" />
                                 <q-btn flat color="secondary" :label="$t('viewAll')" />

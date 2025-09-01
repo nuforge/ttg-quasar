@@ -102,13 +102,14 @@ export default boot(({ app }) => {
 3. **Actions**: Buttons, form actions, interactive elements
 4. **RSVP & Events**: Event participation and status management
 5. **Forms & Validation**: Input labels and error messages
-6. **Admin Features**: Administrative interface elements
-7. **Status & States**: Loading, error, success states (including yes/no)
-8. **Notifications**: Alert messages and feedback
-9. **Search & Filters**: Search interface and filtering options
-10. **Tooltips**: Contextual help and descriptions
-11. **Pluralization**: Dynamic count-based translations
-12. **Account Management**: User profile, permissions, and debug information
+6. **Game Shelf**: Game collection management, stats, and organization
+7. **Admin Features**: Administrative interface elements
+8. **Status & States**: Loading, error, success states (including yes/no)
+9. **Notifications**: Alert messages and feedback (now nested object structure)
+10. **Search & Filters**: Search interface and filtering options
+11. **Tooltips**: Contextual help and descriptions
+12. **Pluralization**: Dynamic count-based translations
+13. **Account Management**: User profile, permissions, and debug information
 
 ### Naming Conventions
 
@@ -476,8 +477,28 @@ const { t } = useI18n();
 
 - **Use descriptive names**: `confirmRSVP` instead of `button1`
 - **Group by feature**: Keep related keys together
-- **Avoid deep nesting**: Flat key structure for easier management
+- **Prefer flat structure**: Most keys should be at the root level for easier management
+- **Strategic nesting**: Use nested objects only for tightly coupled features (e.g., `notifications`)
 - **Include context**: `gameTitle` vs `eventTitle` for clarity
+
+### Structured Translation Objects
+
+Some features benefit from nested object organization:
+
+```typescript
+// Structured notifications object
+notifications: {
+  title: 'Notifications',
+  languageUpdated: 'Language updated successfully',
+  failedToUpdateLanguage: 'Failed to update language. Please try again.',
+},
+
+// Usage in components
+$q.notify({
+  type: 'positive',
+  message: t('notifications.languageUpdated'),
+});
+```
 
 ### Component Integration
 

@@ -52,14 +52,16 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **SEO-Friendly URLs**: Games use `/games/firebase_doc_id/title-slug` format
 - **Firebase Integration**: Real-time syncing of user game preferences
 
-### 🔔 Game Preferences & Notifications
+### �️ Game Shelf & Collection Management
 
+- **Game Collection**: Manage your owned games, favorites, and bookmarks
+- **Personal Stats**: Track your game collection statistics
 - **Favorites**: Star games you love for easy access
 - **Bookmarks**: Save games you want to play later
 - **Event Notifications**: Get notified about events for specific games
 - **Customizable Settings**: Configure notification timing and preferences
 - **Real-time Updates**: Instant syncing across all devices
-- **Notification Bell**: Header notification center with unread counts
+- **Collection Overview**: Visual dashboard of your gaming preferences
 
 ### 👥 Player Management
 

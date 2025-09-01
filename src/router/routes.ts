@@ -180,13 +180,13 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/preferences',
+    path: '/game-shelf',
     component: () => import('layouts/MainLayout.vue'),
     beforeEnter: requireAuth,
     children: [
       {
         path: '',
-        component: () => import('pages/GamePreferencesPage.vue'),
+        component: () => import('pages/GameShelfPage.vue'),
         meta: { requiresAuth: true },
       },
     ],
