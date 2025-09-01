@@ -1,26 +1,133 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
+import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
+import { useCurrentUser } from 'vuefire';
 import GameCard from 'src/components/GameCard.vue';
 import EventCard from 'src/components/events/EventCard.vue';
+import { type Game } from 'src/models/Game';
+import { UserPreferencesAnalyzer } from 'src/services/user-preferences-analyzer';
 
 const router = useRouter();
 const gamesStore = useGamesFirebaseStore();
 const eventsStore = useEventsFirebaseStore();
+const preferencesStore = useUserPreferencesStore();
+const currentUser = useCurrentUser();
+
+// Featured games state
+const featuredGamesData = ref<Game[]>([]);
 
 // Load data on mount
 onMounted(async () => {
+  console.log('🚀 IndexPage mounted, starting data load...');
+
+  // Load games first
   if (gamesStore.games.length === 0) {
+    console.log('📚 Loading games from Firebase...');
     await gamesStore.loadGames();
+    console.log('📚 Games loaded:', gamesStore.games.length, 'total games');
+    console.log('✅ Approved games:', gamesStore.approvedGames.length);
+  } else {
+    console.log('📚 Games already loaded:', gamesStore.games.length, 'total games');
+    console.log('✅ Approved games:', gamesStore.approvedGames.length);
   }
+
   // Load events from Firebase
+  console.log('📅 Subscribing to events...');
   eventsStore.subscribeToEvents();
+
+  // Load user preferences if authenticated
+  if (currentUser.value) {
+    console.log('👤 User authenticated, loading preferences...');
+    await preferencesStore.loadPreferences();
+  } else {
+    console.log('👤 No user authenticated');
+  }
+
+  // Load featured games with user data
+  console.log('🎮 Loading featured games...');
+  await loadFeaturedGames();
+  console.log('🎮 Featured games load complete');
 });
 
-// Featured content
-const featuredGames = computed(() => gamesStore.approvedGames.slice(0, 3));
+// Load featured games with personalization data
+const loadFeaturedGames = async () => {
+  try {
+    console.log('🎮 Loading featured games...');
+    console.log('Games available:', gamesStore.games.length);
+    console.log('Approved games:', gamesStore.approvedGames.length);
+
+    const criteria = {
+      count: 3,
+      // Include user data if available for future personalization
+      ...(currentUser.value && preferencesStore.preferences && {
+        userFavorites: preferencesStore.favoriteGames,
+        userBookmarks: preferencesStore.bookmarkedGames,
+        upcomingEventsForUser: eventsStore.myEvents,
+        allUpcomingEvents: eventsStore.upcomingEvents,
+        // Calculate user genre preferences based on their favorites/bookmarks
+        userGenrePreferences: getUserGenrePreferences(),
+      }),
+    };
+
+    console.log('Featured games criteria:', criteria);
+    featuredGamesData.value = await gamesStore.getFeaturedGamesWithUserData(criteria);
+    console.log('Featured games loaded:', featuredGamesData.value.length);
+  } catch (error) {
+    console.error('Failed to load featured games:', error);
+    // Fallback to basic featured games
+    featuredGamesData.value = gamesStore.featuredGames;
+    console.log('Using fallback featured games:', featuredGamesData.value.length);
+  }
+};
+
+// Calculate user's preferred genres based on their game interactions
+const getUserGenrePreferences = (): string[] => {
+  if (!currentUser.value || !preferencesStore.preferences) {
+    return [];
+  }
+
+  // Get actual game objects for favorites and bookmarks
+  const favoriteGameObjects = preferencesStore.favoriteGames
+    .map(gameId => gamesStore.getGameById(gameId))
+    .filter((game): game is Game => game !== undefined);
+
+  const bookmarkedGameObjects = preferencesStore.bookmarkedGames
+    .map(gameId => gamesStore.getGameById(gameId))
+    .filter((game): game is Game => game !== undefined);
+
+  // Use analyzer to determine preferred genres
+  return UserPreferencesAnalyzer.getPreferredGenres(favoriteGameObjects, bookmarkedGameObjects);
+};
+
+// Refresh featured games when user authentication or preferences change
+const refreshFeaturedGames = async () => {
+  await loadFeaturedGames();
+};
+
+// Watch for authentication changes to refresh featured games
+watch(currentUser, () => {
+  void refreshFeaturedGames();
+});
+
+// Watch for preference changes to refresh featured games
+watch(
+  () => preferencesStore.preferences,
+  () => {
+    if (currentUser.value) {
+      void refreshFeaturedGames();
+    }
+  },
+  { deep: true }
+);// Featured content - uses personalized data when available
+const featuredGames = computed(() => {
+  // Use loaded personalized data if available, otherwise fallback to store's random selection
+  const result = featuredGamesData.value.length > 0 ? featuredGamesData.value : gamesStore.featuredGames;
+  console.log('🎯 Featured games computed:', result.length, result.map(g => g.title));
+  return result;
+});
 
 // Get upcoming events from Firebase store
 const upcomingEvents = computed(() =>
@@ -117,6 +224,15 @@ const steps = [
     </section>
 
     <!-- Featured Games Section -->
+    <!--
+      Displays personalized featured games based on:
+      - User's favorite and bookmarked games
+      - Games with upcoming events the user RSVPed to
+      - Popular games with high RSVP rates
+      - User's preferred genres (calculated from interaction history)
+      - Recently added/updated games
+      Falls back to random selection for non-authenticated users
+    -->
     <section class="games-section q-pa-md q-mb-lg">
       <div class="section-header row items-center justify-between q-mb-md">
         <div class="text-h4">Featured Games</div>

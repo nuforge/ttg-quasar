@@ -16,7 +16,9 @@ import {
 } from 'firebase/firestore';
 import { db } from 'src/boot/firebase';
 import { Game, type FirebaseGame } from 'src/models/Game';
+import { type Event } from 'src/models/Event';
 import { authService } from 'src/services/auth-service';
+import { FeaturedGamesService } from 'src/services/featured-games-service';
 
 export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
   // State
@@ -42,6 +44,17 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     return (legacyId: number) => games.value.find((game) => game.legacyId === legacyId);
   });
 
+  /**
+   * Get featured games using personalization algorithm
+   * Currently uses random selection but structured for future enhancement
+   * with user bookmarks, favorites, upcoming events, and popularity metrics
+   */
+  const featuredGames = computed(() => {
+    const result = getFeaturedGames();
+    console.log('🏪 Store featuredGames getter called, returning:', result.length, 'games');
+    return result;
+  });
+
   // Search games
   const searchGames = computed(() => {
     return (searchTerm: string) => {
@@ -59,6 +72,53 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
       );
     };
   });
+
+  /**
+   * Calculate featured games based on user data and engagement metrics
+   * Currently uses random selection for development, but structured for future enhancement
+   * with real personalization algorithms considering:
+   * - User's bookmarked/favorite games
+   * - Games with upcoming events the user RSVPed to
+   * - Popular games with high RSVP rates
+   * - Games in user's preferred genres
+   * - Recently added/updated games
+   */
+  const getFeaturedGames = (count = 3): Game[] => {
+    // Use approved AND active games
+    const availableGames = games.value.filter((game) => game.approved && game.status === 'active');
+
+    console.log('🎲 getFeaturedGames called with:', {
+      count,
+      totalGames: games.value.length,
+      approvedGames: games.value.filter((g) => g.approved).length,
+      activeGames: games.value.filter((g) => g.status === 'active').length,
+      availableGamesCount: availableGames.length,
+      firstFewGames: games.value
+        .slice(0, 3)
+        .map((g) => ({ title: g.title, status: g.status, approved: g.approved })),
+    });
+
+    if (availableGames.length === 0) {
+      console.log('❌ No active games available');
+      return [];
+    }
+
+    // Use the featured games service for calculation
+    const result = FeaturedGamesService.getFeaturedGames(availableGames, { count });
+    console.log(
+      '✅ getFeaturedGames returning:',
+      result.length,
+      'games:',
+      result.map((g) => g.title),
+    );
+    return result;
+
+    // TODO: Future enhancement - Add user-specific criteria:
+    // - Load user preferences for bookmarks/favorites
+    // - Get user's upcoming events
+    // - Calculate user's genre preferences
+    // - Pass to service for personalized results
+  };
 
   // Actions
   const createGame = async (gameData: Partial<FirebaseGame>) => {
@@ -186,20 +246,64 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     error.value = null;
 
     try {
+      console.log('🔥 Loading games from Firebase...');
       const q = query(collection(db, 'games'), orderBy('title', 'asc'));
 
       const snapshot = await getDocs(q);
+      console.log('📊 Firebase snapshot received:', snapshot.docs.length, 'documents');
+
       games.value = snapshot.docs.map((doc) => {
         const data = doc.data() as FirebaseGame;
-        return Game.fromFirebase(doc.id, data);
+        const game = Game.fromFirebase(doc.id, data);
+        console.log(
+          '🎮 Game loaded:',
+          game.title,
+          'approved:',
+          game.approved,
+          'status:',
+          game.status,
+        );
+        return game;
       });
+
+      console.log('✅ Total games loaded:', games.value.length);
+      console.log('✅ Approved games:', approvedGames.value.length);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       error.value = `Failed to load games: ${errorMessage}`;
+      console.error('❌ Error loading games:', errorMessage);
       throw err;
     } finally {
       loading.value = false;
     }
+  };
+
+  /**
+   * Get featured games with optional user personalization data
+   * This method can be called with user-specific data for personalized results
+   */
+  const getFeaturedGamesWithUserData = async (
+    criteria: {
+      userFavorites?: string[];
+      userBookmarks?: string[];
+      upcomingEventsForUser?: Event[];
+      allUpcomingEvents?: Event[];
+      userGenrePreferences?: string[];
+      count?: number;
+    } = {},
+  ) => {
+    // Ensure games are loaded
+    if (games.value.length === 0) {
+      await loadGames();
+    }
+
+    // Use all active games since approval is not currently used
+    const availableGames = games.value.filter((game) => game.status === 'active');
+
+    if (availableGames.length === 0) return [];
+
+    // Use the featured games service for calculation
+    return FeaturedGamesService.getFeaturedGames(availableGames, criteria);
   };
 
   // Cleanup function
@@ -216,6 +320,7 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
 
     // Getters
     approvedGames,
+    featuredGames,
     gamesByGenre,
     getGameById,
     getGameByLegacyId,
@@ -229,6 +334,7 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     rejectGame,
     subscribeToGames,
     loadGames,
+    getFeaturedGamesWithUserData,
     cleanup,
   };
 });

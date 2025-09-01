@@ -24,24 +24,42 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 
 // Connect to emulators in development (only if explicitly enabled)
-if (process.env.NODE_ENV === 'development' && process.env.USE_FIREBASE_EMULATOR === 'true') {
+const shouldUseEmulator =
+  process.env.NODE_ENV === 'development' &&
+  (process.env.USE_FIREBASE_EMULATOR === 'true' || process.env.USE_FIREBASE_EMULATOR === true);
+
+console.log('🔧 Environment check:', {
+  NODE_ENV: process.env.NODE_ENV,
+  USE_FIREBASE_EMULATOR: process.env.USE_FIREBASE_EMULATOR,
+  USE_FIREBASE_EMULATOR_type: typeof process.env.USE_FIREBASE_EMULATOR,
+  shouldUseEmulator: shouldUseEmulator,
+});
+
+if (shouldUseEmulator) {
+  console.log('🚀 Connecting to Firebase emulators...');
+
   try {
     connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-  } catch {
-    console.log('Auth emulator not available');
+    console.log('✅ Connected to Auth emulator');
+  } catch (error) {
+    console.log('❌ Auth emulator connection failed:', error);
   }
 
   try {
     connectFirestoreEmulator(db, 'localhost', 8080);
-  } catch {
-    console.log('Firestore emulator not available');
+    console.log('✅ Connected to Firestore emulator');
+  } catch (error) {
+    console.log('❌ Firestore emulator connection failed:', error);
   }
 
   try {
     connectStorageEmulator(storage, 'localhost', 9199);
-  } catch {
-    console.log('Storage emulator not available');
+    console.log('✅ Connected to Storage emulator');
+  } catch (error) {
+    console.log('❌ Storage emulator connection failed:', error);
   }
+} else {
+  console.log('🌐 Using production Firebase');
 }
 
 export default boot(({ app: vueApp }) => {
