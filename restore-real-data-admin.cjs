@@ -1,16 +1,8 @@
 // Script to restore REAL data using Firebase Admin SDK
 const admin = require('firebase-admin');
 const { getFirestore: getAdminFirestore } = require('firebase-admin/firestore');
-const { initializeApp } = require('firebase/app');
-const {
-  getFirestore,
-  collection,
-  doc,
-  setDoc,
-  connectFirestoreEmulator,
-} = require('firebase/firestore');
 
-// Initialize Admin SDK with service account
+// Initialize Admin SDK with service account for production
 const serviceAccount = require('./ttgaming-dd3c0-firebase-adminsdk-fbsvc-defb0cbb77.json');
 const adminApp = admin.initializeApp(
   {
@@ -22,10 +14,16 @@ const adminApp = admin.initializeApp(
 
 const adminDb = getAdminFirestore(adminApp);
 
-// Initialize emulator
-const emulatorApp = initializeApp({ projectId: 'demo-project' }, 'emulator');
-const emulatorDb = getFirestore(emulatorApp);
-connectFirestoreEmulator(emulatorDb, 'localhost', 8080);
+// Initialize Admin SDK for emulator
+process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+const emulatorApp = admin.initializeApp(
+  {
+    projectId: 'demo-project',
+  },
+  'emulator',
+);
+
+const emulatorDb = getAdminFirestore(emulatorApp);
 
 async function copyCollection(collectionName) {
   console.log(`Copying ${collectionName} from production...`);
@@ -37,8 +35,8 @@ async function copyCollection(collectionName) {
     for (const docSnap of snapshot.docs) {
       const data = docSnap.data();
 
-      // Convert Firestore timestamps to plain objects
-      const convertedData = JSON.parse(
+      // Convert Firestore timestamps to plain objects and fix data for emulator
+      let convertedData = JSON.parse(
         JSON.stringify(data, (key, value) => {
           if (value && typeof value === 'object' && value._seconds !== undefined) {
             return new Date(value._seconds * 1000);
@@ -47,7 +45,13 @@ async function copyCollection(collectionName) {
         }),
       );
 
-      await setDoc(doc(emulatorDb, collectionName, docSnap.id), convertedData);
+      // Fix games for development use - set as active for featured games
+      if (collectionName === 'games') {
+        convertedData.status = 'active';
+      }
+
+      // Use Admin SDK for emulator writes
+      await emulatorDb.collection(collectionName).doc(docSnap.id).set(convertedData);
       console.log(`Copied ${collectionName}/${docSnap.id}`);
     }
 

@@ -21,7 +21,7 @@ async function importCollection(collectionName) {
 
   try {
     const filename = path.join('./backup', `${collectionName}-2025-09-01.json`);
-    
+
     if (!fs.existsSync(filename)) {
       console.log(`⚠️  No backup file found for ${collectionName}: ${filename}`);
       return;
@@ -29,7 +29,7 @@ async function importCollection(collectionName) {
 
     const data = JSON.parse(fs.readFileSync(filename, 'utf8'));
     const docIds = Object.keys(data);
-    
+
     if (docIds.length === 0) {
       console.log(`⚠️  No data in backup file for ${collectionName}`);
       return;

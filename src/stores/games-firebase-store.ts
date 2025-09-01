@@ -89,8 +89,8 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
    * - Recently added/updated games
    */
   const getFeaturedGames = (count = 3): Game[] => {
-    // Use approved AND active games
-    const availableGames = games.value.filter((game) => game.approved && game.status === 'active');
+    // Use only active games (simplified from approved + active)
+    const availableGames = games.value.filter((game) => game.status === 'active');
 
     console.log('🎲 getFeaturedGames called with:', {
       count,
