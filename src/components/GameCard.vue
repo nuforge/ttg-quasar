@@ -5,6 +5,8 @@ import QRCode from './qrcode/QRCode.vue';
 import GameIcon from './GameIcon.vue';
 import { getGameImageUrl } from 'src/composables/useGameImage';
 import { useGamePreferences } from 'src/composables/useGamePreferences';
+import { useGameOwnershipsStore } from 'src/stores/game-ownerships-store';
+import { useCurrentUser } from 'vuefire';
 import { Notify } from 'quasar';
 import { createGameUrl } from 'src/utils/slug';
 
@@ -19,6 +21,11 @@ const {
   isAuthenticated,
   loading
 } = useGamePreferences();
+
+// Game ownership functionality
+const user = useCurrentUser();
+const ownershipStore = useGameOwnershipsStore();
+const ownershipLoading = ref(false);
 
 const isWebShareSupported = ref(false);
 const shareData = ref({
@@ -37,6 +44,11 @@ const gameImageUrl = computed(() => getGameImageUrl(props.game.image, props.game
 const favorite = computed(() => isFavorite(props.game.id));
 const bookmark = computed(() => isBookmarked(props.game.id));
 const reserved = computed(() => hasNotifications(props.game.id));
+
+// Game ownership computed properties
+const ownsGame = computed(() => ownershipStore.ownsGame(props.game.id));
+const canBringGame = computed(() => ownershipStore.canBringGame(props.game.id));
+const ownership = computed(() => ownershipStore.getOwnership(props.game.id));
 
 const mainGameComponents = computed(() => {
   if (!props.game.components || !Array.isArray(props.game.components)) return [];
@@ -151,8 +163,94 @@ const nativeShare = async (game: Game) => {
   }
 };
 
+// Game ownership handlers
+const handleToggleOwnership = async () => {
+  if (!isAuthenticated.value || !user.value) {
+    Notify.create({
+      type: 'warning',
+      message: 'Please sign in to manage your game collection',
+      position: 'top',
+    });
+    return;
+  }
+
+  try {
+    ownershipLoading.value = true;
+
+    if (ownsGame.value) {
+      const currentOwnership = ownership.value;
+      if (currentOwnership?.id) {
+        await ownershipStore.removeOwnership(currentOwnership.id);
+        Notify.create({
+          type: 'positive',
+          message: `${props.game.title} removed from your collection`,
+          position: 'top',
+        });
+      }
+    } else {
+      await ownershipStore.addOwnership(props.game.id, user.value.uid, true);
+      Notify.create({
+        type: 'positive',
+        message: `${props.game.title} added to your collection!`,
+        position: 'top',
+      });
+    }
+  } catch {
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to update game collection. Please try again.',
+      position: 'top',
+    });
+  } finally {
+    ownershipLoading.value = false;
+  }
+};
+
+const handleToggleCanBring = async () => {
+  if (!ownsGame.value || !ownership.value) {
+    Notify.create({
+      type: 'warning',
+      message: 'You must own this game to toggle bring status',
+      position: 'top',
+    });
+    return;
+  }
+
+  try {
+    ownershipLoading.value = true;
+
+    const currentOwnership = ownership.value;
+    if (currentOwnership?.id) {
+      await ownershipStore.updateOwnership(currentOwnership.id, {
+        canBring: !canBringGame.value
+      });
+
+      Notify.create({
+        type: 'positive',
+        message: canBringGame.value
+          ? `You can no longer bring ${props.game.title} to events`
+          : `You can now bring ${props.game.title} to events!`,
+        position: 'top',
+      });
+    }
+  } catch {
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to update bring status. Please try again.',
+      position: 'top',
+    });
+  } finally {
+    ownershipLoading.value = false;
+  }
+};
+
 onMounted(() => {
   isWebShareSupported.value = !!navigator.share;
+
+  // Subscribe to ownership changes when user is authenticated
+  if (user.value) {
+    ownershipStore.subscribeToPlayerOwnerships(user.value.uid);
+  }
 });
 </script>
 
@@ -180,6 +278,12 @@ onMounted(() => {
           :color="favorite ? 'secondary' : 'grey-9'" round flat :loading="loading">
           <q-tooltip class="bg-secondary text-black">
             {{ favorite ? 'Remove from favorites' : 'Add to favorites' }}
+          </q-tooltip>
+        </q-btn>
+        <q-btn :icon="`mdi-package${ownsGame ? '' : '-variant'}`" @click="handleToggleOwnership()"
+          :color="ownsGame ? 'positive' : 'grey-9'" round flat :loading="ownershipLoading">
+          <q-tooltip class="bg-positive text-black">
+            {{ ownsGame ? 'Remove from collection' : 'Add to collection' }}
           </q-tooltip>
         </q-btn>
       </div>
@@ -219,9 +323,20 @@ onMounted(() => {
     </q-card-section>
 
     <q-card-actions class="justify-between">
-      <q-btn icon="mdi-qrcode" @click="toggleQR()" size="md" color="grey-9" flat />
-      <q-btn icon="mdi-share" @click="nativeShare(game)" size="md" color="grey-9" flat />
-      <q-btn v-if="game.link" icon="mdi-open-in-new" :href="game.link" target="_blank" size="md" color="grey-9" flat />
+      <div>
+        <q-btn icon="mdi-qrcode" @click="toggleQR()" size="md" color="grey-9" flat />
+        <q-btn icon="mdi-share" @click="nativeShare(game)" size="md" color="grey-9" flat />
+        <q-btn v-if="game.link" icon="mdi-open-in-new" :href="game.link" target="_blank" size="md" color="grey-9"
+          flat />
+      </div>
+      <div v-if="ownsGame">
+        <q-btn :icon="`mdi-briefcase${canBringGame ? '' : '-outline'}`" @click="handleToggleCanBring()"
+          :color="canBringGame ? 'positive' : 'grey-9'" size="md" flat :loading="ownershipLoading">
+          <q-tooltip class="bg-positive text-black">
+            {{ canBringGame ? 'Can bring to events' : 'Cannot bring to events' }}
+          </q-tooltip>
+        </q-btn>
+      </div>
     </q-card-actions>
 
     <QRCode :game="game" v-model:showQR="showQRCode" />

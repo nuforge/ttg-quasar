@@ -97,31 +97,10 @@ onMounted(async () => {
 
             <q-item clickable v-close-popup to="/preferences">
               <q-item-section avatar>
-                <q-icon name="mdi-star" />
+                <q-icon name="mdi-bookshelf" />
               </q-item-section>
               <q-item-section>
-                <q-item-label>Game Preferences</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <!-- Testing section (developer/debug tools) -->
-            <q-separator />
-
-            <q-item clickable v-close-popup to="/testing">
-              <q-item-section avatar>
-                <q-icon name="science" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Testing Dashboard</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-close-popup to="/test/migration">
-              <q-item-section avatar>
-                <q-icon name="mdi-database-sync" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Migration Test</q-item-label>
+                <q-item-label>Game Shelf</q-item-label>
               </q-item-section>
             </q-item>
 

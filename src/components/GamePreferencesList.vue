@@ -60,7 +60,7 @@ import { getGameImageUrl } from 'src/composables/useGameImage';
 const props = defineProps<{
     games: Game[];
     loading: boolean;
-    type: 'favorites' | 'bookmarks' | 'notifications';
+    type: 'favorites' | 'bookmarks' | 'notifications' | 'owned';
     emptyIcon: string;
     emptyTitle: string;
     emptyMessage: string;

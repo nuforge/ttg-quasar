@@ -1,9 +1,9 @@
 <template>
     <q-page class="q-pa-md">
         <div class="q-mb-lg">
-            <h4 class="text-h4 q-mb-sm">Game Preferences</h4>
+            <h4 class="text-h4 q-mb-sm">Game Shelf</h4>
             <p class="text-body1 text-grey-7">
-                Manage your favorite games, bookmarks, and notification preferences
+                Manage your game collection, favorites, bookmarks, and notification preferences
             </p>
         </div>
 
@@ -49,6 +49,11 @@
 
                         <div class="q-gutter-md">
                             <div class="row items-center">
+                                <q-icon name="mdi-package-variant" color="positive" size="sm" />
+                                <span class="q-ml-sm">{{ ownedGames.length }} owned games</span>
+                            </div>
+
+                            <div class="row items-center">
                                 <q-icon name="mdi-star" color="secondary" size="sm" />
                                 <span class="q-ml-sm">{{ favoriteGames.length }} favorite games</span>
                             </div>
@@ -70,12 +75,21 @@
             <!-- Games Lists -->
             <div class="col-12 col-md-8">
                 <q-tabs v-model="activeTab" align="left" class="q-mb-md">
+                    <q-tab name="owned" label="Owned Games" icon="mdi-package-variant" />
                     <q-tab name="favorites" label="Favorites" icon="mdi-star" />
                     <q-tab name="bookmarks" label="Bookmarks" icon="mdi-bookmark" />
                     <q-tab name="notifications" label="Notifications" icon="mdi-bell" />
                 </q-tabs>
 
                 <q-tab-panels v-model="activeTab" animated>
+                    <!-- Owned Games Tab -->
+                    <q-tab-panel name="owned">
+                        <GamePreferencesList :games="ownedGameObjects" :loading="gamesLoading" type="owned"
+                            empty-icon="mdi-package-variant-closed" empty-title="No owned games yet"
+                            empty-message="Games you mark as owned will appear here. Use the package icon on game cards to add games to your collection."
+                            @toggle="handleToggleOwnership" />
+                    </q-tab-panel>
+
                     <!-- Favorites Tab -->
                     <q-tab-panel name="favorites">
                         <GamePreferencesList :games="favoriteGameObjects" :loading="gamesLoading" type="favorites"
@@ -107,19 +121,36 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useQuasar } from 'quasar';
+import { useCurrentUser } from 'vuefire';
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
+import { useGameOwnershipsStore } from 'src/stores/game-ownerships-store';
 import GamePreferencesList from 'src/components/GamePreferencesList.vue';
 
 const $q = useQuasar();
+const user = useCurrentUser();
 const preferencesStore = useUserPreferencesStore();
 const gamesStore = useGamesFirebaseStore();
+const ownershipStore = useGameOwnershipsStore();
 
 // State
-const activeTab = ref('favorites');
+const activeTab = ref('owned');
 const saving = ref(false);
 
 // Computed
+const ownedGames = computed(() => {
+    if (!user.value) return [];
+    return ownershipStore.ownerships
+        .filter(ownership => ownership.playerId === user.value?.uid)
+        .map(ownership => ownership.gameId);
+});
+
+const ownedGameObjects = computed(() => {
+    return ownedGames.value
+        .map(gameId => gamesStore.getGameById(gameId))
+        .filter(game => game !== undefined);
+});
+
 const favoriteGames = computed(() => preferencesStore.favoriteGames);
 const bookmarkedGames = computed(() => preferencesStore.bookmarkedGames);
 const gamesLoading = computed(() => gamesStore.loading);
@@ -216,6 +247,35 @@ const handleToggleNotifications = async (gameId: string) => {
     }
 };
 
+const handleToggleOwnership = async (gameId: string) => {
+    if (!user.value) return;
+
+    try {
+        const ownership = ownershipStore.getOwnership(gameId);
+        if (ownership) {
+            await ownershipStore.removeOwnership(ownership.id);
+            $q.notify({
+                type: 'positive',
+                message: 'Game removed from your collection',
+                position: 'top',
+            });
+        } else {
+            await ownershipStore.addOwnership(gameId, user.value.uid);
+            $q.notify({
+                type: 'positive',
+                message: 'Game added to your collection',
+                position: 'top',
+            });
+        }
+    } catch {
+        $q.notify({
+            type: 'negative',
+            message: 'Failed to update game ownership',
+            position: 'top',
+        });
+    }
+};
+
 const handleConfigureNotifications = (gameId: string) => {
     const currentSettings = preferencesStore.getEventNotificationSettings(gameId);
 
@@ -267,6 +327,11 @@ onMounted(async () => {
     // Load games if not already loaded
     if (gamesStore.games.length === 0) {
         await gamesStore.loadGames();
+    }
+
+    // Subscribe to user's game ownerships
+    if (user.value) {
+        ownershipStore.subscribeToPlayerOwnerships(user.value.uid);
     }
 });
 </script>

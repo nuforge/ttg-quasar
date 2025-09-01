@@ -157,6 +157,22 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
+    // Game ownerships collection (for tracking which games players own and can bring)
+    match /gameOwnerships/{ownershipId} {
+      // Users can read their own ownerships, anyone can read to see who owns games
+      allow read: if true; // Allow anyone to see game ownership for event planning
+      
+      // Users can only create/update/delete their own ownerships
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.playerId;
+      
+      allow update: if request.auth != null && 
+        request.auth.uid == resource.data.playerId;
+      
+      allow delete: if request.auth != null && 
+        request.auth.uid == resource.data.playerId;
+    }
+
     // Game event notifications collection
     match /gameEventNotifications/{notificationId} {
       // Users can only read their own notifications

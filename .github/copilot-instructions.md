@@ -1,5 +1,15 @@
 # TTG Quasar Copilot Instructions
 
+## CRITICAL USER INTERACTION RULES
+
+**NEVER REMOVE OR ROLLBACK USER-REQUESTED FEATURES WITHOUT EXPLICIT PERMISSION**
+
+- **ASK FIRST**: Before removing, reverting, or undoing ANY functionality the user requested
+- **NO ASSUMPTIONS**: Don't assume something should be removed because of errors - fix the errors instead
+- **NO COMMITS**: Never commit code unless the user specifically asks for it
+- **USER APPROVAL**: Always ask "Should I commit these changes?" before any git operations
+- **PRESERVE WORK**: If there are errors, fix them - don't delete the user's requested functionality
+
 ## Project Overview
 
 This is a Vue 3 + Quasar + Firebase tabletop gaming management app with real-time features, strict TypeScript, and comprehensive testing. Key focus: social gaming coordination with event management, RSVP tracking, and messaging.
