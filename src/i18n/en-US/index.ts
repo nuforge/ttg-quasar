@@ -412,4 +412,21 @@ export default {
   developmentModeOnly: 'Development mode only - Raw Firebase data',
   permissionsRefreshedSuccessfully: 'Permissions refreshed successfully',
   failedToRefreshPermissions: 'Failed to refresh permissions',
+
+  // Calendar Export
+  calendar: {
+    addToCalendar: 'Add to Calendar',
+    addToGoogle: 'Google Calendar',
+    addToGoogleDesc: 'Add to your Google Calendar',
+    addToOutlook: 'Outlook Calendar',
+    addToOutlookDesc: 'Add to Outlook Calendar',
+    addToApple: 'Apple Calendar',
+    addToAppleDesc: 'Download for Apple Calendar',
+    downloadICS: 'Download .ics file',
+    downloadICSDesc: 'Compatible with most calendar apps',
+    exportSuccess: 'Opening {format}...',
+    exportError: 'Failed to export to calendar',
+    downloadSuccess: 'Calendar file downloaded',
+    downloadError: 'Failed to download calendar file',
+  },
 };

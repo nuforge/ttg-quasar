@@ -417,4 +417,21 @@ export default {
   developmentModeOnly: 'Solo modo de desarrollo - Datos sin procesar de Firebase',
   permissionsRefreshedSuccessfully: 'Permisos actualizados exitosamente',
   failedToRefreshPermissions: 'Error al actualizar permisos',
+
+  // Calendar Export
+  calendar: {
+    addToCalendar: 'Agregar al Calendario',
+    addToGoogle: 'Google Calendar',
+    addToGoogleDesc: 'Agregar a tu Google Calendar',
+    addToOutlook: 'Calendario de Outlook',
+    addToOutlookDesc: 'Agregar al Calendario de Outlook',
+    addToApple: 'Apple Calendar',
+    addToAppleDesc: 'Descargar para Apple Calendar',
+    downloadICS: 'Descargar archivo .ics',
+    downloadICSDesc: 'Compatible con la mayoría de aplicaciones de calendario',
+    exportSuccess: 'Abriendo {format}...',
+    exportError: 'Error al exportar al calendario',
+    downloadSuccess: 'Archivo de calendario descargado',
+    downloadError: 'Error al descargar el archivo de calendario',
+  },
 };

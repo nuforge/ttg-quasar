@@ -24,6 +24,9 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Interactive Calendar**: Visual calendar with event indicators and date selection
 - **Independent RSVP States**: Separate RSVP and Interest toggles for flexible participation
 - **Player Limits**: Set minimum and maximum player counts
+- **Calendar Export**: Export events to personal calendars (Google, Outlook, ICS format)
+- **Multi-Format Support**: Google Calendar links, Outlook links, and downloadable .ics files
+- **Apple Calendar Support**: Compatible ICS downloads for Apple Calendar integration
 - **Real-time Updates**: Live event updates across all users
 - **Firebase Integration**: Reliable event data storage and synchronization
 - **SEO-Friendly URLs**: Events use `/events/firebase_doc_id/title-slug` format

@@ -12,6 +12,7 @@ import PlayersList from 'src/components/players/PlayersList.vue';
 import MessageList from 'src/components/messaging/MessageList.vue';
 import MessageComposer from 'src/components/messaging/MessageComposer.vue';
 import EventRSVPButtons from 'src/components/events/EventRSVPButtons.vue';
+import CalendarExportButton from 'src/components/events/CalendarExportButton.vue';
 import { createGameUrl } from 'src/utils/slug';
 
 const route = useRoute();
@@ -184,8 +185,9 @@ const sendEventComment = (message: string) => {
               {{ event.status }}
             </q-badge>
           </div>
-          <div class="col-auto">
+          <div class="col-auto q-gutter-sm">
             <EventRSVPButtons :event="event" />
+            <CalendarExportButton :event="event" color="primary" outlined />
           </div>
         </div>
 

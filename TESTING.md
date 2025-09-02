@@ -4,38 +4,49 @@ This document outlines the testing strategy and configuration for the Tabletop G
 
 ## 🎯 Current Status
 
-**✅ COMPREHENSIVE: 431 passing tests across 22 test files (100% success rate)**
+**✅ COMPREHENSIVE: 446 passing tests across 23 test files (100% success rate)**
 
 Test Results Summary:
 
 ```
 ✓ test/unit/utils/game-icons.test.ts (13 tests)
 ✓ test/unit/utils/conversation-utils.test.ts (5 tests)
-✓ test/unit/stores/user-preferences-store.test.ts (20 tests) ⬅️ NEW
+✓ test/unit/stores/user-preferences-store.test.ts (20 tests)
 ✓ test/unit/stores/players-firebase-store.test.ts (15 tests)
 ✓ test/unit/stores/games-firebase-store.test.ts (52 tests)
 ✓ test/unit/stores/events-firebase-store-final.test.ts (45 tests)
-✓ test/unit/services/user-preferences-service.test.ts (18 tests) ⬅️ NEW
+✓ test/unit/services/user-preferences-service.test.ts (18 tests)
 ✓ test/unit/services/event-submission-service.test.ts (43 tests)
 ✓ test/unit/services/event-submission-service-simple.test.ts (3 tests)
 ✓ test/unit/services/featured-games-service.test.ts (6 tests)
 ✓ test/unit/services/user-preferences-analyzer.test.ts (8 tests)
+✓ test/unit/services/calendar-export-service.test.ts (15 tests) ⬅️ NEW
 ✓ test/unit/models/UserPreferences.test.ts (26 tests)
 ✓ test/unit/models/GameSubmission.test.ts (14 tests)
 ✓ test/unit/models/Event.test.ts (47 tests)
 ✓ test/unit/models/Game.test.ts (22 tests)
 ✓ test/unit/models/Player.test.ts (39 tests)
 ✓ test/unit/composables/useGamePreferences.test.ts (13 tests)
-✓ test/unit/components/GamePreferencesList.test.ts (16 tests) ⬅️ NEW
+✓ test/unit/components/GamePreferencesList.test.ts (16 tests)
 ✓ test/unit/components/GameIcon.test.ts (8 tests)
 ✓ test/unit/components/PlayerCard.test.ts (6 tests)
 ✓ test/unit/pages/PlayersPage.test.ts (5 tests)
 ✓ test/integration/players-store-integration.test.ts (7 tests)
 
- Test Files  22 passed (22)
-      Tests  431 passed (431)
-   Duration  ~2.4s
+ Test Files  23 passed (23)
+      Tests  446 passed (446)
+   Duration  ~2.6s
 ```
+
+**Latest Addition: Calendar Export Testing** (September 2025):
+
+- **Calendar Export Service**: 15 comprehensive tests covering:
+  - ICS file generation with proper formatting and timezone handling
+  - Google Calendar URL creation with event details and app integration
+  - Outlook Calendar URL generation with proper encoding
+  - File download functionality with DOM API mocking
+  - Error handling for invalid event data and unsupported formats
+  - Multi-format calendar export validation
 
 **Major Testing Expansion**: Added comprehensive business logic testing for:
 

@@ -10,6 +10,7 @@ import GameIcon from '../GameIcon.vue';
 import PlayerListDialog from 'src/components/players/PlayerListDialog.vue';
 import { createEventUrl, createGameUrl } from 'src/utils/slug';
 import EventRSVPButtons from './EventRSVPButtons.vue';
+import CalendarExportButton from './CalendarExportButton.vue';
 
 defineOptions({
   name: 'EventCard',
@@ -183,6 +184,7 @@ const selectEventDate = () => {
       <!-- RSVP Actions -->
       <q-card-actions class="q-pt-none q-pb-sm q-pr-md row justify-between">
         <EventRSVPButtons :event="event" :show-labels="false" size="md" />
+        <CalendarExportButton :event="event" color="primary" outlined size="sm" :label="$t('calendar.addToCalendar')" />
       </q-card-actions>
 
     </q-card-section>
