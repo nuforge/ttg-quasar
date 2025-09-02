@@ -141,7 +141,7 @@ import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 
 ### Testing Strategy (`test/`)
 
-- **377 tests, 100% pass rate** - maintain this standard
+- **431 tests, 100% pass rate** - maintain this standard
 - **Small Changes, Big Errors Prevention**: Tests catch breaking changes in core business logic
 - **Core Model Testing**: Complete coverage of Event (47 tests), Game (22 tests), Player (39 tests) models
 - **User Preferences Testing**: Complete coverage of favorites, bookmarks, notifications system

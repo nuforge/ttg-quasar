@@ -277,7 +277,7 @@ interface PlayerLike {
 
 ### Comprehensive Test Suite
 
-This project maintains a **202-test comprehensive testing suite** with 100% pass rate:
+This project maintains a **431-test comprehensive testing suite** with 100% pass rate:
 
 ```bash
 # Run all tests
@@ -290,6 +290,7 @@ npm run test:ui         # Interactive test UI
 ### Testing Strategy
 
 - **Business Logic Focus**: Tests cover store state, computed properties, and data processing
+- **Logic vs. Interface Separation**: Business logic tests (`.test.ts`) separate from future UI interaction tests (`.ui.test.ts`)
 - **Firebase Mocking**: Proper mocking patterns for Firestore operations
 - **Component Testing**: Vue component behavior and interactions
 - **Service Testing**: CRUD operations and error handling
@@ -297,11 +298,12 @@ npm run test:ui         # Interactive test UI
 
 ### Coverage Areas
 
+- ✅ **User Preferences System**: Complete testing of favorites, bookmarks, notifications (54 new tests) 🆕
 - ✅ **Games Store**: State management, search logic, game filtering (52 tests)
 - ✅ **Events Store**: State management, RSVP logic, event filtering (45 tests)
 - ✅ **Players Store**: User management, profile operations (15 tests)
 - ✅ **Event Submission Service**: Complete CRUD workflow (46 tests)
-- ✅ **Components**: GameIcon, PlayerCard, PlayersPage (19 tests)
+- ✅ **Components**: GameIcon, PlayerCard, PlayersPage, GamePreferencesList (35 tests)
 - ✅ **Utilities**: Game icons, conversation helpers (18 tests)
 
 See `TESTING.md` for detailed testing documentation and Firebase-specific testing patterns.
