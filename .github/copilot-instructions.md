@@ -141,16 +141,18 @@ import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 
 ### Testing Strategy (`test/`)
 
-- **202 tests, 100% pass rate** - maintain this standard
+- **377 tests, 100% pass rate** - maintain this standard
 - **Small Changes, Big Errors Prevention**: Tests catch breaking changes in core business logic
+- **Core Model Testing**: Complete coverage of Event (47 tests), Game (22 tests), Player (39 tests) models
+- **User Preferences Testing**: Complete coverage of favorites, bookmarks, notifications system
+- **Model Testing**: UserPreferences, GameSubmission models with Firebase integration
+- **Composable Testing**: useGamePreferences with authentication and store integration
+- **Service Testing**: UserPreferencesAnalyzer, event submission with CRUD operations, validation, error handling
 - **Store Testing Focus**: Computed properties, data transformations, RSVP logic
-- **Service Layer Testing**: CRUD operations, validation, error handling
 - **Component Testing**: User interactions, prop validation, event emission
 - **Firebase Mocking**: Custom mocks in `test/mocks/`, avoid testing Firebase internals
 - **Run Tests**: `npm test` (watch) or `npm run test:run` (CI)
-- **Practical Value**: Tests verify real business scenarios, not implementation details
-
-## Development Workflow
+- **Practical Value**: Tests verify real business scenarios, not implementation details## Development Workflow
 
 ### Environment Setup
 
