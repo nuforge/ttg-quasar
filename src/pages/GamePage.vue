@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import GameCard from 'src/components/GameCard.vue';
 import type { Game } from 'src/models/Game';
@@ -79,6 +79,28 @@ const sendGameComment = async (message: string) => {
 
 // Initialize stores and subscriptions
 let unsubscribe: (() => void) | undefined;
+
+// Watch for route changes and reload game
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    if (newId !== oldId) {
+      // Clean up previous subscription
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = undefined;
+      }
+
+      // Load the new game
+      loadGame();
+
+      // Subscribe to new game messages if we have a game
+      if (game.value) {
+        unsubscribe = messagesStore.subscribeToGameMessages(game.value.legacyId);
+      }
+    }
+  }
+);
 
 onMounted(async () => {
   // Load games from Firebase

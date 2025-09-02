@@ -42,28 +42,49 @@ const safeHour = hour ?? 0;
 
 ## Vue Router Parameter Reactivity
 
-**Problem**: When navigating between pages with the same component (e.g., `/events/123` to `/events/456`), Vue reuses the component instance and doesn't re-run setup. Refs set from `route.params` don't update automatically.
+**Problem**: When navigating between pages with the same component (e.g., `/games/123` to `/games/456`), Vue reuses the component instance and doesn't re-run setup. Refs set from `route.params` don't update automatically.
 
 **Solution**: Use computed properties for route parameters:
 
 ```typescript
 // WRONG
-const eventId = ref(route.params.id);
+const gameId = ref(route.params.id);
 
 // CORRECT
-const eventId = computed(() => route.params.id);
+const gameId = computed(() => route.params.id);
 ```
 
-Add watchers for route changes to update component state:
+Add watchers for route changes to update component state and clean up subscriptions:
 
 ```typescript
+// Watch for route changes and reload data
 watch(
-  () => eventId.value,
-  (newEventId) => {
-    // Update component state when route changes
+  () => route.params.id,
+  (newId, oldId) => {
+    if (newId !== oldId) {
+      // Clean up previous subscriptions
+      if (unsubscribe) {
+        unsubscribe();
+        unsubscribe = undefined;
+      }
+
+      // Load the new data
+      loadGame();
+
+      // Re-establish subscriptions
+      if (game.value) {
+        unsubscribe = messagesStore.subscribeToGameMessages(game.value.legacyId);
+      }
+    }
   },
 );
 ```
+
+**Common Scenarios**:
+
+- Game pages: `/games/:id/:slug` - Need to reload game data and message subscriptions
+- Event pages: `/events/:id/:slug` - Need to reload event data and participant lists
+- Any page with dynamic data based on route parameters
 
 ## Navigation Implementation
 

@@ -155,8 +155,8 @@ const handleInterested = async () => {
   <div class="event-rsvp-buttons">
     <!-- Not authenticated -->
     <div v-if="!isAuthenticated" class="text-center">
-      <q-btn flat color="primary" :size="size" icon="mdi-login" :label="showLabels ? t('loginRequiredRsvp') : undefined"
-        to="/login" unelevated />
+      <q-btn flat color="primary" dense :size="size" icon="mdi-login"
+        :label="showLabels ? t('loginRequiredRsvp') : undefined" to="/login" unelevated />
     </div>
 
     <!-- Host cannot change RSVP -->

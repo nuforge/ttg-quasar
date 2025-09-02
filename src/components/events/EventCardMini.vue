@@ -102,7 +102,7 @@ const statusColor = computed(() => {
       <div class="row items-center justify-between">
         <div class="col">
           <router-link :to="createEventUrl(event.firebaseDocId || event.id.toString(), event.title)"
-            class="text-h6 text-primary no-underline">
+            class="text-h6 text-secondary no-underline">
             {{ event.title }}
           </router-link>
         </div>
@@ -130,7 +130,7 @@ const statusColor = computed(() => {
             <q-icon name="mdi-dice-multiple" size="xs" />
             <router-link :to="createGameUrl(game.id, game.title)" class="no-underline" @click.stop>{{
               game.title
-              }}</router-link>
+            }}</router-link>
           </div>
         </div>
         <!-- Right: Action buttons (horizontal) -->

@@ -8,7 +8,7 @@ import { authService } from 'src/services/auth-service';
 import type { Player } from 'src/models/Player';
 import GameIcon from '../GameIcon.vue';
 import PlayerListDialog from 'src/components/players/PlayerListDialog.vue';
-import { createEventUrl } from 'src/utils/slug';
+import { createEventUrl, createGameUrl } from 'src/utils/slug';
 import EventRSVPButtons from './EventRSVPButtons.vue';
 
 defineOptions({
@@ -129,7 +129,7 @@ const selectEventDate = () => {
       <div class="row items-center justify-between">
 
         <router-link :to="createEventUrl(event.firebaseDocId || event.id.toString(), event.title)"
-          class="text-h6 text-uppercase no-underline">{{ event.title
+          class="text-h6 text-uppercase no-underline text-secondary">{{ event.title
           }}</router-link>
         <q-badge :color="statusBadgeColor"
           :icon="isUserConfirmed ? 'mdi-check' : isUserInterested ? 'mdi-heart' : undefined">
@@ -165,13 +165,13 @@ const selectEventDate = () => {
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ event.getConfirmedCount() }} / {{ event.maxPlayers }} {{ $t('player', 2)
-              }}</q-item-label>
+                }}</q-item-label>
               <q-item-label v-if="event.getInterestedCount() > 0" caption class="text-orange">
                 +{{ event.getInterestedCount() }} interested
               </q-item-label>
             </q-item-section>
           </q-item>
-          <q-item v-if="game" :to="`/games/${game.id}`" clickable>
+          <q-item v-if="game" :to="createGameUrl(game.id, game.title)" clickable>
             <q-item-section avatar>
               <q-tooltip class="bg-primary text-black">Game: {{ game.title }}</q-tooltip>
               <q-icon name="mdi-dice-multiple" size="xs" />
