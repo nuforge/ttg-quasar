@@ -153,7 +153,81 @@ export default {
   contactPhone: 'Teléfono de Contacto',
 
   // Admin
-  admin: 'Administrador',
+  admin: {
+    title: 'Administrador',
+    calendar: {
+      title: 'Sincronización con Google Calendar',
+      status: {
+        enabled: 'La sincronización del calendario está habilitada',
+        disabled: 'La sincronización del calendario está deshabilitada',
+        enabledDesc: 'Los eventos de TTG se están sincronizando con Google Calendar',
+        disabledDesc: 'La sincronización del calendario está desactivada',
+      },
+      form: {
+        enable: 'Habilitar sincronización con Google Calendar',
+        selectCalendar: 'Seleccionar calendario',
+        noCalendars: 'No se encontraron calendarios. Asegúrese de tener acceso a Google Calendar.',
+        syncMode: {
+          manual: 'Sincronización manual',
+          manualDesc: 'Sincronizar eventos manualmente usando el botón de sincronizar',
+          auto: 'Sincronización automática (recomendado)',
+          autoDesc: 'Sincronizar eventos automáticamente cuando se crean o actualizan',
+        },
+        publicUrl: 'URL de suscripción pública del calendario',
+        publicUrlHint:
+          'La URL a la que los usuarios pueden suscribirse para actualizaciones automáticas del calendario',
+      },
+      actions: {
+        save: 'Guardar Configuración',
+        testConnection: 'Probar Conexión',
+        syncAll: 'Sincronizar Todos los Eventos',
+      },
+      success: {
+        saved: 'Configuración de sincronización del calendario guardada exitosamente',
+        connection: 'Conexión con Google Calendar exitosa',
+        sync: 'Se sincronizaron {success} eventos exitosamente ({failed} fallaron)',
+        copied: 'URL del calendario público copiada al portapapeles',
+      },
+      errors: {
+        save: 'Error al guardar la configuración de sincronización del calendario',
+        connection: 'Error al conectar con Google Calendar. Verifique sus permisos.',
+        sync: 'Error al sincronizar eventos con Google Calendar',
+        loadCalendars: 'Error al cargar los calendarios disponibles',
+        copy: 'Error al copiar URL al portapapeles',
+      },
+      lastSync: {
+        title: 'Resultados de la Última Sincronización',
+        success: 'exitoso',
+        failed: 'fallaron',
+      },
+      publicInfo: {
+        title: 'Información del Calendario Público',
+        description:
+          'Los usuarios pueden suscribirse a esta URL del calendario para obtener actualizaciones automáticas de los eventos de TTG en sus calendarios personales.',
+        urlLabel: 'URL de suscripción pública',
+        instructions:
+          'Comparte esta URL con los usuarios o agrégala a tu sitio web para suscripciones fáciles al calendario.',
+      },
+      setup: {
+        title: 'Guía de Configuración',
+        description: 'Sigue estos pasos para configurar la integración con Google Calendar:',
+        step1: {
+          title: 'Habilitar API de Google Calendar',
+          description: 'Habilita la API de Google Calendar en tu proyecto de Google Cloud Console',
+        },
+        step2: {
+          title: 'Configurar Credenciales OAuth2',
+          description: 'Configura las credenciales OAuth2 con alcance de acceso al calendario',
+        },
+        step3: {
+          title: 'Actualizar Configuración de Firebase',
+          description:
+            'Agrega tus credenciales de la API de Google a las variables de entorno de Firebase',
+        },
+        openConsole: 'Abrir Google Cloud Console',
+      },
+    },
+  },
   adminPanel: 'Panel de Administración',
   adminDashboard: 'Panel de Control',
   adminEmail: 'Correo de Administrador',
@@ -433,5 +507,102 @@ export default {
     exportError: 'Error al exportar al calendario',
     downloadSuccess: 'Archivo de calendario descargado',
     downloadError: 'Error al descargar el archivo de calendario',
+
+    // Calendar Subscription
+    subscription: {
+      navTitle: 'Feeds de Calendario',
+      title: 'Suscripción de Calendario',
+      subtitle: 'Crea feeds personalizados de calendario para tus eventos',
+      description:
+        'Crea un feed personalizado de calendario para suscribirte a tus eventos TTG. Tu aplicación de calendario se actualizará automáticamente cuando cambien los eventos.',
+
+      // Public Calendar Subscription
+      notAvailable: 'Suscripción de calendario no disponible',
+      contactAdmin: 'Contacta a un administrador para habilitar la sincronización de calendario',
+      available: {
+        title: 'Calendario de Eventos TTG Disponible',
+        description:
+          'Suscríbete para obtener actualizaciones automáticas de todos los eventos próximos',
+      },
+      google: {
+        title: 'Google Calendar',
+        description: 'Agrega eventos TTG directamente a tu Google Calendar',
+        action: 'Agregar a Google',
+      },
+      outlook: {
+        title: 'Calendario de Outlook',
+        description: 'Suscríbete en la aplicación web o de escritorio de Outlook',
+        action: 'Agregar a Outlook',
+      },
+      apple: {
+        title: 'Apple Calendar',
+        description: 'Funciona con aplicaciones de calendario de iPhone, iPad y Mac',
+        action: 'Agregar a Apple',
+        fallback:
+          'Si el calendario no se abrió automáticamente, copia la URL y agrégala manualmente en tu aplicación de calendario',
+      },
+      other: {
+        title: 'Otras Aplicaciones de Calendario',
+        description: 'Copia la URL de suscripción para cualquier aplicación de calendario',
+        action: 'Copiar URL',
+      },
+      manual: {
+        title: 'Instrucciones de Configuración Manual',
+        urlTitle: 'URL de Suscripción de Calendario',
+        steps: {
+          title: 'Cómo agregar este calendario',
+          copy: 'Copia la URL del calendario de arriba',
+          open: 'Abre tu aplicación de calendario',
+          add: 'Busca "Agregar Calendario" o "Suscribirse a Calendario"',
+          paste: 'Pega la URL cuando se te solicite',
+          save: '¡Guarda y disfruta las actualizaciones automáticas de eventos!',
+        },
+      },
+      benefits: {
+        title: 'Beneficios de suscribirse',
+        automatic: 'Actualizaciones automáticas cuando se agregan nuevos eventos',
+        realtime: 'Sincronización en tiempo real en todos tus dispositivos',
+        integration: 'Se integra con tu flujo de trabajo de calendario existente',
+        notifications: 'Recibe recordatorios basados en la configuración de tu calendario',
+      },
+      opened:
+        'Aplicación de calendario abierta - sigue las instrucciones para completar la suscripción',
+
+      // Existing keys
+      rsvpOnly: 'Solo eventos a los que he confirmado asistencia',
+      rsvpOnlyDesc: 'Incluir solo eventos donde has confirmado tu asistencia',
+      interestedOnly: 'Solo eventos marcados como interesantes',
+      interestedOnlyDesc: 'Incluir solo eventos en los que has mostrado interés',
+      upcomingOnly: 'Solo eventos próximos',
+      upcomingOnlyDesc: 'Excluir eventos pasados y cancelados',
+      selectGames: 'Filtrar por juegos específicos (opcional)',
+      selectGamesDesc:
+        'Deja vacío para incluir todos los juegos, o selecciona juegos específicos para filtrar',
+      generate: 'Generar Feed de Calendario',
+      feedReady: 'Feed de Calendario Listo',
+      feedUrl: 'URL de Suscripción',
+      feedTitle: 'Eventos TTG',
+      feedDescription: 'Feed de Eventos de Juegos de Mesa',
+      copyUrl: 'Copiar URL',
+      download: 'Descargar archivo .ics',
+      generated: 'Feed de calendario generado exitosamente',
+      error: 'Error al generar el feed de calendario',
+      loginRequired: 'Por favor inicia sesión para crear una suscripción de calendario',
+      urlCopied: 'URL del feed copiada al portapapeles',
+      copyFailed: 'Error al copiar URL al portapapeles',
+      downloaded: 'Feed de calendario descargado',
+      howToUse: 'Cómo usar tu suscripción de calendario',
+      instructions: {
+        title: 'Agregar a tu aplicación de calendario',
+        google: 'Google Calendar',
+        googleDesc:
+          'Copia la URL y agrégala como una nueva suscripción de calendario en la configuración de Google Calendar',
+        outlook: 'Calendario de Outlook',
+        outlookDesc: 'Usa "Agregar calendario desde internet" y pega la URL de suscripción',
+        apple: 'Apple Calendar',
+        appleDesc:
+          'Usa "Agregar Suscripción de Calendario" e ingresa la URL, o importa el archivo .ics descargado',
+      },
+    },
   },
 };

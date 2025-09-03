@@ -2,6 +2,7 @@ import { computed, ref, watch } from 'vue';
 import { useCurrentUser } from 'vuefire';
 import {
   signInWithPopup,
+  linkWithPopup,
   GoogleAuthProvider,
   FacebookAuthProvider,
   signOut as firebaseSignOut,
@@ -9,9 +10,11 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
   type User,
+  getAuth,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from 'src/boot/firebase';
+import { initializeApp } from 'firebase/app';
 import { Player } from 'src/models/Player';
 
 export class VueFireAuthService {
@@ -23,6 +26,18 @@ export class VueFireAuthService {
 
   private googleProvider = new GoogleAuthProvider();
   private facebookProvider = new FacebookAuthProvider();
+
+  // Create a separate auth instance for real Google OAuth (bypasses emulator)
+  private realAuth = getAuth(
+    initializeApp(
+      {
+        apiKey: process.env.FIREBASE_API_KEY || '',
+        authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
+        projectId: process.env.FIREBASE_PROJECT_ID || '',
+      },
+      'google-oauth-app',
+    ),
+  );
 
   // Storage keys for persisting tokens
   private readonly GOOGLE_TOKEN_KEY = 'ttg_google_access_token';
@@ -244,6 +259,61 @@ export class VueFireAuthService {
       console.error('Google sign-in error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Google sign-in failed: ${errorMessage}`);
+    } finally {
+      this.loading.value = false;
+    }
+  }
+
+  /**
+   * Get real Google OAuth token for Calendar API (bypasses emulator)
+   */
+  async getRealGoogleOAuthToken(): Promise<string> {
+    this.loading.value = true;
+    try {
+      console.log('🔑 Getting REAL Google OAuth token for Calendar API...');
+
+      // Use the real auth instance to get actual Google OAuth tokens
+      const result = await signInWithPopup(this.realAuth, this.googleProvider);
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+
+      if (credential?.accessToken) {
+        console.log('✅ Got real Google OAuth access token');
+        this.saveTokenToStorage(credential.accessToken);
+        return credential.accessToken;
+      }
+
+      throw new Error('No access token received from Google');
+    } catch (error) {
+      console.error('Real Google OAuth failed:', error);
+      throw error;
+    } finally {
+      this.loading.value = false;
+    }
+  }
+
+  async linkGoogleAccount() {
+    this.loading.value = true;
+    try {
+      const user = useCurrentUser().value;
+      if (!user) {
+        throw new Error('No user signed in');
+      }
+
+      const result = await linkWithPopup(user, this.googleProvider);
+
+      // Store the Google OAuth access token for Calendar API
+      const credential = GoogleAuthProvider.credentialFromResult(result);
+
+      if (credential?.accessToken) {
+        // Save token to storage with persistence (default 1 hour expiry)
+        this.saveTokenToStorage(credential.accessToken);
+      }
+
+      return result.user;
+    } catch (error) {
+      console.error('Google account linking error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      throw new Error(`Google account linking failed: ${errorMessage}`);
     } finally {
       this.loading.value = false;
     }

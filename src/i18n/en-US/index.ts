@@ -152,7 +152,79 @@ export default {
   contactPhone: 'Contact Phone',
 
   // Admin
-  admin: 'Admin',
+  admin: {
+    title: 'Admin',
+    calendar: {
+      title: 'Google Calendar Sync',
+      status: {
+        enabled: 'Calendar sync is enabled',
+        disabled: 'Calendar sync is disabled',
+        enabledDesc: 'TTG events are being synchronized to Google Calendar',
+        disabledDesc: 'Calendar synchronization is turned off',
+      },
+      form: {
+        enable: 'Enable Google Calendar sync',
+        selectCalendar: 'Select calendar',
+        noCalendars: 'No calendars found. Make sure you have access to Google Calendar.',
+        syncMode: {
+          manual: 'Manual sync',
+          manualDesc: 'Sync events manually using the sync button',
+          auto: 'Automatic sync (recommended)',
+          autoDesc: 'Sync events automatically when they are created or updated',
+        },
+        publicUrl: 'Public calendar subscription URL',
+        publicUrlHint: 'The URL users can subscribe to for automatic calendar updates',
+      },
+      actions: {
+        save: 'Save Configuration',
+        testConnection: 'Test Connection',
+        syncAll: 'Sync All Events',
+      },
+      success: {
+        saved: 'Calendar sync configuration saved successfully',
+        connection: 'Google Calendar connection successful',
+        sync: 'Synced {success} events successfully ({failed} failed)',
+        copied: 'Public calendar URL copied to clipboard',
+      },
+      errors: {
+        save: 'Failed to save calendar sync configuration',
+        connection: 'Failed to connect to Google Calendar. Please check your permissions.',
+        sync: 'Failed to sync events to Google Calendar',
+        loadCalendars: 'Failed to load available calendars',
+        copy: 'Failed to copy URL to clipboard',
+      },
+      lastSync: {
+        title: 'Last Sync Results',
+        success: 'successful',
+        failed: 'failed',
+      },
+      publicInfo: {
+        title: 'Public Calendar Information',
+        description:
+          'Users can subscribe to this calendar URL to get automatic updates of TTG events in their personal calendars.',
+        urlLabel: 'Public subscription URL',
+        instructions:
+          'Share this URL with users or add it to your website for easy calendar subscriptions.',
+      },
+      setup: {
+        title: 'Setup Guide',
+        description: 'Follow these steps to configure Google Calendar integration:',
+        step1: {
+          title: 'Enable Google Calendar API',
+          description: 'Enable the Google Calendar API in your Google Cloud Console project',
+        },
+        step2: {
+          title: 'Configure OAuth2 Credentials',
+          description: 'Set up OAuth2 credentials with calendar access scope',
+        },
+        step3: {
+          title: 'Update Firebase Configuration',
+          description: 'Add your Google API credentials to Firebase environment variables',
+        },
+        openConsole: 'Open Google Cloud Console',
+      },
+    },
+  },
   adminPanel: 'Admin Panel',
   adminDashboard: 'Admin Dashboard',
   adminEmail: 'Admin Email',
@@ -428,5 +500,99 @@ export default {
     exportError: 'Failed to export to calendar',
     downloadSuccess: 'Calendar file downloaded',
     downloadError: 'Failed to download calendar file',
+
+    // Calendar Subscription
+    subscription: {
+      navTitle: 'Calendar Feeds',
+      title: 'Calendar Subscription',
+      subtitle: 'Create personalized calendar feeds for your events',
+      description:
+        'Create a personalized calendar feed to subscribe to your TTG events. Your calendar app will automatically update when events change.',
+
+      // Public Calendar Subscription
+      notAvailable: 'Calendar subscription not available',
+      contactAdmin: 'Contact an administrator to enable calendar sync',
+      available: {
+        title: 'TTG Events Calendar Available',
+        description: 'Subscribe to get automatic updates of all upcoming events',
+      },
+      google: {
+        title: 'Google Calendar',
+        description: 'Add TTG events directly to your Google Calendar',
+        action: 'Add to Google',
+      },
+      outlook: {
+        title: 'Outlook Calendar',
+        description: 'Subscribe in Outlook web or desktop app',
+        action: 'Add to Outlook',
+      },
+      apple: {
+        title: 'Apple Calendar',
+        description: 'Works with iPhone, iPad, and Mac calendar apps',
+        action: 'Add to Apple',
+        fallback:
+          "If the calendar didn't open automatically, copy the URL and add it manually in your calendar app",
+      },
+      other: {
+        title: 'Other Calendar Apps',
+        description: 'Copy the subscription URL for any calendar app',
+        action: 'Copy URL',
+      },
+      manual: {
+        title: 'Manual Setup Instructions',
+        urlTitle: 'Calendar Subscription URL',
+        steps: {
+          title: 'How to add this calendar',
+          copy: 'Copy the calendar URL above',
+          open: 'Open your calendar application',
+          add: 'Look for "Add Calendar" or "Subscribe to Calendar"',
+          paste: 'Paste the URL when prompted',
+          save: 'Save and enjoy automatic event updates!',
+        },
+      },
+      benefits: {
+        title: 'Benefits of subscribing',
+        automatic: 'Automatic updates when new events are added',
+        realtime: 'Real-time sync across all your devices',
+        integration: 'Integrates with your existing calendar workflow',
+        notifications: 'Get reminders based on your calendar settings',
+      },
+      opened: 'Calendar application opened - follow the prompts to complete subscription',
+
+      // Existing keys
+      rsvpOnly: "Only events I've RSVP'd to",
+      rsvpOnlyDesc: "Include only events where you've confirmed attendance",
+      interestedOnly: "Only events I've marked as interested",
+      interestedOnlyDesc: "Include only events you've shown interest in",
+      upcomingOnly: 'Only upcoming events',
+      upcomingOnlyDesc: 'Exclude past and cancelled events',
+      selectGames: 'Filter by specific games (optional)',
+      selectGamesDesc: 'Leave empty to include all games, or select specific games to filter',
+      generate: 'Generate Calendar Feed',
+      feedReady: 'Calendar Feed Ready',
+      feedUrl: 'Subscription URL',
+      feedTitle: 'TTG Events',
+      feedDescription: 'Tabletop Gaming Events Feed',
+      copyUrl: 'Copy URL',
+      download: 'Download .ics File',
+      generated: 'Calendar feed generated successfully',
+      error: 'Failed to generate calendar feed',
+      loginRequired: 'Please sign in to create a calendar subscription',
+      urlCopied: 'Feed URL copied to clipboard',
+      copyFailed: 'Failed to copy URL to clipboard',
+      downloaded: 'Calendar feed downloaded',
+      howToUse: 'How to use your calendar subscription',
+      instructions: {
+        title: 'Add to your calendar app',
+        google: 'Google Calendar',
+        googleDesc:
+          'Copy the URL and add it as a new calendar subscription in Google Calendar settings',
+        outlook: 'Outlook Calendar',
+        outlookDesc: 'Use "Add calendar from internet" and paste the subscription URL',
+        apple: 'Apple Calendar',
+        appleDesc:
+          'Use "Add Calendar Subscription" and enter the URL, or import the downloaded .ics file',
+      },
+    },
   },
 };

@@ -85,7 +85,7 @@ const downloadCalendarFile = () => {
 
 <template>
   <q-btn-dropdown :color="color" :size="size" :flat="flat" :outlined="outlined" :label="label"
-    dropdown-icon="mdi-calendar-plus" no-caps class="calendar-export-btn">
+    dropdown-icon="mdi-calendar-export" no-caps class="calendar-export-btn">
     <q-list>
       <!-- Google Calendar -->
       <q-item clickable v-close-popup @click="exportToCalendar('google')">

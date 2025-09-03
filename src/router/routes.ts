@@ -51,6 +51,21 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+
+  // Calendar routes
+  {
+    path: '/calendar/subscription',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/CalendarSubscriptionPage.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
+  },
+
   {
     path: '/games/',
     component: () => import('layouts/MainLayout.vue'),

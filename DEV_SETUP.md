@@ -126,6 +126,40 @@ USE_FIREBASE_EMULATOR=false
 
 The emulator automatically handles Google OAuth simulation - just use the sign-in button in your app!
 
+### Google Calendar Integration
+
+**Important**: Google Calendar API requires **real OAuth tokens** even in development with Firebase emulators.
+
+The implementation uses a **hybrid approach**:
+
+- **Firebase emulators** for TTG development (Auth, Firestore, Storage)
+- **Real Google OAuth** for Calendar API access (bypasses emulator limitations)
+
+#### Setup Requirements:
+
+1. **Google Cloud Console**:
+   - Calendar API enabled ✅
+   - OAuth 2.0 client configured ✅
+   - Development origins: `http://localhost:9000`
+
+2. **Environment Variables**:
+
+   ```env
+   # Your shared calendar ID
+   SHARED_CALENDAR_ID=your-calendar-id@group.calendar.google.com
+   ```
+
+3. **Firebase Auth Scopes**:
+   - Calendar scope included in Google provider ✅
+   - Real OAuth bypass implemented ✅
+
+4. **Usage**:
+   - Navigate to `/admin` → Google Calendar Integration
+   - Click "Test Connection" for OAuth flow
+   - Select calendar and configure sync mode
+
+**Result**: Real Calendar API integration while maintaining clean emulator development!
+
 ## Additional Configuration
 
 For full functionality, ensure:

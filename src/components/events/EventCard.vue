@@ -184,7 +184,7 @@ const selectEventDate = () => {
       <!-- RSVP Actions -->
       <q-card-actions class="q-pt-none q-pb-sm q-pr-md row justify-between">
         <EventRSVPButtons :event="event" :show-labels="false" size="md" />
-        <CalendarExportButton :event="event" color="primary" outlined size="sm" :label="$t('calendar.addToCalendar')" />
+        <CalendarExportButton flat :event="event" color="primary" outlined size="sm" />
       </q-card-actions>
 
     </q-card-section>

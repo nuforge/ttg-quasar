@@ -10,5 +10,9 @@ declare namespace NodeJS {
     FIREBASE_STORAGE_BUCKET: string | undefined;
     FIREBASE_MESSAGING_SENDER_ID: string | undefined;
     FIREBASE_APP_ID: string | undefined;
+    GOOGLE_CLOUD_CLIENT_ID: string | undefined;
+    GOOGLE_CLOUD_SECRET: string | undefined;
+    SHARED_CALENDAR_ID: string | undefined;
+    SHARED_CALENDAR_ENABLED: string | boolean | undefined;
   }
 }

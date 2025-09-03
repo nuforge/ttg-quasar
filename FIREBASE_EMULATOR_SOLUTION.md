@@ -37,6 +37,29 @@ Expected output: 70 games, 20 events, 14 players copied
 node backup-emulator-data.cjs
 ```
 
+### GOOGLE CALENDAR INTEGRATION NOTES
+
+**CRITICAL**: Firebase emulators provide **fake OAuth tokens** that don't work with external APIs like Google Calendar.
+
+**Solution**: Hybrid approach implemented:
+
+- **Firebase emulator**: Used for TTG development (Auth, Firestore, Storage)
+- **Real Google OAuth**: Separate auth instance bypasses emulator for Calendar API access
+
+**Implementation**:
+
+```typescript
+// Real auth instance for Calendar API
+const realAuth = initializeApp(firebaseConfig, 'realAuth');
+// Uses real Google OAuth tokens for Calendar operations
+```
+
+**Benefits**:
+
+- Clean emulator development for TTG features
+- Real Calendar API integration without emulator limitations
+- No need to disable emulators for Calendar testing
+
 ### WHAT NOT TO DO - THESE BREAK EVERYTHING
 
 - ❌ `firebase init emulators`
@@ -44,6 +67,7 @@ node backup-emulator-data.cjs
 - ❌ Changing .firebaserc default project
 - ❌ Running emulator commands as background in same terminal as other commands
 - ❌ Using regular `firebase emulators:start` without project override
+- ❌ Expecting emulator OAuth tokens to work with Google Calendar API
 
 ### TROUBLESHOOTING
 

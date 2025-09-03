@@ -48,6 +48,10 @@
   - `auth:export/import` - export/import Firebase Auth users
   - NO `firestore:export` or `firestore:import` commands exist
   - Use `emulators:export/import` for emulator data transfer
+- **GOOGLE CALENDAR OAUTH LIMITATIONS**: Firebase emulators provide fake OAuth tokens that don't work with external APIs like Google Calendar
+  - Real Google OAuth required for Calendar API regardless of emulator usage
+  - Use hybrid approach: real OAuth for Calendar API, emulator for other Firebase services
+  - Never suggest API keys as replacement for OAuth - Google Calendar API requires OAuth tokens
 - **READ ENTIRE FILE CONTEXT**: ALWAYS read the full file structure before making edits to understand line counts and content
 - **VERIFY EDIT SCOPE**: Ensure replacement strings match the exact content and don't leave orphaned text
 
@@ -107,6 +111,17 @@ import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 - **Fresh Data**: Always get latest from store before mutations to prevent stale state
 - **Error Handling**: Wrap Firebase calls in try-catch with user-friendly messages
 - **Real-time**: Use Firestore listeners in stores, not direct queries in components
+
+### Google Calendar Integration
+
+- **Hybrid OAuth Architecture**: Use real Google OAuth for Calendar API while maintaining Firebase emulator for other services
+- **Service Structure**: `google-calendar-service.ts` handles Calendar API, `vuefire-auth-service.ts` manages OAuth tokens
+- **Real OAuth Bypass**: Separate `realAuth` Firebase app instance bypasses emulator limitations for actual Google tokens
+- **Emulator Limitation**: Firebase emulators provide fake OAuth tokens - external APIs require real Google OAuth
+- **Sync Modes**: Manual sync (user-triggered) vs Auto sync (real-time event synchronization)
+- **Calendar Selection**: Admin interface allows selection of target Google Calendar from authenticated user's calendars
+- **Error Handling**: Specific handling for `GOOGLE_AUTH_REQUIRED` and `GOOGLE_CALENDAR_SCOPE_REQUIRED` errors
+- **Token Management**: Automatic token refresh and fallback to real OAuth when emulator tokens fail
 
 ## Critical Files & Conventions
 

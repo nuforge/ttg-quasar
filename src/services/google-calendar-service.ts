@@ -1,4 +1,8 @@
+import type { Event } from 'src/models/Event';
 import { vueFireAuthService } from './vuefire-auth-service';
+
+// Google Calendar API configuration
+const CALENDAR_API_BASE_URL = 'https://www.googleapis.com/calendar/v3';
 
 export interface CalendarEvent {
   id?: string;
@@ -6,153 +10,191 @@ export interface CalendarEvent {
   description?: string;
   location?: string;
   start: {
-    dateTime?: string; // For timed events
-    date?: string; // For all-day events
+    dateTime?: string;
+    date?: string;
     timeZone?: string;
   };
   end: {
-    dateTime?: string; // For timed events
-    date?: string; // For all-day events
+    dateTime?: string;
+    date?: string;
     timeZone?: string;
   };
-  attendees?: Array<{
-    email: string;
-    displayName?: string;
-  }>;
+  attendees?: { email: string }[];
   reminders?: {
     useDefault: boolean;
     overrides?: Array<{
-      method: 'email' | 'popup';
+      method: string;
       minutes: number;
     }>;
   };
 }
 
+export interface Calendar {
+  id: string;
+  summary: string;
+  description?: string;
+  primary?: boolean;
+}
+
 export class GoogleCalendarService {
-  private readonly CALENDAR_API_URL = 'https://www.googleapis.com/calendar/v3';
+  private calendarId: string;
+  private isDevelopmentMode: boolean;
 
-  // Get the calendar ID to use (shared or personal)
-  private getCalendarId(): string {
-    const sharedCalendarEnabled = process.env.SHARED_CALENDAR_ENABLED === 'true';
-    const sharedCalendarId = process.env.SHARED_CALENDAR_ID;
+  constructor() {
+    // Use shared calendar ID from environment, fallback to primary
+    this.calendarId = process.env.SHARED_CALENDAR_ID || 'primary';
 
-    if (
-      sharedCalendarEnabled &&
-      sharedCalendarId &&
-      sharedCalendarId !== 'your-shared-calendar-id@group.calendar.google.com'
-    ) {
-      return sharedCalendarId;
+    // Check if we're in development mode with Firebase emulator
+    this.isDevelopmentMode =
+      process.env.NODE_ENV === 'development' && process.env.USE_FIREBASE_EMULATOR === 'true';
+
+    console.log(`📅 Google Calendar Service initialized with calendar: ${this.calendarId}`);
+
+    if (this.isDevelopmentMode) {
+      console.log('🔧 Development mode: Using mock Calendar API responses');
     }
-
-    return 'primary';
   }
 
-  // Allow external override of calendar ID
-  private currentCalendarId: string | null = null;
-
-  public setCalendarId(calendarId: string) {
-    this.currentCalendarId = calendarId;
+  /**
+   * Set which calendar to use for operations
+   */
+  public setCalendarId(calendarId: string): void {
+    this.calendarId = calendarId;
+    console.log(`📅 Calendar ID set to: ${calendarId}`);
   }
 
-  public clearCalendarId() {
-    this.currentCalendarId = null;
-  }
-
+  /**
+   * Get current calendar ID
+   */
   public getCurrentCalendarId(): string {
-    return this.currentCalendarId || this.getCalendarId();
+    return this.calendarId;
   }
 
+  /**
+   * Check if Google Calendar API is properly configured
+   */
+  public checkConfiguration(): {
+    isConfigured: boolean;
+    missingVars: string[];
+    message: string;
+  } {
+    const missingVars: string[] = [];
+
+    if (!this.calendarId) {
+      missingVars.push('SHARED_CALENDAR_ID');
+    }
+
+    const isConfigured = missingVars.length === 0;
+
+    return {
+      isConfigured,
+      missingVars,
+      message: isConfigured
+        ? 'Google Calendar API is properly configured'
+        : `Missing required environment variables: ${missingVars.join(', ')}`,
+    };
+  }
+
+  /**
+   * Get OAuth token from existing Firebase Google authentication
+   */
   private async getAccessToken(): Promise<string> {
-    const user = vueFireAuthService.currentUser.value;
-    if (!user) {
-      throw new Error('User not authenticated');
+    console.log('🔑 Getting Google access token from Firebase Auth...');
+
+    // In development with emulator, we still need REAL Google tokens for Calendar API
+    // So bypass the emulator token checks and use real Google auth
+
+    // Check if we have a valid token from Firebase Auth
+    if (vueFireAuthService.isGoogleTokenValid() && vueFireAuthService.googleAccessToken.value) {
+      console.log('✅ Using existing Firebase Google token');
+      return vueFireAuthService.googleAccessToken.value;
     }
 
-    // Check if we have a valid Google OAuth access token
-    if (!vueFireAuthService.isGoogleTokenValid()) {
-      try {
-        const refreshed = await vueFireAuthService.refreshGoogleTokenIfNeeded();
-        if (!refreshed) {
-          throw new Error('Token refresh failed');
-        }
-      } catch (error) {
-        console.error('Failed to refresh Google Calendar token:', error);
-        throw new Error(
-          'Google Calendar access token is expired and could not be refreshed. Please sign in with Google again to refresh your permissions.',
-        );
-      }
+    // Try to refresh the token
+    const refreshed = await vueFireAuthService.refreshGoogleTokenIfNeeded();
+    if (refreshed && vueFireAuthService.googleAccessToken.value) {
+      console.log('✅ Refreshed Firebase Google token');
+      return vueFireAuthService.googleAccessToken.value;
     }
 
-    const accessToken = vueFireAuthService.googleAccessToken.value;
-    if (!accessToken) {
-      throw new Error('No Google OAuth access token available. Please sign in with Google again.');
+    // If we get here, we need to force a real Google OAuth flow
+    console.log('🔄 No valid token found, requesting real Google OAuth...');
+
+    // Force a real Google sign-in to get actual OAuth tokens
+    await this.requestCalendarPermissions();
+
+    if (vueFireAuthService.googleAccessToken.value) {
+      console.log('✅ Got real Google OAuth token');
+      return vueFireAuthService.googleAccessToken.value;
     }
 
-    return accessToken;
+    throw new Error('GOOGLE_AUTH_REQUIRED');
   }
 
-  async createEvent(eventData: CalendarEvent): Promise<CalendarEvent> {
+  /**
+   * Request Google Calendar permissions by getting real OAuth tokens
+   */
+  public async requestCalendarPermissions(): Promise<boolean> {
     try {
+      console.log('🔐 Requesting Google Calendar permissions...');
+
+      // Get real Google OAuth token (bypasses emulator)
+      const token = await vueFireAuthService.getRealGoogleOAuthToken();
+
+      if (token) {
+        console.log('✅ Calendar permissions granted');
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Failed to request Calendar permissions:', error);
+      throw error;
+    }
+  } /**
+   * List user's calendars using OAuth token
+   */
+  public async listCalendars(): Promise<Calendar[]> {
+    try {
+      console.log('📋 Fetching calendar list...');
       const token = await this.getAccessToken();
-      const calendarId = this.getCurrentCalendarId();
 
-      const requestBody = {
-        ...eventData,
-        reminders: eventData.reminders || {
-          useDefault: false,
-          overrides: [
-            { method: 'email', minutes: 24 * 60 }, // 1 day before
-            { method: 'popup', minutes: 60 }, // 1 hour before
-          ],
+      const url = `${CALENDAR_API_BASE_URL}/users/me/calendarList`;
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      };
-
-      const response = await fetch(
-        `${this.CALENDAR_API_URL}/calendars/${encodeURIComponent(calendarId)}/events`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        },
-      );
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
+        console.error('Calendar list error:', errorText);
 
-        // Provide specific error messages for common issues
-        if (response.status === 403) {
-          throw new Error(
-            `Access denied to calendar ${calendarId}. Make sure the calendar is shared with write permissions for the authenticated user, or the user has been granted access to manage this calendar.`,
-          );
+        if (response.status === 401) {
+          throw new Error('GOOGLE_AUTH_REQUIRED');
         }
-        if (response.status === 404) {
-          throw new Error(
-            `Calendar ${calendarId} not found. Please check the calendar ID in your .env file.`,
-          );
-        }
-
-        throw new Error(
-          `Calendar API error: ${response.status} ${response.statusText} - ${errorText}`,
-        );
+        throw new Error(`Failed to list calendars: ${response.statusText}`);
       }
 
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      throw new Error(`Failed to create calendar event: ${errorMessage}`);
-    }
-  }
+      const data = await response.json();
+      console.log('✅ Calendars fetched successfully:', data.items?.length || 0);
 
-  async updateEvent(eventId: string, eventData: Partial<CalendarEvent>): Promise<CalendarEvent> {
+      return data.items || [];
+    } catch (error) {
+      console.error('Failed to list calendars:', error);
+      throw error;
+    }
+  } /**
+   * Create a new event in the specified calendar using OAuth
+   */
+  public async createEvent(eventData: CalendarEvent): Promise<CalendarEvent> {
     try {
+      console.log('📅 Creating calendar event:', eventData.summary);
       const token = await this.getAccessToken();
 
-      const response = await fetch(`${this.CALENDAR_API_URL}/calendars/primary/events/${eventId}`, {
-        method: 'PUT',
+      const url = `${CALENDAR_API_BASE_URL}/calendars/${this.calendarId}/events`;
+      const response = await fetch(url, {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -161,67 +203,111 @@ export class GoogleCalendarService {
       });
 
       if (!response.ok) {
-        throw new Error(`Calendar API error: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('Create event error:', errorText);
+
+        if (response.status === 401) {
+          throw new Error('GOOGLE_AUTH_REQUIRED');
+        }
+        throw new Error(`Failed to create event: ${response.statusText}`);
       }
 
-      return response.json();
+      const createdEvent = await response.json();
+      console.log('✅ Event created successfully:', createdEvent.id);
+      return createdEvent;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      throw new Error(`Failed to update calendar event: ${errorMessage}`);
+      console.error('Failed to create event:', error);
+      throw error;
     }
   }
 
-  async deleteEvent(eventId: string): Promise<void> {
+  /**
+   * Update an existing event in the calendar
+   */
+  public async updateEvent(
+    eventId: string,
+    eventData: Partial<CalendarEvent>,
+  ): Promise<CalendarEvent> {
     try {
+      console.log('📝 Updating calendar event:', eventId);
       const token = await this.getAccessToken();
 
-      const response = await fetch(`${this.CALENDAR_API_URL}/calendars/primary/events/${eventId}`, {
+      const url = `${CALENDAR_API_BASE_URL}/calendars/${this.calendarId}/events/${eventId}`;
+      const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Update event error:', errorText);
+
+        if (response.status === 401) {
+          throw new Error('GOOGLE_AUTH_REQUIRED');
+        }
+        throw new Error(`Failed to update event: ${response.statusText}`);
+      }
+
+      const updatedEvent = await response.json();
+      console.log('✅ Event updated successfully:', updatedEvent.id);
+      return updatedEvent;
+    } catch (error) {
+      console.error('Failed to update event:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete an event from the calendar
+   */
+  public async deleteEvent(eventId: string): Promise<void> {
+    try {
+      console.log('🗑️ Deleting calendar event:', eventId);
+      const token = await this.getAccessToken();
+
+      const url = `${CALENDAR_API_BASE_URL}/calendars/${this.calendarId}/events/${eventId}`;
+      const response = await fetch(url, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok && response.status !== 404) {
-        throw new Error(`Calendar API error: ${response.statusText}`);
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      throw new Error(`Failed to delete calendar event: ${errorMessage}`);
-    }
-  }
-
-  async getEvent(eventId: string): Promise<CalendarEvent> {
-    try {
-      const token = await this.getAccessToken();
-
-      const response = await fetch(`${this.CALENDAR_API_URL}/calendars/primary/events/${eventId}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
       if (!response.ok) {
-        throw new Error(`Calendar API error: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('Delete event error:', errorText);
+
+        if (response.status === 401) {
+          throw new Error('GOOGLE_AUTH_REQUIRED');
+        }
+        throw new Error(`Failed to delete event: ${response.statusText}`);
       }
 
-      return response.json();
+      console.log('✅ Event deleted successfully');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      throw new Error(`Failed to get calendar event: ${errorMessage}`);
+      console.error('Failed to delete event:', error);
+      throw error;
     }
   }
 
-  async listEvents(
+  /**
+   * List events from the calendar
+   */
+  public async listEvents(
+    calendarId?: string,
     timeMin?: string,
     timeMax?: string,
-    maxResults: number = 250,
-  ): Promise<{ items: CalendarEvent[] }> {
+    maxResults = 10,
+  ): Promise<CalendarEvent[]> {
     try {
+      console.log('📋 Listing calendar events...');
       const token = await this.getAccessToken();
-      const calendarId = this.getCurrentCalendarId();
 
+      const targetCalendarId = calendarId || this.calendarId;
       const params = new URLSearchParams({
         maxResults: maxResults.toString(),
         singleEvents: 'true',
@@ -231,63 +317,106 @@ export class GoogleCalendarService {
       if (timeMin) params.append('timeMin', timeMin);
       if (timeMax) params.append('timeMax', timeMax);
 
-      const response = await fetch(
-        `${this.CALENDAR_API_URL}/calendars/${encodeURIComponent(calendarId)}/events?${params}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Calendar API error: ${response.statusText}`);
-      }
-
-      return response.json();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      throw new Error(`Failed to list calendar events: ${errorMessage}`);
-    }
-  }
-
-  // List all calendars accessible to the user
-  async listCalendars(): Promise<{
-    items: Array<{ id: string; summary: string; primary?: boolean; accessRole: string }>;
-  }> {
-    try {
-      const token = await this.getAccessToken();
-
-      const response = await fetch(`${this.CALENDAR_API_URL}/users/me/calendarList`, {
-        method: 'GET',
+      const url = `${CALENDAR_API_BASE_URL}/calendars/${targetCalendarId}/events?${params}`;
+      const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error(`Calendar API error: ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('List events error:', errorText);
+
+        if (response.status === 401) {
+          throw new Error('GOOGLE_AUTH_REQUIRED');
+        }
+        throw new Error(`Failed to list events: ${response.statusText}`);
       }
 
-      const result = await response.json();
-      return result;
+      const data = await response.json();
+      console.log('✅ Events listed successfully:', data.items?.length || 0);
+      return data.items || [];
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      throw new Error(`Failed to list calendars: ${errorMessage}`);
+      console.error('Failed to list events:', error);
+      throw error;
     }
   }
 
-  // Get current calendar configuration
-  getCalendarConfig() {
-    const calendarId = this.getCurrentCalendarId();
-    const isShared = calendarId !== 'primary';
+  /**
+   * Convert TTG Event to Google Calendar Event
+   */
+  public convertTTGEventToCalendarEvent(ttgEvent: Event): CalendarEvent {
+    const eventDate = ttgEvent.getDateObject();
+
+    // Parse time safely
+    const timeParts = ttgEvent.time?.split(':') || ['18', '00'];
+    const hours = parseInt(timeParts[0] || '18');
+    const minutes = parseInt(timeParts[1] || '00');
+    eventDate.setHours(hours, minutes);
+
+    const startDateTime = eventDate.toISOString();
+
+    // Calculate end time
+    const endDate = new Date(eventDate);
+    if (ttgEvent.endTime) {
+      const endTimeParts = ttgEvent.endTime.split(':');
+      const endHours = parseInt(endTimeParts[0] || '21');
+      const endMinutes = parseInt(endTimeParts[1] || '00');
+      endDate.setHours(endHours, endMinutes);
+    } else {
+      endDate.setHours(endDate.getHours() + 3); // Default 3-hour duration
+    }
 
     return {
-      calendarId,
-      isShared,
-      isConfigured: isShared && calendarId !== 'your-shared-calendar-id@group.calendar.google.com',
+      summary: ttgEvent.title,
+      description: `${ttgEvent.description}\n\nPlayers: ${ttgEvent.getConfirmedCount()}/${ttgEvent.maxPlayers}`,
+      location: ttgEvent.location,
+      start: {
+        dateTime: startDateTime,
+        timeZone: 'America/New_York',
+      },
+      end: {
+        dateTime: endDate.toISOString(),
+        timeZone: 'America/New_York',
+      },
     };
+  }
+
+  /**
+   * Sync a TTG event to Google Calendar
+   */
+  public async syncTTGEvent(ttgEvent: Event): Promise<CalendarEvent> {
+    const calendarEvent = this.convertTTGEventToCalendarEvent(ttgEvent);
+    return await this.createEvent(calendarEvent);
+  }
+
+  /**
+   * Test the connection by trying a simple API call
+   */
+  public async testConnection(): Promise<{
+    success: boolean;
+    calendars?: Calendar[];
+    error?: string;
+  }> {
+    try {
+      console.log('🧪 Testing Google Calendar connection...');
+
+      // Check if we have required configuration
+      if (!this.calendarId) {
+        return { success: false, error: 'Calendar ID not configured' };
+      }
+
+      // Try to list calendars to test the connection
+      const calendars = await this.listCalendars();
+      return { success: true, calendars };
+    } catch (error) {
+      console.error('Connection test failed:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
   }
 }
 

@@ -19,8 +19,8 @@
     </div>
 
     <!-- Quick Stats -->
-    <div class="row q-gutter-sm q-mb-xl">
-      <div class="col-12 col-sm-6 col-md-3">
+    <div class="row q-col-gutter-sm q-mb-xl">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="stat-card">
           <q-card-section>
             <div class="flex items-center">
@@ -37,7 +37,7 @@
         </q-card>
       </div>
 
-      <div class="col-12 col-sm-6 col-md-3">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="stat-card">
           <q-card-section>
             <div class="flex items-center">
@@ -54,7 +54,7 @@
         </q-card>
       </div>
 
-      <div class="col-12 col-sm-6 col-md-3">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="stat-card">
           <q-card-section>
             <div class="flex items-center">
@@ -71,7 +71,7 @@
         </q-card>
       </div>
 
-      <div class="col-12 col-sm-6 col-md-3">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-3">
         <q-card class="stat-card">
           <q-card-section>
             <div class="flex items-center">
@@ -90,7 +90,7 @@
     </div>
 
     <!-- System Status -->
-    <div class="row q-gutter-md q-mb-xl">
+    <div class="row q-col-gutter-md q-mb-xl">
       <div class="col-12 col-md-6">
         <q-card>
           <q-card-section>
@@ -123,7 +123,7 @@
 
               <q-item>
                 <q-item-section avatar>
-                  <q-avatar :color="dataStatus.color" text-color="white" icon="database" />
+                  <q-avatar :color="dataStatus.color" text-color="white" icon="folder" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>Data Migration</q-item-label>
@@ -171,17 +171,53 @@
             </div>
           </q-card-section>
           <q-card-section class="q-pt-none">
-            <div class="row q-gutter-md">
-              <q-btn color="primary" icon="group_add" label="Add User" @click="$router.push('/admin/users')" />
-              <q-btn color="secondary" icon="mdi-dice-plus" label="Add Game" @click="$router.push('/admin/games')" />
-              <q-btn color="positive" icon="event_note" label="Create Event" @click="$router.push('/events')" />
-              <q-btn color="accent" icon="sync" label="Event Migration" @click="$router.push('/admin/migration')" />
-              <q-btn color="info" icon="backup" label="Backup Data" @click="backupData" :loading="backupLoading" />
-              <q-btn color="warning" icon="refresh" label="Refresh Cache" @click="refreshCache"
-                :loading="refreshLoading" />
-              <q-btn v-if="isDevelopment" color="purple" icon="bug_report" label="Debug Permissions"
-                @click="debugPermissions" />
+            <div class="row q-col-gutter-md">
+              <div class="col-auto">
+                <q-btn color="primary" icon="group_add" label="Add User" @click="$router.push('/admin/users')" />
+              </div>
+              <div class="col-auto">
+                <q-btn color="secondary" icon="mdi-dice-multiple" label="Add Game"
+                  @click="$router.push('/admin/games')" />
+              </div>
+              <div class="col-auto">
+                <q-btn color="positive" icon="event_note" label="Create Event" @click="$router.push('/events')" />
+              </div>
+              <div class="col-auto">
+                <q-btn color="accent" icon="sync" label="Event Migration" @click="$router.push('/admin/migration')" />
+              </div>
+              <div class="col-auto">
+                <q-btn color="deep-purple" icon="mdi-google" label="Calendar Settings"
+                  @click="scrollToCalendarSettings" />
+              </div>
+              <div class="col-auto">
+                <q-btn color="info" icon="backup" label="Backup Data" @click="backupData" :loading="backupLoading" />
+              </div>
+              <div class="col-auto">
+                <q-btn color="warning" icon="refresh" label="Refresh Cache" @click="refreshCache"
+                  :loading="refreshLoading" />
+              </div>
+              <div class="col-auto">
+                <q-btn v-if="isDevelopment" color="purple" icon="bug_report" label="Debug Permissions"
+                  @click="debugPermissions" />
+              </div>
             </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- Google Calendar Integration -->
+    <div class="row q-gutter-md q-mb-xl google-calendar-section">
+      <div class="col-12">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">
+              <q-icon name="mdi-google" class="q-mr-sm" />
+              Google Calendar Integration
+            </div>
+          </q-card-section>
+          <q-card-section class="q-pt-none">
+            <GoogleCalendarSettings />
           </q-card-section>
         </q-card>
       </div>
@@ -195,6 +231,7 @@ import { useQuasar } from 'quasar';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
+import GoogleCalendarSettings from 'src/components/admin/GoogleCalendarSettings.vue';
 
 const $q = useQuasar();
 const playersStore = usePlayersFirebaseStore();
@@ -328,6 +365,14 @@ const debugPermissions = async () => {
       message: 'Debug failed. Check console for details.',
       position: 'top'
     });
+  }
+};
+
+const scrollToCalendarSettings = () => {
+  // Scroll to the Google Calendar settings section
+  const element = document.querySelector('.google-calendar-section');
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
   }
 };
 

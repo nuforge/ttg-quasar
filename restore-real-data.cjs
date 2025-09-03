@@ -22,7 +22,7 @@ const prodApp = initializeApp(
 );
 
 // Emulator app
-const emulatorApp = initializeApp({ projectId: 'demo-project' }, 'emulator');
+const emulatorApp = initializeApp({ projectId: 'ttgaming-dd3c0' }, 'emulator');
 const emulatorDb = getFirestore(emulatorApp);
 connectFirestoreEmulator(emulatorDb, 'localhost', 8080);
 

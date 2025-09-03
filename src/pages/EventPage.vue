@@ -187,7 +187,7 @@ const sendEventComment = (message: string) => {
           </div>
           <div class="col-auto q-gutter-sm">
             <EventRSVPButtons :event="event" />
-            <CalendarExportButton :event="event" color="primary" outlined />
+            <CalendarExportButton :event="event" color="primary" flat />
           </div>
         </div>
 
@@ -347,7 +347,7 @@ const sendEventComment = (message: string) => {
               <q-item-section>
                 <q-item-label>{{ availableEvent.title }}</q-item-label>
                 <q-item-label caption>ID: {{ availableEvent.id }} | Date: {{ availableEvent.getFormattedDate()
-                }}</q-item-label>
+                  }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>

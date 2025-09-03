@@ -79,7 +79,17 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Admin Dashboard**: Comprehensive system overview and statistics
 - **User Management**: Admin controls for user roles and permissions
 - **Game Library Management**: Add, edit, and manage the game database
+- **Google Calendar Integration**: Sync TTG events with Google Calendar
 - **Development Mode**: Override admin access for initial setup and development
+
+### 📅 Google Calendar Integration
+
+- **Hybrid OAuth Architecture**: Real Google Calendar API integration while maintaining Firebase emulator development
+- **Automatic Event Sync**: TTG events sync to Google Calendar (Manual or Auto modes)
+- **Calendar Selection**: Choose target Google Calendar from authenticated user's calendars
+- **Real-time Updates**: Changes to TTG events automatically update Google Calendar (Auto mode)
+- **Admin Configuration**: Full admin interface for Calendar setup and testing
+- **Token Management**: Automatic OAuth token refresh and error handling
 
 ## 🔑 Admin Access
 
@@ -94,6 +104,7 @@ A comprehensive Tabletop Gaming Management Application built with Vue 3, Quasar 
 - **Dashboard**: `/admin` - System overview and quick actions
 - **User Management**: `/admin/users` - Manage user roles and permissions
 - **Game Management**: `/admin/games` - Manage game library
+- **Google Calendar**: `/admin` - Configure Google Calendar integration and sync settings
 
 ## 🛠️ Technology Stack
 
