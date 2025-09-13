@@ -11,14 +11,15 @@ export const requireAuth = (
   to: RouteLocationNormalized,
   from: RouteLocationNormalized,
   next: NavigationGuardNext,
-) => {
+): void => {
   const user = useCurrentUser();
   const isAuthenticated = computed(() => !!user.value);
   const isLoading = computed(() => user.value === undefined);
 
   // Check if route requires admin access
   if (to.meta.requiresAdmin && isAuthenticated.value) {
-    return checkAdminAccess(to, from, next);
+    void checkAdminAccess(to, from, next);
+    return;
   }
 
   // If still loading authentication state, wait for it
@@ -86,14 +87,7 @@ const checkAdminAccess = async (
       await playersStore.initializeAdminData();
     }
 
-    // Development override: Allow admin access if no admin users exist
-    if (process.env.NODE_ENV === 'development' && playersStore.userRoles.size === 0) {
-      console.warn(
-        '🔧 Development Mode: Granting admin access - no admin roles configured. Please visit /admin/setup to create an admin user.',
-      );
-      next();
-      return;
-    }
+    // No development override - admin access requires proper roles
 
     // Check if user has admin permissions
     const userRole = playersStore.getUserRole(user.value.uid);

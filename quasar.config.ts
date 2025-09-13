@@ -162,7 +162,39 @@ export default defineConfig((ctx) => {
       ],
 
       // extendPackageJson (json) {},
-      // extendSSRWebserverConf (esbuildConf) {},
+      extendSSRWebserverConf(esbuildConf: any) {
+        // Add security headers middleware
+        esbuildConf.middlewares = [
+          ...esbuildConf.middlewares,
+          (req: any, res: any, next: any) => {
+            // Security headers
+            res.setHeader('X-Content-Type-Options', 'nosniff');
+            res.setHeader('X-Frame-Options', 'DENY');
+            res.setHeader('X-XSS-Protection', '1; mode=block');
+            res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+            res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+            res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+
+            // Content Security Policy
+            res.setHeader(
+              'Content-Security-Policy',
+              "default-src 'self'; " +
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://www.google.com https://www.gstatic.com/firebasejs/; " +
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+                "font-src 'self' https://fonts.gstatic.com; " +
+                "img-src 'self' data: https: blob:; " +
+                "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.google.com wss://*.firebaseio.com; " +
+                "frame-src 'none'; " +
+                "object-src 'none'; " +
+                "base-uri 'self'; " +
+                "form-action 'self'; " +
+                "frame-ancestors 'none';",
+            );
+
+            next();
+          },
+        ];
+      },
 
       // manualStoreSerialization: true,
       // manualStoreSsrContextInjection: true,

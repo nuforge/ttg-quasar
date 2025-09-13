@@ -54,10 +54,7 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
   const isCurrentUserAdmin = computed(() => {
     if (!authService.currentUser.value) return false;
 
-    // Development override: Allow admin access for authenticated users if no admin roles exist
-    if (process.env.NODE_ENV === 'development' && userRoles.value.size === 0) {
-      return true;
-    }
+    // No development override - admin access requires proper roles
 
     const role = userRoles.value.get(authService.currentUser.value.uid);
     return role?.permissions.includes('admin') || false;

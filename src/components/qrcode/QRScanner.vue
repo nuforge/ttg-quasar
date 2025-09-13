@@ -48,13 +48,14 @@ const toggleCamera = async () => {
 };
 
 // QR Scanning Loop
-const scanFrame = () => {
+const scanFrame = (): void => {
   if (!video.value || !isCameraActive.value ||
     video.value.readyState < HTMLMediaElement.HAVE_METADATA) return;
 
   // Add dimension validation
   if (video.value.videoWidth === 0 || video.value.videoHeight === 0) {
-    return requestAnimationFrame(scanFrame);
+    requestAnimationFrame(scanFrame);
+    return;
   }
 
   const canvas = document.createElement('canvas');

@@ -68,16 +68,9 @@ describe('Players Firebase Store', () => {
     });
 
     it('should have isCurrentUserAdmin computed property', () => {
-      // Set NODE_ENV to development to enable the development override
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
-
       const store = usePlayersFirebaseStore();
-      // In development mode with no roles, should return true
-      expect(store.isCurrentUserAdmin).toBe(true);
-
-      // Restore original environment
-      process.env.NODE_ENV = originalEnv;
+      // Without proper admin roles, should return false (security fix)
+      expect(store.isCurrentUserAdmin).toBe(false);
     });
   });
 

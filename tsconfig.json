@@ -1,3 +1,51 @@
 {
-  "extends": "./.quasar/tsconfig.json"
+  "extends": "./.quasar/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@/components/*": ["src/components/*"],
+      "@/services/*": ["src/services/*"],
+      "@/stores/*": ["src/stores/*"],
+      "@/types/*": ["src/types/*"],
+      "@/utils/*": ["src/utils/*"],
+      "@/models/*": ["src/models/*"],
+      "@/composables/*": ["src/composables/*"],
+      "#q-app": ["./node_modules/@quasar/app-vite/types/index.d.ts"],
+      "#q-app/wrappers": ["./node_modules/@quasar/app-vite/types/app-wrappers.d.ts"],
+      "layouts/*": ["./src/layouts/*"],
+      "pages/*": ["./src/pages/*"]
+    },
+    "types": ["vite/client", "node"],
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*", "test/**/*", "*.config.*"],
+  "exclude": ["node_modules", "dist", ".quasar", "coverage"],
+  "ts-node": {
+    "esm": true
+  }
 }

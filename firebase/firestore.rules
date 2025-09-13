@@ -1,8 +1,82 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+    // Players collection - public read, authenticated write
+    match /players/{userId} {
+      allow read: if true; // Public read for player discovery
+      allow write: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
     }
+    
+    // Events collection - public read, authenticated write
+    match /events/{eventId} {
+      allow read: if true; // Public read for event browsing
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && 
+        (request.auth.uid == resource.data.createdBy || 
+         isAdmin(request.auth.uid));
+    }
+    
+    // Games collection - public read, admin write
+    match /games/{gameId} {
+      allow read: if true; // Public read
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
+    }
+    
+    // User roles - authenticated read, admin write
+    match /userRoles/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
+    }
+    
+    // User statuses - authenticated read, admin write
+    match /userStatuses/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
+    }
+    
+    // Messages collection - authenticated users only
+    match /messages/{messageId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // User preferences - user can only access their own
+    match /userPreferences/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Game ownerships - user can only access their own
+    match /gameOwnerships/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Game submissions - authenticated users can create, admins can manage
+    match /gameSubmissions/{submissionId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && isAdmin(request.auth.uid);
+    }
+    
+    // Event submissions - authenticated users can create, admins can manage
+    match /eventSubmissions/{submissionId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && isAdmin(request.auth.uid);
+    }
+    
+    // Conversations - authenticated users can read/write
+    match /conversations/{conversationId} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Game notifications - user can only access their own
+    match /gameNotifications/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+  
+  // Helper function to check admin permissions
+  function isAdmin(userId) {
+    return get(/databases/$(database)/documents/userRoles/$(userId)).data.permissions.hasAny(['admin']);
   }
 }
