@@ -16,7 +16,7 @@ The TTG (Tabletop Gaming) Quasar Application is a comprehensive, enterprise-grad
 ### ✨ **Key Features**
 
 - 🔐 **Secure Authentication** - Firebase Auth with role-based access control
-- 🎮 **Game Management** - Comprehensive game catalog and ownership tracking  
+- 🎮 **Game Management** - Comprehensive game catalog and ownership tracking
 - 📅 **Event Management** - Event creation, RSVP, and calendar integration
 - 👥 **Player Management** - User profiles, preferences, and social features
 - 💬 **Messaging System** - Real-time messaging between players
@@ -76,13 +76,13 @@ firebase deploy
 
 ## 📚 **Documentation**
 
-| Document | Description | Status |
-|----------|-------------|---------|
-| [Project Overview](docs/PROJECT_OVERVIEW.md) | High-level project information | ✅ Complete |
-| [API Documentation](docs/API_DOCUMENTATION.md) | Complete API reference | ✅ Complete |
-| [Deployment Guide](docs/DEPLOYMENT_GUIDE.md) | Production deployment instructions | ✅ Complete |
-| [Development Roadmap](docs/development/DEVELOPMENT_ROADMAP.md) | Future development plans | ✅ Complete |
-| [Security Documentation](docs/security/) | Security implementation details | ✅ Complete |
+| Document                                                       | Description                        | Status      |
+| -------------------------------------------------------------- | ---------------------------------- | ----------- |
+| [Project Overview](docs/PROJECT_OVERVIEW.md)                   | High-level project information     | ✅ Complete |
+| [API Documentation](docs/API_DOCUMENTATION.md)                 | Complete API reference             | ✅ Complete |
+| [Deployment Guide](docs/DEPLOYMENT_GUIDE.md)                   | Production deployment instructions | ✅ Complete |
+| [Development Roadmap](docs/development/DEVELOPMENT_ROADMAP.md) | Future development plans           | ✅ Complete |
+| [Security Documentation](docs/security/)                       | Security implementation details    | ✅ Complete |
 
 ## 🛠️ **Development**
 
@@ -114,6 +114,7 @@ firebase deploy          # Deploy to Firebase
 ## 🔮 **Roadmap**
 
 ### Phase 2: Feature Enhancement (Weeks 1-12)
+
 - Enhanced UI/UX components
 - Advanced game management
 - Improved event management
