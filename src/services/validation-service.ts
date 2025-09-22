@@ -1,7 +1,55 @@
 import type { ValidationRule, ValidationResult, ValidationSchema } from 'src/types/validation';
 import { SanitizationUtils } from 'src/utils/sanitization';
+import type { ContentDoc } from 'src/schemas/contentdoc';
+import { contentDocSchema } from 'src/schemas/contentdoc';
 
 export class ValidationService {
+  private ajv: any = null;
+  private contentDocValidator: any = null;
+
+  constructor() {
+    // Lazy load AJV to avoid bundle size issues
+    this.initializeAJV();
+  }
+
+  private async initializeAJV() {
+    try {
+      const Ajv = (await import('ajv')).default;
+      const addFormats = (await import('ajv-formats')).default;
+
+      this.ajv = new Ajv({ allErrors: true, strict: false });
+      addFormats(this.ajv);
+
+      this.contentDocValidator = this.ajv.compile(contentDocSchema);
+    } catch (error) {
+      console.warn('Failed to initialize AJV for ContentDoc validation:', error);
+    }
+  }
+
+  /**
+   * Validate ContentDoc using AJV schema
+   */
+  async validateContentDoc(contentDoc: ContentDoc): Promise<void> {
+    if (!this.contentDocValidator) {
+      await this.initializeAJV();
+    }
+
+    if (!this.contentDocValidator) {
+      throw new Error('ContentDoc validation not available - AJV not initialized');
+    }
+
+    const isValid = this.contentDocValidator(contentDoc);
+
+    if (!isValid) {
+      const errors = this.contentDocValidator.errors || [];
+      const errorMessages = errors.map((err: any) => {
+        const path = err.instancePath || err.dataPath || 'root';
+        return `${path}: ${err.message}`;
+      });
+
+      throw new Error(`ContentDoc validation failed: ${errorMessages.join(', ')}`);
+    }
+  }
   static validate<T extends Record<string, unknown>>(
     data: T,
     schema: ValidationSchema<T>,

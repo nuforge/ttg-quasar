@@ -20,6 +20,10 @@ import { type Event } from 'src/models/Event';
 import { type GameSubmissionData } from 'src/models/GameSubmission';
 import { authService } from 'src/services/auth-service';
 import { FeaturedGamesService } from 'src/services/featured-games-service';
+import { CLCAIngestService, type CLCAIngestError } from 'src/services/clca-ingest-service';
+import { ContentDocMappingService } from 'src/services/contentdoc-mapping-service';
+import { DeadLetterQueueService } from 'src/services/dead-letter-queue-service';
+import { logger } from 'src/utils/logger';
 
 export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
   // State
@@ -27,6 +31,24 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
   const loading = ref(false);
   const error = ref<string | null>(null);
   const unsubscribes = ref<Unsubscribe[]>([]);
+
+  // CLCA Integration Services
+  const clcaIngestService = new CLCAIngestService();
+  const contentDocMappingService = new ContentDocMappingService();
+  const dlqService = new DeadLetterQueueService();
+
+  // CLCA sync status tracking for games
+  const clcaSyncStatus = ref<
+    Map<
+      string,
+      {
+        synced: boolean;
+        syncedAt?: Date;
+        error?: string;
+        clcaId?: string;
+      }
+    >
+  >(new Map());
 
   // Getters
   const approvedGames = computed(() => {
@@ -311,6 +333,144 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     return FeaturedGamesService.getFeaturedGames(availableGames, criteria);
   };
 
+  // CLCA Integration Methods
+  const publishGameToCLCA = async (gameId: string): Promise<void> => {
+    const game = games.value.find((g) => g.id === gameId);
+    if (!game) {
+      throw new Error('Game not found');
+    }
+
+    try {
+      // Map to ContentDoc
+      const contentDoc = await contentDocMappingService.mapGameToContentDoc(game);
+
+      // Publish to CLCA
+      const result = await clcaIngestService.publishContent(contentDoc);
+
+      // Update sync status
+      clcaSyncStatus.value.set(gameId, {
+        synced: true,
+        syncedAt: new Date(),
+        clcaId: result.id,
+      });
+
+      logger.info('Game published to CLCA', {
+        gameId: game.id,
+        clcaId: result.id,
+      });
+    } catch (error) {
+      // Update sync status with error
+      clcaSyncStatus.value.set(gameId, {
+        synced: false,
+        error: (error as Error).message,
+      });
+
+      // Add to dead letter queue for retry
+      try {
+        const contentDoc = await contentDocMappingService.mapGameToContentDoc(game);
+        await dlqService.addToDLQ(contentDoc, error as CLCAIngestError, {
+          eventId: game.id,
+          attempt: 1,
+        });
+      } catch (mappingError) {
+        logger.error('Failed to add failed CLCA sync to DLQ', mappingError as Error, {
+          gameId: game.id,
+        });
+      }
+
+      throw error;
+    }
+  };
+
+  const getGameCLCASyncStatus = computed(() => {
+    return (gameId: string) => clcaSyncStatus.value.get(gameId);
+  });
+
+  // Enhanced createGame method with automatic CLCA publishing
+  const createGameWithCLCA = async (
+    gameData: Partial<FirebaseGame>,
+    syncToCLCA = true,
+  ): Promise<void> => {
+    try {
+      // Create game using existing method
+      await createGame(gameData);
+
+      // If game is approved and sync is enabled, publish to CLCA
+      if (gameData.approved && syncToCLCA && clcaIngestService.isConfigured()) {
+        // Find the created game (this is a simplified approach)
+        const createdGame = games.value.find(
+          (g) => g.title === gameData.title && g.createdBy === gameData.createdBy,
+        );
+
+        if (createdGame) {
+          try {
+            await publishGameToCLCA(createdGame.id);
+          } catch (clcaError) {
+            logger.warn('CLCA sync failed during game creation', clcaError as Error);
+            // Don't fail game creation if CLCA sync fails
+          }
+        }
+      }
+    } catch (error) {
+      logger.error('Failed to create game with CLCA sync', error as Error, { gameData });
+      throw error;
+    }
+  };
+
+  // Enhanced approveGame method with automatic CLCA publishing
+  const approveGameWithCLCA = async (gameId: string, syncToCLCA = true): Promise<void> => {
+    try {
+      // Approve game using existing method
+      await approveGame(gameId);
+
+      // Auto-sync to CLCA if sync is enabled
+      if (syncToCLCA && clcaIngestService.isConfigured()) {
+        try {
+          await publishGameToCLCA(gameId);
+        } catch (clcaError) {
+          logger.warn('CLCA sync failed during game approval', clcaError as Error);
+          // Don't fail game approval if CLCA sync fails
+        }
+      }
+    } catch (error) {
+      logger.error('Failed to approve game with CLCA sync', error as Error, { gameId });
+      throw error;
+    }
+  };
+
+  // Batch sync all approved games to CLCA (admin function)
+  const syncAllGamesToCLCA = async (): Promise<{
+    successful: number;
+    failed: number;
+    errors: Array<{ gameId: string; error: string }>;
+  }> => {
+    const results = {
+      successful: 0,
+      failed: 0,
+      errors: [] as Array<{ gameId: string; error: string }>,
+    };
+
+    const approvedGamesList = games.value.filter((g) => g.approved && g.status === 'active');
+
+    logger.info('Starting batch CLCA game sync', { gameCount: approvedGamesList.length });
+
+    for (const game of approvedGamesList) {
+      try {
+        await publishGameToCLCA(game.id);
+        results.successful++;
+      } catch (error) {
+        results.failed++;
+        results.errors.push({
+          gameId: game.id,
+          error: (error as Error).message,
+        });
+      }
+    }
+
+    logger.info('Batch CLCA game sync completed', results);
+    return results;
+  };
+
   // Cleanup function
   const cleanup = () => {
     unsubscribes.value.forEach((unsubscribe) => unsubscribe());
@@ -331,6 +491,7 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     getGameById,
     getGameByLegacyId,
     searchGames,
+    getGameCLCASyncStatus,
 
     // Actions
     submitGame,
@@ -343,5 +504,11 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     loadGames,
     getFeaturedGamesWithUserData,
     cleanup,
+
+    // CLCA Integration
+    publishGameToCLCA,
+    createGameWithCLCA,
+    approveGameWithCLCA,
+    syncAllGamesToCLCA,
   };
 });

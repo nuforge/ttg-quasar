@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useMessagesFirebaseStore } from 'src/stores/messages-firebase-store';
-import { usePlayersStore } from 'src/stores/players-store';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import type { Message } from 'src/models/Message';
 import MessageItem from './MessageItem.vue';
 
@@ -11,11 +11,11 @@ const props = defineProps<{
 }>();
 
 const messagesStore = useMessagesFirebaseStore();
-const playersStore = usePlayersStore();
+const playersStore = usePlayersFirebaseStore();
 
 // Initialize stores if needed
 if (playersStore.players.length === 0) {
-  void playersStore.fetchPlayers();
+  void playersStore.fetchAllPlayers();
 }
 
 const currentUserId = computed(() => messagesStore.currentUserId);

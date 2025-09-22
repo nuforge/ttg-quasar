@@ -20,6 +20,10 @@ import { db } from 'src/boot/firebase';
 import { Event, type RSVP } from 'src/models/Event';
 import { authService } from 'src/services/auth-service';
 import { googleCalendarService, type CalendarEvent } from 'src/services/google-calendar-service';
+import { CLCAIngestService, type CLCAIngestError } from 'src/services/clca-ingest-service';
+import { ContentDocMappingService } from 'src/services/contentdoc-mapping-service';
+import { DeadLetterQueueService } from 'src/services/dead-letter-queue-service';
+import { logger } from 'src/utils/logger';
 
 export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
   // State
@@ -27,6 +31,24 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
   const loading = ref(false);
   const error = ref<string | null>(null);
   const unsubscribes = ref<Unsubscribe[]>([]);
+
+  // CLCA Integration Services
+  const clcaIngestService = new CLCAIngestService();
+  const contentDocMappingService = new ContentDocMappingService();
+  const dlqService = new DeadLetterQueueService();
+
+  // CLCA sync status tracking
+  const clcaSyncStatus = ref<
+    Map<
+      string,
+      {
+        synced: boolean;
+        syncedAt?: Date;
+        error?: string;
+        clcaId?: string;
+      }
+    >
+  >(new Map());
 
   // Getters
   const upcomingEvents = computed(() => {
@@ -396,6 +418,172 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     events.value = [];
   };
 
+  // CLCA Integration Methods
+  const publishEventToCLCA = async (eventId: string): Promise<void> => {
+    const event = events.value.find(
+      (e) => e.firebaseDocId === eventId || e.id.toString() === eventId,
+    );
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
+    try {
+      // Map to ContentDoc
+      const contentDoc = await contentDocMappingService.mapEventToContentDoc(event);
+
+      // Publish to CLCA
+      const result = await clcaIngestService.publishContent(contentDoc);
+
+      // Update sync status
+      clcaSyncStatus.value.set(eventId, {
+        synced: true,
+        syncedAt: new Date(),
+        clcaId: result.id,
+      });
+
+      // Update event in Firestore with CLCA metadata
+      const docId = event.firebaseDocId || eventId;
+      const eventRef = doc(db, 'events', docId);
+      await updateDoc(eventRef, {
+        clcaSynced: true,
+        clcaSyncedAt: serverTimestamp(),
+        clcaContentId: result.id,
+        updatedAt: serverTimestamp(),
+      });
+
+      logger.info('Event published to CLCA', {
+        eventId: event.id,
+        firebaseDocId: docId,
+        clcaId: result.id,
+      });
+    } catch (error) {
+      // Update sync status with error
+      clcaSyncStatus.value.set(eventId, {
+        synced: false,
+        error: (error as Error).message,
+      });
+
+      // Add to dead letter queue for retry
+      try {
+        const contentDoc = await contentDocMappingService.mapEventToContentDoc(event);
+        await dlqService.addToDLQ(contentDoc, error as CLCAIngestError, {
+          eventId: event.id.toString(),
+          attempt: 1,
+        });
+      } catch (mappingError) {
+        logger.error('Failed to add failed CLCA sync to DLQ', mappingError as Error, {
+          eventId: event.id,
+        });
+      }
+
+      throw error;
+    }
+  };
+
+  const getCLCASyncStatus = computed(() => {
+    return (eventId: string) => clcaSyncStatus.value.get(eventId);
+  });
+
+  // Enhanced createEvent method with automatic CLCA publishing
+  const createEventWithCLCA = async (eventData: {
+    gameId: number;
+    title: string;
+    date: string;
+    time: string;
+    endTime: string;
+    location: string;
+    minPlayers: number;
+    maxPlayers: number;
+    description?: string;
+    notes?: string;
+    syncToGoogleCalendar?: boolean;
+    syncToCLCA?: boolean;
+  }): Promise<string> => {
+    try {
+      // Create event using existing method
+      const eventId = await createEvent(eventData);
+
+      // Get the created event
+      const event = events.value.find((e) => e.firebaseDocId === eventId);
+      if (event && event.status === 'upcoming' && eventData.syncToCLCA !== false) {
+        try {
+          // Automatically publish to CLCA for upcoming events
+          await publishEventToCLCA(eventId);
+        } catch (clcaError) {
+          logger.warn('CLCA sync failed during event creation', clcaError as Error);
+          // Don't fail event creation if CLCA sync fails
+        }
+      }
+
+      return eventId;
+    } catch (error) {
+      logger.error('Failed to create event with CLCA sync', error as Error, { eventData });
+      throw error;
+    }
+  };
+
+  // Enhanced updateEvent method with CLCA sync
+  const updateEventWithCLCA = async (
+    eventId: string,
+    updates: Partial<Event>,
+    syncToCLCA = true,
+  ): Promise<void> => {
+    try {
+      // Update event using existing method
+      await updateEvent(eventId, updates);
+
+      // Auto-sync to CLCA if event is published and sync is enabled
+      const event = events.value.find(
+        (e) => e.firebaseDocId === eventId || e.id.toString() === eventId,
+      );
+      if (event && event.status === 'upcoming' && syncToCLCA && clcaIngestService.isConfigured()) {
+        try {
+          await publishEventToCLCA(eventId);
+        } catch (clcaError) {
+          logger.warn('CLCA sync failed during event update', clcaError as Error);
+          // Don't fail event update if CLCA sync fails
+        }
+      }
+    } catch (error) {
+      logger.error('Failed to update event with CLCA sync', error as Error, { eventId, updates });
+      throw error;
+    }
+  };
+
+  // Batch sync all events to CLCA (admin function)
+  const syncAllEventsToCLCA = async (): Promise<{
+    successful: number;
+    failed: number;
+    errors: Array<{ eventId: string; error: string }>;
+  }> => {
+    const results = {
+      successful: 0,
+      failed: 0,
+      errors: [] as Array<{ eventId: string; error: string }>,
+    };
+
+    const upcomingEventsList = events.value.filter((e) => e.status === 'upcoming');
+
+    logger.info('Starting batch CLCA sync', { eventCount: upcomingEventsList.length });
+
+    for (const event of upcomingEventsList) {
+      try {
+        const eventId = event.firebaseDocId || event.id.toString();
+        await publishEventToCLCA(eventId);
+        results.successful++;
+      } catch (error) {
+        results.failed++;
+        results.errors.push({
+          eventId: event.id.toString(),
+          error: (error as Error).message,
+        });
+      }
+    }
+
+    logger.info('Batch CLCA sync completed', results);
+    return results;
+  };
+
   const toggleInterest = async (event: Event) => {
     if (!authService.isAuthenticated.value || !authService.currentPlayer.value) {
       throw new Error('Must be authenticated to toggle interest');
@@ -456,6 +644,7 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     upcomingEvents,
     myEvents,
     eventsByGame,
+    getCLCASyncStatus,
 
     // Actions
     createEvent,
@@ -466,5 +655,11 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     toggleInterest,
     subscribeToEvents,
     cleanup,
+
+    // CLCA Integration
+    publishEventToCLCA,
+    createEventWithCLCA,
+    updateEventWithCLCA,
+    syncAllEventsToCLCA,
   };
 });
