@@ -25,18 +25,11 @@ export class ContentDocMappingService {
         tags: this.buildEventTags(event),
         features: {
           'feat:event/v1': this.buildEventFeature(event),
-          ...(event.gameId &&
-            event.gameName && {
-              'feat:game/v1': this.buildGameFeatureFromEvent(event),
-            }),
+          ...(event.gameId && {
+            'feat:game/v1': this.buildGameFeatureFromEvent(event),
+          }),
         },
         rsvpSummary: this.buildRSVPSummary(event),
-        images: event.images?.map((img) => ({
-          url: img.url,
-          caption: img.caption,
-          width: img.width,
-          height: img.height,
-        })),
         ownerSystem: 'ttg',
         originalId: `event:${event.id}`,
         ownerUrl: this.buildEventUrl(event),
@@ -123,7 +116,7 @@ export class ContentDocMappingService {
     const tags = [
       'content-type:event',
       'system:ttg',
-      `event-type:${event.eventType || 'game_night'}`,
+      'event-type:game_night', // Default event type since TTG focuses on game nights
       `status:${event.status}`,
     ];
 
@@ -132,10 +125,8 @@ export class ContentDocMappingService {
       tags.push(`game-id:${event.gameId}`);
     }
 
-    // Add genre tag if available
-    if (event.game?.genre) {
-      tags.push(`game-genre:${event.game.genre.toLowerCase()}`);
-    }
+    // Note: Genre information would need to be fetched from games store
+    // For now, we'll skip genre tags in event mapping
 
     // Add location tag
     if (event.location) {
@@ -166,10 +157,11 @@ export class ContentDocMappingService {
     if (game.numberOfPlayers) {
       const playerCount = game.numberOfPlayers.toString();
       if (playerCount.includes('-')) {
-        const [min, max] = playerCount.split('-').map((n) => parseInt(n.trim()));
-        if (min <= 2 && max <= 4) {
+        const parts = playerCount.split('-').map((n) => parseInt(n.trim()));
+        const [min, max] = parts;
+        if (min && max && min <= 2 && max <= 4) {
           tags.push('player-count:small');
-        } else if (min <= 4 && max <= 8) {
+        } else if (min && max && min <= 4 && max <= 8) {
           tags.push('player-count:medium');
         } else {
           tags.push('player-count:large');
@@ -198,10 +190,10 @@ export class ContentDocMappingService {
    */
   private buildGameFeatureFromEvent(event: Event): GameFeature {
     return {
-      gameId: event.gameId!.toString(),
-      gameName: event.gameName || event.game?.title || 'Unknown Game',
-      genre: event.game?.genre,
-      playerCount: event.maxPlayers || event.game?.numberOfPlayers,
+      gameId: event.gameId.toString(),
+      gameName: event.title, // Use event title as game name for now
+      genre: undefined, // Genre would need to be fetched from games store
+      playerCount: event.maxPlayers,
     };
   }
 
@@ -224,9 +216,9 @@ export class ContentDocMappingService {
     const rsvps = event.rsvps || [];
     return {
       yes: rsvps.filter((r) => r.status === 'confirmed').length,
-      no: rsvps.filter((r) => r.status === 'declined').length,
-      maybe: rsvps.filter((r) => r.status === 'maybe' || r.status === 'interested').length,
-      waitlist: rsvps.filter((r) => r.status === 'waitlist').length,
+      no: rsvps.filter((r) => r.status === 'cancelled').length, // Map cancelled to no
+      maybe: rsvps.filter((r) => r.status === 'interested').length,
+      waitlist: rsvps.filter((r) => r.status === 'waiting').length,
       capacity: event.maxPlayers || null,
     };
   }
@@ -236,7 +228,8 @@ export class ContentDocMappingService {
    */
   private buildISOTimestamp(date: string, time: string): string {
     try {
-      const dateTime = new Date(`${date}T${time}`);
+      // Ensure we create ISO timestamp in UTC to avoid timezone issues
+      const dateTime = new Date(`${date}T${time}:00.000Z`);
       if (isNaN(dateTime.getTime())) {
         throw new Error(`Invalid date/time: ${date}T${time}`);
       }

@@ -1,0 +1,4649 @@
+{
+  "summary": {
+    "totalFiles": 107,
+    "stores": 10,
+    "components": 61,
+    "composables": 4,
+    "utilities": 5,
+    "services": 24,
+    "types": 3,
+    "functionalCategories": 11,
+    "redundancies": 0,
+    "codeIslands": 17,
+    "architecturalIssues": 1
+  },
+  "functionalGroups": {
+    "theme-management": {
+      "count": 2,
+      "items": [
+        {
+          "name": "HeaderComponent",
+          "type": "component",
+          "responsibilities": [
+            "theme-management",
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "RightDrawer",
+          "type": "component",
+          "responsibilities": [
+            "theme-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        }
+      ]
+    },
+    "persona-management": {
+      "count": 24,
+      "items": [
+        {
+          "name": "games-firebase-store",
+          "type": "store",
+          "responsibilities": [
+            "persona-management",
+            "tag-management"
+          ],
+          "complexity": {
+            "lines": 515,
+            "functions": 3,
+            "classes": 0,
+            "imports": 13,
+            "complexity": 521
+          }
+        },
+        {
+          "name": "CLCAManagement",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "GoogleCalendarSettings",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "CalendarSubscriptionManager",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "PublicCalendarSubscription",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "CalendarExportButton",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "EventCard",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "GamePreferencesList",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "HeaderComponent",
+          "type": "component",
+          "responsibilities": [
+            "theme-management",
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "LeftDrawer",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "ConversationItem",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "ConversationList",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "NotificationBell",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "PlayerAvatar",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "PlayerCardMini",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "PlayersList",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "AccountPage",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "AdminDashboard",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "AdminSetup",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "EventPage",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "I18nDemo",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "IndexPage",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "story-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "LoginPage",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "SettingsPage",
+          "type": "component",
+          "responsibilities": [
+            "persona-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        }
+      ]
+    },
+    "tag-management": {
+      "count": 4,
+      "items": [
+        {
+          "name": "games-firebase-store",
+          "type": "store",
+          "responsibilities": [
+            "persona-management",
+            "tag-management"
+          ],
+          "complexity": {
+            "lines": 515,
+            "functions": 3,
+            "classes": 0,
+            "imports": 13,
+            "complexity": 521
+          }
+        },
+        {
+          "name": "EventRSVPSummary",
+          "type": "component",
+          "responsibilities": [
+            "tag-management",
+            "chat-functionality",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "GameSubmissionDialog",
+          "type": "component",
+          "responsibilities": [
+            "tag-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "game-icons",
+          "type": "utility",
+          "responsibilities": [
+            "tag-management",
+            "utility-functions"
+          ],
+          "complexity": {
+            "lines": 360,
+            "functions": 3,
+            "classes": 0,
+            "imports": 0,
+            "complexity": 366
+          }
+        }
+      ]
+    },
+    "chat-functionality": {
+      "count": 28,
+      "items": [
+        {
+          "name": "EventRSVPSummary",
+          "type": "component",
+          "responsibilities": [
+            "tag-management",
+            "chat-functionality",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "LeftDrawer",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "ConversationList",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "MessageComposer",
+          "type": "component",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "MessageItem",
+          "type": "component",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "MessageList",
+          "type": "component",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "MessagePanel",
+          "type": "component",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "NotificationBell",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "GamePage",
+          "type": "component",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "GamePageFirebase",
+          "type": "component",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "GameShelfPage",
+          "type": "component",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "I18nDemo",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "LoginPage",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "MessagesPage",
+          "type": "component",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "auth-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 209,
+            "functions": 0,
+            "classes": 1,
+            "imports": 5,
+            "complexity": 212
+          }
+        },
+        {
+          "name": "clca-ingest-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 275,
+            "functions": 0,
+            "classes": 1,
+            "imports": 5,
+            "complexity": 278
+          }
+        },
+        {
+          "name": "contentdoc-mapping-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 297,
+            "functions": 0,
+            "classes": 1,
+            "imports": 5,
+            "complexity": 300
+          }
+        },
+        {
+          "name": "dead-letter-queue-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "lines": 347,
+            "functions": 0,
+            "classes": 1,
+            "imports": 6,
+            "complexity": 350
+          }
+        },
+        {
+          "name": "game-event-notification-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "lines": 256,
+            "functions": 0,
+            "classes": 1,
+            "imports": 5,
+            "complexity": 259
+          }
+        },
+        {
+          "name": "game-migration-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 81,
+            "functions": 2,
+            "classes": 1,
+            "imports": 3,
+            "complexity": 88
+          }
+        },
+        {
+          "name": "google-calendar-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 425,
+            "functions": 0,
+            "classes": 1,
+            "imports": 2,
+            "complexity": 428
+          }
+        },
+        {
+          "name": "image-storage-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 283,
+            "functions": 0,
+            "classes": 1,
+            "imports": 2,
+            "complexity": 286
+          }
+        },
+        {
+          "name": "monitoring-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 368,
+            "functions": 8,
+            "classes": 1,
+            "imports": 1,
+            "complexity": 387
+          }
+        },
+        {
+          "name": "rate-limit-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "lines": 155,
+            "functions": 0,
+            "classes": 1,
+            "imports": 2,
+            "complexity": 158
+          }
+        },
+        {
+          "name": "ttg-event-sync-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 325,
+            "functions": 0,
+            "classes": 1,
+            "imports": 5,
+            "complexity": 328
+          }
+        },
+        {
+          "name": "user-management-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality"
+          ],
+          "complexity": {
+            "lines": 406,
+            "functions": 0,
+            "classes": 1,
+            "imports": 4,
+            "complexity": 409
+          }
+        },
+        {
+          "name": "validation-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 212,
+            "functions": 4,
+            "classes": 1,
+            "imports": 4,
+            "complexity": 223
+          }
+        },
+        {
+          "name": "vuefire-auth-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 508,
+            "functions": 0,
+            "classes": 1,
+            "imports": 7,
+            "complexity": 511
+          }
+        }
+      ]
+    },
+    "story-management": {
+      "count": 1,
+      "items": [
+        {
+          "name": "IndexPage",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "story-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        }
+      ]
+    },
+    "timeline-management": {
+      "count": 18,
+      "items": [
+        {
+          "name": "EventCalendar",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "EventCard",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "EventCardMini",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "EventRSVPButtons",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "EventRSVPSummary",
+          "type": "component",
+          "responsibilities": [
+            "tag-management",
+            "chat-functionality",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "GameCard",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "GamePreferencesList",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "LeftDrawer",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "PlayerCard",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "PlayerDetails",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "PlayerListDialog",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "EventQRCode",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "RightDrawer",
+          "type": "component",
+          "responsibilities": [
+            "theme-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "EventPage",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "EventsPage",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "I18nDemo",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "chat-functionality",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "IndexPage",
+          "type": "component",
+          "responsibilities": [
+            "persona-management",
+            "story-management",
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        },
+        {
+          "name": "NotificationsPage",
+          "type": "component",
+          "responsibilities": [
+            "timeline-management"
+          ],
+          "complexity": {
+            "complexity": 0
+          }
+        }
+      ]
+    },
+    "data-persistence": {
+      "count": 14,
+      "items": [
+        {
+          "name": "useGameImage",
+          "type": "composable",
+          "responsibilities": [
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 233,
+            "functions": 3,
+            "classes": 0,
+            "imports": 2,
+            "complexity": 239
+          }
+        },
+        {
+          "name": "logger",
+          "type": "utility",
+          "responsibilities": [
+            "utility-functions",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 159,
+            "functions": 0,
+            "classes": 1,
+            "imports": 2,
+            "complexity": 162
+          }
+        },
+        {
+          "name": "auth-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 209,
+            "functions": 0,
+            "classes": 1,
+            "imports": 5,
+            "complexity": 212
+          }
+        },
+        {
+          "name": "calendar-export-service",
+          "type": "service",
+          "responsibilities": [
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 249,
+            "functions": 0,
+            "classes": 1,
+            "imports": 3,
+            "complexity": 252
+          }
+        },
+        {
+          "name": "calendar-feed-service",
+          "type": "service",
+          "responsibilities": [
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 282,
+            "functions": 0,
+            "classes": 1,
+            "imports": 2,
+            "complexity": 285
+          }
+        },
+        {
+          "name": "clca-ingest-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 275,
+            "functions": 0,
+            "classes": 1,
+            "imports": 5,
+            "complexity": 278
+          }
+        },
+        {
+          "name": "contentdoc-mapping-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 297,
+            "functions": 0,
+            "classes": 1,
+            "imports": 5,
+            "complexity": 300
+          }
+        },
+        {
+          "name": "game-migration-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 81,
+            "functions": 2,
+            "classes": 1,
+            "imports": 3,
+            "complexity": 88
+          }
+        },
+        {
+          "name": "google-calendar-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 425,
+            "functions": 0,
+            "classes": 1,
+            "imports": 2,
+            "complexity": 428
+          }
+        },
+        {
+          "name": "image-storage-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 283,
+            "functions": 0,
+            "classes": 1,
+            "imports": 2,
+            "complexity": 286
+          }
+        },
+        {
+          "name": "monitoring-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 368,
+            "functions": 8,
+            "classes": 1,
+            "imports": 1,
+            "complexity": 387
+          }
+        },
+        {
+          "name": "ttg-event-sync-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 325,
+            "functions": 0,
+            "classes": 1,
+            "imports": 5,
+            "complexity": 328
+          }
+        },
+        {
+          "name": "validation-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 212,
+            "functions": 4,
+            "classes": 1,
+            "imports": 4,
+            "complexity": 223
+          }
+        },
+        {
+          "name": "vuefire-auth-service",
+          "type": "service",
+          "responsibilities": [
+            "chat-functionality",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 508,
+            "functions": 0,
+            "classes": 1,
+            "imports": 7,
+            "complexity": 511
+          }
+        }
+      ]
+    },
+    "routing-navigation": {
+      "count": 1,
+      "items": [
+        {
+          "name": "useAuthGuard",
+          "type": "composable",
+          "responsibilities": [
+            "routing-navigation"
+          ],
+          "complexity": {
+            "lines": 215,
+            "functions": 4,
+            "classes": 0,
+            "imports": 4,
+            "complexity": 223
+          }
+        }
+      ]
+    },
+    "utility-functions": {
+      "count": 5,
+      "items": [
+        {
+          "name": "conversation-utils",
+          "type": "utility",
+          "responsibilities": [
+            "utility-functions"
+          ],
+          "complexity": {
+            "lines": 61,
+            "functions": 3,
+            "classes": 0,
+            "imports": 2,
+            "complexity": 67
+          }
+        },
+        {
+          "name": "game-icons",
+          "type": "utility",
+          "responsibilities": [
+            "tag-management",
+            "utility-functions"
+          ],
+          "complexity": {
+            "lines": 360,
+            "functions": 3,
+            "classes": 0,
+            "imports": 0,
+            "complexity": 366
+          }
+        },
+        {
+          "name": "logger",
+          "type": "utility",
+          "responsibilities": [
+            "utility-functions",
+            "data-persistence"
+          ],
+          "complexity": {
+            "lines": 159,
+            "functions": 0,
+            "classes": 1,
+            "imports": 2,
+            "complexity": 162
+          }
+        },
+        {
+          "name": "sanitization",
+          "type": "utility",
+          "responsibilities": [
+            "utility-functions"
+          ],
+          "complexity": {
+            "lines": 51,
+            "functions": 0,
+            "classes": 1,
+            "imports": 0,
+            "complexity": 54
+          }
+        },
+        {
+          "name": "slug",
+          "type": "utility",
+          "responsibilities": [
+            "utility-functions"
+          ],
+          "complexity": {
+            "lines": 29,
+            "functions": 3,
+            "classes": 0,
+            "imports": 0,
+            "complexity": 35
+          }
+        }
+      ]
+    }
+  },
+  "redundancies": [],
+  "codeIslands": [
+    {
+      "type": "unclear-purpose",
+      "name": "App",
+      "path": "App.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "CLCASyncStatus",
+      "path": "components\\events\\CLCASyncStatus.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "RSVPStatusChip",
+      "path": "components\\events\\RSVPStatusChip.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "GameIcon",
+      "path": "components\\GameIcon.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "GameList",
+      "path": "components\\GameList.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "QRCode",
+      "path": "components\\qrcode\\QRCode.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "QRDialog",
+      "path": "components\\qrcode\\QRDialog.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "QRScanner",
+      "path": "components\\qrcode\\QRScanner.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "MainLayout",
+      "path": "layouts\\MainLayout.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "AdminGames",
+      "path": "pages\\AdminGames.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "AdminUsers",
+      "path": "pages\\AdminUsers.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "CalendarSubscriptionPage",
+      "path": "pages\\CalendarSubscriptionPage.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "ErrorNotFound",
+      "path": "pages\\ErrorNotFound.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "GamesPage",
+      "path": "pages\\GamesPage.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "GamesPageFirebase",
+      "path": "pages\\GamesPageFirebase.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "MakeMeAdmin",
+      "path": "pages\\MakeMeAdmin.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    },
+    {
+      "type": "unclear-purpose",
+      "name": "PlayersPage",
+      "path": "pages\\PlayersPage.vue",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove"
+    }
+  ],
+  "architecturalIssues": [
+    {
+      "type": "inconsistent-naming",
+      "component": "stores",
+      "issue": "Inconsistent store naming patterns",
+      "recommendation": "Standardize store naming convention"
+    }
+  ],
+  "dataFlow": {},
+  "recommendations": [
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "App"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "CLCASyncStatus"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "RSVPStatusChip"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "GameIcon"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "GameList"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "QRCode"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "QRDialog"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "QRScanner"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "MainLayout"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "AdminGames"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "AdminUsers"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "CalendarSubscriptionPage"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "ErrorNotFound"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "GamesPage"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "GamesPageFirebase"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "MakeMeAdmin"
+      ]
+    },
+    {
+      "priority": "medium",
+      "type": "code-island",
+      "issue": "Component has no clear functional responsibilities",
+      "recommendation": "Either define clear purpose or remove",
+      "affectedItems": [
+        "PlayersPage"
+      ]
+    },
+    {
+      "priority": "high",
+      "type": "architectural",
+      "issue": "Inconsistent store naming patterns",
+      "recommendation": "Standardize store naming convention",
+      "affectedItems": [
+        "stores"
+      ]
+    }
+  ],
+  "legacy": {
+    "legacyReferences": [
+      {
+        "path": "components\\games\\GameSubmissionDialog.vue",
+        "matches": [
+          "\\bGameSubmission\\b",
+          "game-submission"
+        ]
+      },
+      {
+        "path": "i18n\\en-ES\\index.ts",
+        "matches": [
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      },
+      {
+        "path": "i18n\\en-US\\index.ts",
+        "matches": [
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      },
+      {
+        "path": "models\\EventSubmission.ts",
+        "matches": [
+          "\\bEventSubmission\\b",
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      },
+      {
+        "path": "models\\Game.ts",
+        "matches": [
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      },
+      {
+        "path": "models\\GameSubmission.ts",
+        "matches": [
+          "\\bGameSubmission\\b",
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      },
+      {
+        "path": "pages\\AdminDashboard.vue",
+        "matches": [
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      },
+      {
+        "path": "pages\\AdminGames.vue",
+        "matches": [
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      },
+      {
+        "path": "services\\contentdoc-mapping-service.ts",
+        "matches": [
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      },
+      {
+        "path": "services\\featured-games-service.ts",
+        "matches": [
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      },
+      {
+        "path": "stores\\games-firebase-store.ts",
+        "matches": [
+          "\\bGameSubmission\\b",
+          "\\bApproval\\b|\\bapprove\\b|\\bapproved\\b"
+        ]
+      }
+    ],
+    "unusedLegacy": [
+      "components\\games\\GameSubmissionDialog.vue",
+      "models\\EventSubmission.ts",
+      "models\\GameSubmission.ts"
+    ]
+  },
+  "detailedAnalysis": {
+    "stores": {
+      "calendar-store": {
+        "name": "calendar-store",
+        "path": "stores\\calendar-store.ts",
+        "responsibilities": [],
+        "state": [
+          "selectedDate",
+          "// Format"
+        ],
+        "actions": [
+          "setSelectedDate"
+        ],
+        "getters": [],
+        "dependencies": [
+          "pinia"
+        ],
+        "complexity": {
+          "lines": 14,
+          "functions": 0,
+          "classes": 0,
+          "imports": 1,
+          "complexity": 14
+        },
+        "usage": {}
+      },
+      "events-firebase-store": {
+        "name": "events-firebase-store",
+        "path": "stores\\events-firebase-store.ts",
+        "responsibilities": [],
+        "state": [],
+        "actions": [],
+        "getters": [],
+        "dependencies": [
+          "pinia",
+          "vue",
+          "src/boot/firebase",
+          "src/models/Event",
+          "src/services/auth-service",
+          "src/services/google-calendar-service",
+          "src/services/clca-ingest-service",
+          "src/services/contentdoc-mapping-service",
+          "src/services/dead-letter-queue-service",
+          "src/utils/logger"
+        ],
+        "complexity": {
+          "lines": 666,
+          "functions": 2,
+          "classes": 0,
+          "imports": 11,
+          "complexity": 670
+        },
+        "usage": {}
+      },
+      "example-store": {
+        "name": "example-store",
+        "path": "stores\\example-store.ts",
+        "responsibilities": [],
+        "state": [
+          "counter",
+          ""
+        ],
+        "actions": [
+          "increment"
+        ],
+        "getters": [],
+        "dependencies": [
+          "pinia"
+        ],
+        "complexity": {
+          "lines": 22,
+          "functions": 0,
+          "classes": 0,
+          "imports": 1,
+          "complexity": 22
+        },
+        "usage": {}
+      },
+      "game-notifications-store": {
+        "name": "game-notifications-store",
+        "path": "stores\\game-notifications-store.ts",
+        "responsibilities": [],
+        "state": [],
+        "actions": [],
+        "getters": [],
+        "dependencies": [
+          "pinia",
+          "vue",
+          "src/services/auth-service"
+        ],
+        "complexity": {
+          "lines": 126,
+          "functions": 1,
+          "classes": 0,
+          "imports": 4,
+          "complexity": 128
+        },
+        "usage": {}
+      },
+      "game-ownerships-store": {
+        "name": "game-ownerships-store",
+        "path": "stores\\game-ownerships-store.ts",
+        "responsibilities": [],
+        "state": [],
+        "actions": [],
+        "getters": [],
+        "dependencies": [
+          "pinia",
+          "vue",
+          "src/services/game-ownership-service",
+          "firebase/firestore"
+        ],
+        "complexity": {
+          "lines": 95,
+          "functions": 4,
+          "classes": 0,
+          "imports": 4,
+          "complexity": 103
+        },
+        "usage": {}
+      },
+      "games-firebase-store": {
+        "name": "games-firebase-store",
+        "path": "stores\\games-firebase-store.ts",
+        "responsibilities": [
+          "persona-management",
+          "tag-management"
+        ],
+        "state": [],
+        "actions": [],
+        "getters": [],
+        "dependencies": [
+          "pinia",
+          "vue",
+          "src/boot/firebase",
+          "src/models/Game",
+          "src/models/Event",
+          "src/models/GameSubmission",
+          "src/services/auth-service",
+          "src/services/featured-games-service",
+          "src/services/clca-ingest-service",
+          "src/services/contentdoc-mapping-service",
+          "src/services/dead-letter-queue-service",
+          "src/utils/logger"
+        ],
+        "complexity": {
+          "lines": 515,
+          "functions": 3,
+          "classes": 0,
+          "imports": 13,
+          "complexity": 521
+        },
+        "usage": {}
+      },
+      "index": {
+        "name": "index",
+        "path": "stores\\index.ts",
+        "responsibilities": [],
+        "state": [],
+        "actions": [],
+        "getters": [],
+        "dependencies": [
+          "#q-app/wrappers",
+          "pinia"
+        ],
+        "complexity": {
+          "lines": 33,
+          "functions": 1,
+          "classes": 0,
+          "imports": 2,
+          "complexity": 35
+        },
+        "usage": {}
+      },
+      "messages-firebase-store": {
+        "name": "messages-firebase-store",
+        "path": "stores\\messages-firebase-store.ts",
+        "responsibilities": [],
+        "state": [],
+        "actions": [],
+        "getters": [],
+        "dependencies": [
+          "pinia",
+          "vue",
+          "src/boot/firebase",
+          "src/models/Message",
+          "src/models/Conversation",
+          "src/services/auth-service"
+        ],
+        "complexity": {
+          "lines": 483,
+          "functions": 9,
+          "classes": 0,
+          "imports": 7,
+          "complexity": 501
+        },
+        "usage": {}
+      },
+      "players-firebase-store": {
+        "name": "players-firebase-store",
+        "path": "stores\\players-firebase-store.ts",
+        "responsibilities": [],
+        "state": [],
+        "actions": [],
+        "getters": [],
+        "dependencies": [
+          "pinia",
+          "vue",
+          "src/boot/firebase",
+          "src/models/Player",
+          "src/services/auth-service"
+        ],
+        "complexity": {
+          "lines": 344,
+          "functions": 4,
+          "classes": 0,
+          "imports": 6,
+          "complexity": 352
+        },
+        "usage": {}
+      },
+      "user-preferences-store": {
+        "name": "user-preferences-store",
+        "path": "stores\\user-preferences-store.ts",
+        "responsibilities": [],
+        "state": [],
+        "actions": [],
+        "getters": [],
+        "dependencies": [
+          "pinia",
+          "vue",
+          "src/models/UserPreferences",
+          "src/services/user-preferences-service",
+          "src/services/auth-service"
+        ],
+        "complexity": {
+          "lines": 234,
+          "functions": 1,
+          "classes": 0,
+          "imports": 5,
+          "complexity": 236
+        },
+        "usage": {}
+      }
+    },
+    "components": {
+      "App": {
+        "name": "App",
+        "path": "App.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "quasar",
+          "src/stores/players-firebase-store",
+          "src/composables/useLanguage"
+        ],
+        "templateComplexity": {
+          "elements": 1,
+          "directives": 0,
+          "complexity": 1
+        },
+        "scriptComplexity": {
+          "lines": 40,
+          "functions": 0,
+          "complexity": 40
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "CLCAManagement": {
+        "name": "CLCAManagement",
+        "path": "components\\admin\\CLCAManagement.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "quasar",
+          "src/stores/events-firebase-store",
+          "src/stores/games-firebase-store",
+          "src/services/dead-letter-queue-service",
+          "src/services/clca-ingest-service"
+        ],
+        "templateComplexity": {
+          "elements": 8,
+          "directives": 1,
+          "complexity": 9
+        },
+        "scriptComplexity": {
+          "lines": 264,
+          "functions": 2,
+          "complexity": 268
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GoogleCalendarSettings": {
+        "name": "GoogleCalendarSettings",
+        "path": "components\\admin\\GoogleCalendarSettings.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "quasar",
+          "vuefire",
+          "src/services/ttg-event-sync-service",
+          "src/services/google-calendar-service",
+          "src/services/vuefire-auth-service"
+        ],
+        "templateComplexity": {
+          "elements": 7,
+          "directives": 1,
+          "complexity": 8
+        },
+        "scriptComplexity": {
+          "lines": 285,
+          "functions": 5,
+          "complexity": 295
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "CalendarSubscriptionManager": {
+        "name": "CalendarSubscriptionManager",
+        "path": "components\\calendar\\CalendarSubscriptionManager.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "vuefire",
+          "src/stores/events-firebase-store",
+          "src/stores/games-firebase-store",
+          "src/stores/players-firebase-store",
+          "src/services/calendar-feed-service",
+          "quasar"
+        ],
+        "templateComplexity": {
+          "elements": 58,
+          "directives": 5,
+          "complexity": 63
+        },
+        "scriptComplexity": {
+          "lines": 213,
+          "functions": 3,
+          "complexity": 219
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "EventCalendar": {
+        "name": "EventCalendar",
+        "path": "components\\calendar\\EventCalendar.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/stores/calendar-store",
+          "src/stores/events-firebase-store",
+          "src/services/auth-service"
+        ],
+        "templateComplexity": {
+          "elements": 2,
+          "directives": 1,
+          "complexity": 3
+        },
+        "scriptComplexity": {
+          "lines": 140,
+          "functions": 4,
+          "complexity": 148
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "PublicCalendarSubscription": {
+        "name": "PublicCalendarSubscription",
+        "path": "components\\calendar\\PublicCalendarSubscription.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "quasar",
+          "src/services/ttg-event-sync-service"
+        ],
+        "templateComplexity": {
+          "elements": 12,
+          "directives": 3,
+          "complexity": 15
+        },
+        "scriptComplexity": {
+          "lines": 112,
+          "functions": 3,
+          "complexity": 118
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "CalendarExportButton": {
+        "name": "CalendarExportButton",
+        "path": "components\\events\\CalendarExportButton.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/models/Event",
+          "src/models/Game",
+          "src/services/calendar-export-service",
+          "src/stores/games-firebase-store",
+          "quasar",
+          "vue-i18n"
+        ],
+        "templateComplexity": {
+          "elements": 31,
+          "directives": 4,
+          "complexity": 35
+        },
+        "scriptComplexity": {
+          "lines": 84,
+          "functions": 2,
+          "complexity": 88
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "CLCASyncStatus": {
+        "name": "CLCASyncStatus",
+        "path": "components\\events\\CLCASyncStatus.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "src/stores/events-firebase-store",
+          "src/stores/games-firebase-store",
+          "quasar"
+        ],
+        "templateComplexity": {
+          "elements": 9,
+          "directives": 1,
+          "complexity": 10
+        },
+        "scriptComplexity": {
+          "lines": 95,
+          "functions": 0,
+          "complexity": 95
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "EventCard": {
+        "name": "EventCard",
+        "path": "components\\events\\EventCard.vue",
+        "responsibilities": [
+          "persona-management",
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/models/Event",
+          "src/stores/players-firebase-store",
+          "src/stores/calendar-store",
+          "src/stores/games-firebase-store",
+          "src/services/auth-service",
+          "src/models/Player",
+          "../GameIcon.vue",
+          "src/components/players/PlayerListDialog.vue",
+          "src/utils/slug",
+          "./EventRSVPButtons.vue",
+          "./CalendarExportButton.vue"
+        ],
+        "templateComplexity": {
+          "elements": 50,
+          "directives": 7,
+          "complexity": 57
+        },
+        "scriptComplexity": {
+          "lines": 124,
+          "functions": 3,
+          "complexity": 130
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "EventCardMini": {
+        "name": "EventCardMini",
+        "path": "components\\events\\EventCardMini.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/models/Event",
+          "src/stores/players-firebase-store",
+          "src/stores/games-firebase-store",
+          "src/components/qrcode/EventQRCode.vue",
+          "./EventRSVPButtons.vue",
+          "src/utils/slug"
+        ],
+        "templateComplexity": {
+          "elements": 23,
+          "directives": 2,
+          "complexity": 25
+        },
+        "scriptComplexity": {
+          "lines": 97,
+          "functions": 2,
+          "complexity": 101
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "EventRSVPButtons": {
+        "name": "EventRSVPButtons",
+        "path": "components\\events\\EventRSVPButtons.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "quasar",
+          "vue-i18n",
+          "src/models/Event",
+          "src/stores/events-firebase-store",
+          "src/services/auth-service"
+        ],
+        "templateComplexity": {
+          "elements": 14,
+          "directives": 9,
+          "complexity": 23
+        },
+        "scriptComplexity": {
+          "lines": 152,
+          "functions": 0,
+          "complexity": 152
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "EventRSVPSummary": {
+        "name": "EventRSVPSummary",
+        "path": "components\\events\\EventRSVPSummary.vue",
+        "responsibilities": [
+          "tag-management",
+          "chat-functionality",
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/models/Event"
+        ],
+        "templateComplexity": {
+          "elements": 18,
+          "directives": 5,
+          "complexity": 23
+        },
+        "scriptComplexity": {
+          "lines": 35,
+          "functions": 0,
+          "complexity": 35
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "RSVPStatusChip": {
+        "name": "RSVPStatusChip",
+        "path": "components\\events\\RSVPStatusChip.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/models/Event"
+        ],
+        "templateComplexity": {
+          "elements": 2,
+          "directives": 0,
+          "complexity": 2
+        },
+        "scriptComplexity": {
+          "lines": 46,
+          "functions": 0,
+          "complexity": 46
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GameCard": {
+        "name": "GameCard",
+        "path": "components\\GameCard.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "src/models/Game",
+          "./qrcode/QRCode.vue",
+          "./GameIcon.vue",
+          "src/composables/useGameImage",
+          "src/composables/useGamePreferences",
+          "src/stores/game-ownerships-store",
+          "vuefire",
+          "quasar",
+          "src/utils/slug"
+        ],
+        "templateComplexity": {
+          "elements": 38,
+          "directives": 4,
+          "complexity": 42
+        },
+        "scriptComplexity": {
+          "lines": 256,
+          "functions": 1,
+          "complexity": 258
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GameIcon": {
+        "name": "GameIcon",
+        "path": "components\\GameIcon.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/utils/game-icons"
+        ],
+        "templateComplexity": {
+          "elements": 2,
+          "directives": 4,
+          "complexity": 6
+        },
+        "scriptComplexity": {
+          "lines": 24,
+          "functions": 0,
+          "complexity": 24
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GameList": {
+        "name": "GameList",
+        "path": "components\\GameList.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "vuefire",
+          "quasar",
+          "src/models/Game",
+          "./GameCard.vue",
+          "src/composables/useGameImage",
+          "src/utils/slug",
+          "src/composables/useGamePreferences",
+          "src/stores/game-ownerships-store"
+        ],
+        "templateComplexity": {
+          "elements": 10,
+          "directives": 5,
+          "complexity": 15
+        },
+        "scriptComplexity": {
+          "lines": 241,
+          "functions": 5,
+          "complexity": 251
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GamePreferencesList": {
+        "name": "GamePreferencesList",
+        "path": "components\\GamePreferencesList.vue",
+        "responsibilities": [
+          "persona-management",
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue-i18n",
+          "src/models/Game",
+          "src/composables/useGameImage"
+        ],
+        "templateComplexity": {
+          "elements": 25,
+          "directives": 5,
+          "complexity": 30
+        },
+        "scriptComplexity": {
+          "lines": 69,
+          "functions": 3,
+          "complexity": 75
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GameSubmissionDialog": {
+        "name": "GameSubmissionDialog",
+        "path": "components\\games\\GameSubmissionDialog.vue",
+        "responsibilities": [
+          "tag-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "quasar",
+          "vue-i18n",
+          "src/stores/games-firebase-store",
+          "src/models/GameSubmission"
+        ],
+        "templateComplexity": {
+          "elements": 39,
+          "directives": 14,
+          "complexity": 53
+        },
+        "scriptComplexity": {
+          "lines": 219,
+          "functions": 2,
+          "complexity": 223
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "HeaderComponent": {
+        "name": "HeaderComponent",
+        "path": "components\\HeaderComponent.vue",
+        "responsibilities": [
+          "theme-management",
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vuefire",
+          "vue-router",
+          "src/services/vuefire-auth-service",
+          "src/stores/players-firebase-store",
+          "src/components/PlayerAvatar.vue",
+          "src/components/NotificationBell.vue"
+        ],
+        "templateComplexity": {
+          "elements": 42,
+          "directives": 10,
+          "complexity": 52
+        },
+        "scriptComplexity": {
+          "lines": 57,
+          "functions": 0,
+          "complexity": 57
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "LeftDrawer": {
+        "name": "LeftDrawer",
+        "path": "components\\LeftDrawer.vue",
+        "responsibilities": [
+          "persona-management",
+          "chat-functionality",
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vuefire",
+          "src/components/qrcode/QRDialog.vue"
+        ],
+        "templateComplexity": {
+          "elements": 43,
+          "directives": 12,
+          "complexity": 55
+        },
+        "scriptComplexity": {
+          "lines": 9,
+          "functions": 0,
+          "complexity": 9
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "ConversationItem": {
+        "name": "ConversationItem",
+        "path": "components\\messaging\\ConversationItem.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue-i18n"
+        ],
+        "templateComplexity": {
+          "elements": 11,
+          "directives": 4,
+          "complexity": 15
+        },
+        "scriptComplexity": {
+          "lines": 37,
+          "functions": 1,
+          "complexity": 39
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "ConversationList": {
+        "name": "ConversationList",
+        "path": "components\\messaging\\ConversationList.vue",
+        "responsibilities": [
+          "persona-management",
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/stores/players-firebase-store",
+          "./ConversationItem.vue"
+        ],
+        "templateComplexity": {
+          "elements": 6,
+          "directives": 2,
+          "complexity": 8
+        },
+        "scriptComplexity": {
+          "lines": 74,
+          "functions": 2,
+          "complexity": 78
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "MessageComposer": {
+        "name": "MessageComposer",
+        "path": "components\\messaging\\MessageComposer.vue",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/stores/messages-firebase-store",
+          "src/models/Message"
+        ],
+        "templateComplexity": {
+          "elements": 4,
+          "directives": 2,
+          "complexity": 6
+        },
+        "scriptComplexity": {
+          "lines": 59,
+          "functions": 0,
+          "complexity": 59
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "MessageItem": {
+        "name": "MessageItem",
+        "path": "components\\messaging\\MessageItem.vue",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/stores/players-firebase-store",
+          "src/models/Message"
+        ],
+        "templateComplexity": {
+          "elements": 5,
+          "directives": 1,
+          "complexity": 6
+        },
+        "scriptComplexity": {
+          "lines": 37,
+          "functions": 0,
+          "complexity": 37
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "MessageList": {
+        "name": "MessageList",
+        "path": "components\\messaging\\MessageList.vue",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/stores/messages-firebase-store",
+          "src/stores/players-firebase-store",
+          "src/models/Message",
+          "./MessageItem.vue"
+        ],
+        "templateComplexity": {
+          "elements": 3,
+          "directives": 2,
+          "complexity": 5
+        },
+        "scriptComplexity": {
+          "lines": 33,
+          "functions": 0,
+          "complexity": 33
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "MessagePanel": {
+        "name": "MessagePanel",
+        "path": "components\\messaging\\MessagePanel.vue",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue-i18n",
+          "./MessageList.vue",
+          "./MessageComposer.vue",
+          "src/models/Message"
+        ],
+        "templateComplexity": {
+          "elements": 7,
+          "directives": 3,
+          "complexity": 10
+        },
+        "scriptComplexity": {
+          "lines": 31,
+          "functions": 0,
+          "complexity": 31
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "NotificationBell": {
+        "name": "NotificationBell",
+        "path": "components\\NotificationBell.vue",
+        "responsibilities": [
+          "persona-management",
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-router",
+          "quasar",
+          "src/stores/game-notifications-store",
+          "src/services/game-event-notification-service",
+          "src/utils/slug",
+          "src/stores/games-firebase-store"
+        ],
+        "templateComplexity": {
+          "elements": 29,
+          "directives": 7,
+          "complexity": 36
+        },
+        "scriptComplexity": {
+          "lines": 84,
+          "functions": 4,
+          "complexity": 92
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "PlayerAvatar": {
+        "name": "PlayerAvatar",
+        "path": "components\\PlayerAvatar.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue"
+        ],
+        "templateComplexity": {
+          "elements": 3,
+          "directives": 2,
+          "complexity": 5
+        },
+        "scriptComplexity": {
+          "lines": 57,
+          "functions": 2,
+          "complexity": 61
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "PlayerCard": {
+        "name": "PlayerCard",
+        "path": "components\\players\\PlayerCard.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "src/components/PlayerAvatar.vue"
+        ],
+        "templateComplexity": {
+          "elements": 10,
+          "directives": 2,
+          "complexity": 12
+        },
+        "scriptComplexity": {
+          "lines": 42,
+          "functions": 1,
+          "complexity": 44
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "PlayerCardMini": {
+        "name": "PlayerCardMini",
+        "path": "components\\players\\PlayerCardMini.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue-i18n",
+          "src/models/Player",
+          "src/components/PlayerAvatar.vue"
+        ],
+        "templateComplexity": {
+          "elements": 7,
+          "directives": 2,
+          "complexity": 9
+        },
+        "scriptComplexity": {
+          "lines": 37,
+          "functions": 1,
+          "complexity": 39
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "PlayerDetails": {
+        "name": "PlayerDetails",
+        "path": "components\\players\\PlayerDetails.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "src/models/Event",
+          "src/utils/slug",
+          "src/components/PlayerAvatar.vue"
+        ],
+        "templateComplexity": {
+          "elements": 25,
+          "directives": 3,
+          "complexity": 28
+        },
+        "scriptComplexity": {
+          "lines": 38,
+          "functions": 0,
+          "complexity": 38
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "PlayerListDialog": {
+        "name": "PlayerListDialog",
+        "path": "components\\players\\PlayerListDialog.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "src/models/Player",
+          "./PlayersList.vue",
+          "vue"
+        ],
+        "templateComplexity": {
+          "elements": 8,
+          "directives": 1,
+          "complexity": 9
+        },
+        "scriptComplexity": {
+          "lines": 42,
+          "functions": 1,
+          "complexity": 44
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "PlayersList": {
+        "name": "PlayersList",
+        "path": "components\\players\\PlayersList.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "src/models/Player",
+          "src/components/PlayerAvatar.vue"
+        ],
+        "templateComplexity": {
+          "elements": 9,
+          "directives": 2,
+          "complexity": 11
+        },
+        "scriptComplexity": {
+          "lines": 15,
+          "functions": 0,
+          "complexity": 15
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "EventQRCode": {
+        "name": "EventQRCode",
+        "path": "components\\qrcode\\EventQRCode.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "qrcode.vue",
+          "quasar",
+          "quasar",
+          "vue",
+          "src/models/Event",
+          "vue"
+        ],
+        "templateComplexity": {
+          "elements": 7,
+          "directives": 1,
+          "complexity": 8
+        },
+        "scriptComplexity": {
+          "lines": 46,
+          "functions": 0,
+          "complexity": 46
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "QRCode": {
+        "name": "QRCode",
+        "path": "components\\qrcode\\QRCode.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "qrcode.vue",
+          "quasar",
+          "quasar",
+          "vue",
+          "src/models/Game",
+          "vue"
+        ],
+        "templateComplexity": {
+          "elements": 7,
+          "directives": 1,
+          "complexity": 8
+        },
+        "scriptComplexity": {
+          "lines": 46,
+          "functions": 0,
+          "complexity": 46
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "QRDialog": {
+        "name": "QRDialog",
+        "path": "components\\qrcode\\QRDialog.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "./QRScanner.vue"
+        ],
+        "templateComplexity": {
+          "elements": 8,
+          "directives": 1,
+          "complexity": 9
+        },
+        "scriptComplexity": {
+          "lines": 4,
+          "functions": 0,
+          "complexity": 4
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "QRScanner": {
+        "name": "QRScanner",
+        "path": "components\\qrcode\\QRScanner.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "jsqr"
+        ],
+        "templateComplexity": {
+          "elements": 5,
+          "directives": 2,
+          "complexity": 7
+        },
+        "scriptComplexity": {
+          "lines": 108,
+          "functions": 3,
+          "complexity": 114
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "RightDrawer": {
+        "name": "RightDrawer",
+        "path": "components\\RightDrawer.vue",
+        "responsibilities": [
+          "theme-management",
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "src/stores/events-firebase-store",
+          "src/stores/calendar-store",
+          "src/services/auth-service",
+          "./events/EventCardMini.vue",
+          "./calendar/EventCalendar.vue"
+        ],
+        "templateComplexity": {
+          "elements": 16,
+          "directives": 12,
+          "complexity": 28
+        },
+        "scriptComplexity": {
+          "lines": 62,
+          "functions": 0,
+          "complexity": 62
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "MainLayout": {
+        "name": "MainLayout",
+        "path": "layouts\\MainLayout.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/components/LeftDrawer.vue",
+          "src/components/RightDrawer.vue",
+          "src/components/HeaderComponent.vue"
+        ],
+        "templateComplexity": {
+          "elements": 7,
+          "directives": 2,
+          "complexity": 9
+        },
+        "scriptComplexity": {
+          "lines": 17,
+          "functions": 2,
+          "complexity": 21
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "AccountPage": {
+        "name": "AccountPage",
+        "path": "pages\\AccountPage.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vuefire",
+          "src/stores/players-firebase-store",
+          "quasar",
+          "vue-i18n"
+        ],
+        "templateComplexity": {
+          "elements": 84,
+          "directives": 9,
+          "complexity": 93
+        },
+        "scriptComplexity": {
+          "lines": 58,
+          "functions": 2,
+          "complexity": 62
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "AdminDashboard": {
+        "name": "AdminDashboard",
+        "path": "pages\\AdminDashboard.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "quasar",
+          "src/stores/players-firebase-store",
+          "src/stores/games-firebase-store",
+          "src/stores/events-firebase-store",
+          "src/components/admin/GoogleCalendarSettings.vue"
+        ],
+        "templateComplexity": {
+          "elements": 4,
+          "directives": 2,
+          "complexity": 6
+        },
+        "scriptComplexity": {
+          "lines": 163,
+          "functions": 2,
+          "complexity": 167
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "AdminGames": {
+        "name": "AdminGames",
+        "path": "pages\\AdminGames.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "quasar",
+          "src/stores/games-firebase-store",
+          "src/services/auth-service"
+        ],
+        "templateComplexity": {
+          "elements": 83,
+          "directives": 12,
+          "complexity": 95
+        },
+        "scriptComplexity": {
+          "lines": 126,
+          "functions": 2,
+          "complexity": 130
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "AdminSetup": {
+        "name": "AdminSetup",
+        "path": "pages\\AdminSetup.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "quasar",
+          "vue-router",
+          "quasar",
+          "src/services/user-management-service"
+        ],
+        "templateComplexity": {
+          "elements": 28,
+          "directives": 8,
+          "complexity": 36
+        },
+        "scriptComplexity": {
+          "lines": 114,
+          "functions": 1,
+          "complexity": 116
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "AdminUsers": {
+        "name": "AdminUsers",
+        "path": "pages\\AdminUsers.vue",
+        "responsibilities": [],
+        "props": [
+          "pagination",
+          "page",
+          "rowsPerPage",
+          "sortBy",
+          "descending"
+        ],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "quasar",
+          "src/stores/players-firebase-store",
+          "src/models/Player"
+        ],
+        "templateComplexity": {
+          "elements": 9,
+          "directives": 2,
+          "complexity": 11
+        },
+        "scriptComplexity": {
+          "lines": 376,
+          "functions": 14,
+          "complexity": 404
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "CalendarSubscriptionPage": {
+        "name": "CalendarSubscriptionPage",
+        "path": "pages\\CalendarSubscriptionPage.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "src/components/calendar/CalendarSubscriptionManager.vue"
+        ],
+        "templateComplexity": {
+          "elements": 9,
+          "directives": 0,
+          "complexity": 9
+        },
+        "scriptComplexity": {
+          "lines": 7,
+          "functions": 0,
+          "complexity": 7
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "ErrorNotFound": {
+        "name": "ErrorNotFound",
+        "path": "pages\\ErrorNotFound.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [],
+        "templateComplexity": {
+          "elements": 5,
+          "directives": 0,
+          "complexity": 5
+        },
+        "scriptComplexity": {
+          "lines": 3,
+          "functions": 0,
+          "complexity": 3
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "EventPage": {
+        "name": "EventPage",
+        "path": "pages\\EventPage.vue",
+        "responsibilities": [
+          "persona-management",
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-router",
+          "src/stores/events-firebase-store",
+          "src/stores/players-firebase-store",
+          "src/stores/messages-firebase-store",
+          "src/stores/games-firebase-store",
+          "src/models/Event",
+          "src/models/Player",
+          "src/components/players/PlayerDetails.vue",
+          "src/components/players/PlayersList.vue",
+          "src/components/messaging/MessageList.vue",
+          "src/components/messaging/MessageComposer.vue",
+          "src/components/events/EventRSVPButtons.vue",
+          "src/components/events/CalendarExportButton.vue",
+          "src/utils/slug"
+        ],
+        "templateComplexity": {
+          "elements": 73,
+          "directives": 9,
+          "complexity": 82
+        },
+        "scriptComplexity": {
+          "lines": 170,
+          "functions": 3,
+          "complexity": 176
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "EventsPage": {
+        "name": "EventsPage",
+        "path": "pages\\EventsPage.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "src/stores/events-firebase-store",
+          "src/stores/games-firebase-store",
+          "src/components/events/EventCard.vue"
+        ],
+        "templateComplexity": {
+          "elements": 9,
+          "directives": 2,
+          "complexity": 11
+        },
+        "scriptComplexity": {
+          "lines": 103,
+          "functions": 1,
+          "complexity": 105
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GamePage": {
+        "name": "GamePage",
+        "path": "pages\\GamePage.vue",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-router",
+          "src/components/GameCard.vue",
+          "src/models/Game",
+          "src/stores/messages-firebase-store",
+          "src/stores/players-firebase-store",
+          "src/stores/games-firebase-store",
+          "src/services/auth-service",
+          "src/components/messaging/MessageList.vue",
+          "src/components/messaging/MessageComposer.vue"
+        ],
+        "templateComplexity": {
+          "elements": 20,
+          "directives": 3,
+          "complexity": 23
+        },
+        "scriptComplexity": {
+          "lines": 128,
+          "functions": 1,
+          "complexity": 130
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GamePageFirebase": {
+        "name": "GamePageFirebase",
+        "path": "pages\\GamePageFirebase.vue",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-router",
+          "src/stores/games-firebase-store",
+          "src/stores/messages-firebase-store",
+          "src/stores/players-firebase-store",
+          "src/services/auth-service",
+          "src/models/Game",
+          "src/components/GameCard.vue",
+          "src/components/messaging/MessageList.vue",
+          "src/components/messaging/MessageComposer.vue"
+        ],
+        "templateComplexity": {
+          "elements": 24,
+          "directives": 4,
+          "complexity": 28
+        },
+        "scriptComplexity": {
+          "lines": 113,
+          "functions": 0,
+          "complexity": 113
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GameShelfPage": {
+        "name": "GameShelfPage",
+        "path": "pages\\GameShelfPage.vue",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vuefire",
+          "src/stores/user-preferences-store",
+          "src/stores/games-firebase-store",
+          "src/stores/game-ownerships-store",
+          "src/components/GameList.vue"
+        ],
+        "templateComplexity": {
+          "elements": 38,
+          "directives": 2,
+          "complexity": 40
+        },
+        "scriptComplexity": {
+          "lines": 73,
+          "functions": 0,
+          "complexity": 73
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GamesPage": {
+        "name": "GamesPage",
+        "path": "pages\\GamesPage.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "src/components/GameCard.vue",
+          "src/components/GameIcon.vue",
+          "src/components/qrcode/QRCode.vue",
+          "vue",
+          "src/models/Game",
+          "vue-router",
+          "src/services/api-service",
+          "src/composables/useGameImage",
+          "src/utils/slug",
+          "vue-i18n",
+          "vue"
+        ],
+        "templateComplexity": {
+          "elements": 16,
+          "directives": 7,
+          "complexity": 23
+        },
+        "scriptComplexity": {
+          "lines": 285,
+          "functions": 9,
+          "complexity": 303
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "GamesPageFirebase": {
+        "name": "GamesPageFirebase",
+        "path": "pages\\GamesPageFirebase.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "quasar",
+          "src/components/GameList.vue",
+          "src/components/games/GameSubmissionDialog.vue",
+          "src/stores/games-firebase-store",
+          "src/services/auth-service"
+        ],
+        "templateComplexity": {
+          "elements": 8,
+          "directives": 2,
+          "complexity": 10
+        },
+        "scriptComplexity": {
+          "lines": 23,
+          "functions": 1,
+          "complexity": 25
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "I18nDemo": {
+        "name": "I18nDemo",
+        "path": "pages\\I18nDemo.vue",
+        "responsibilities": [
+          "persona-management",
+          "chat-functionality",
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "src/composables/useLanguage"
+        ],
+        "templateComplexity": {
+          "elements": 80,
+          "directives": 8,
+          "complexity": 88
+        },
+        "scriptComplexity": {
+          "lines": 24,
+          "functions": 0,
+          "complexity": 24
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "IndexPage": {
+        "name": "IndexPage",
+        "path": "pages\\IndexPage.vue",
+        "responsibilities": [
+          "persona-management",
+          "story-management",
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-router",
+          "vue-i18n",
+          "src/stores/games-firebase-store",
+          "src/stores/events-firebase-store",
+          "src/stores/user-preferences-store",
+          "vuefire",
+          "src/components/GameCard.vue",
+          "src/components/events/EventCard.vue",
+          "src/models/Game",
+          "src/services/user-preferences-analyzer"
+        ],
+        "templateComplexity": {
+          "elements": 58,
+          "directives": 4,
+          "complexity": 62
+        },
+        "scriptComplexity": {
+          "lines": 170,
+          "functions": 1,
+          "complexity": 172
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "LoginPage": {
+        "name": "LoginPage",
+        "path": "pages\\LoginPage.vue",
+        "responsibilities": [
+          "persona-management",
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-router",
+          "vuefire",
+          "src/services/vuefire-auth-service",
+          "quasar"
+        ],
+        "templateComplexity": {
+          "elements": 9,
+          "directives": 2,
+          "complexity": 11
+        },
+        "scriptComplexity": {
+          "lines": 131,
+          "functions": 1,
+          "complexity": 133
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "MakeMeAdmin": {
+        "name": "MakeMeAdmin",
+        "path": "pages\\MakeMeAdmin.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vuefire",
+          "src/services/user-management-service",
+          "src/stores/players-firebase-store"
+        ],
+        "templateComplexity": {
+          "elements": 16,
+          "directives": 3,
+          "complexity": 19
+        },
+        "scriptComplexity": {
+          "lines": 40,
+          "functions": 0,
+          "complexity": 40
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "MessagesPage": {
+        "name": "MessagesPage",
+        "path": "pages\\MessagesPage.vue",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/stores/messages-firebase-store",
+          "src/models/Message",
+          "src/stores/players-firebase-store",
+          "src/components/messaging/ConversationList.vue",
+          "src/components/messaging/MessagePanel.vue"
+        ],
+        "templateComplexity": {
+          "elements": 19,
+          "directives": 2,
+          "complexity": 21
+        },
+        "scriptComplexity": {
+          "lines": 86,
+          "functions": 5,
+          "complexity": 96
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "NotificationsPage": {
+        "name": "NotificationsPage",
+        "path": "pages\\NotificationsPage.vue",
+        "responsibilities": [
+          "timeline-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "vue-router",
+          "quasar",
+          "src/stores/game-notifications-store",
+          "src/stores/user-preferences-store",
+          "src/stores/games-firebase-store",
+          "src/services/game-event-notification-service",
+          "src/utils/slug"
+        ],
+        "templateComplexity": {
+          "elements": 21,
+          "directives": 8,
+          "complexity": 29
+        },
+        "scriptComplexity": {
+          "lines": 179,
+          "functions": 6,
+          "complexity": 191
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "PlayersPage": {
+        "name": "PlayersPage",
+        "path": "pages\\PlayersPage.vue",
+        "responsibilities": [],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue",
+          "src/stores/players-firebase-store",
+          "src/stores/events-firebase-store",
+          "src/components/players/PlayerCard.vue",
+          "src/components/players/PlayerDetails.vue"
+        ],
+        "templateComplexity": {
+          "elements": 10,
+          "directives": 4,
+          "complexity": 14
+        },
+        "scriptComplexity": {
+          "lines": 81,
+          "functions": 2,
+          "complexity": 85
+        },
+        "usage": {},
+        "isUsed": false
+      },
+      "SettingsPage": {
+        "name": "SettingsPage",
+        "path": "pages\\SettingsPage.vue",
+        "responsibilities": [
+          "persona-management"
+        ],
+        "props": [],
+        "emits": [],
+        "dependencies": [
+          "vue-i18n",
+          "quasar",
+          "vue",
+          "src/stores/user-preferences-store",
+          "src/composables/useLanguage"
+        ],
+        "templateComplexity": {
+          "elements": 20,
+          "directives": 3,
+          "complexity": 23
+        },
+        "scriptComplexity": {
+          "lines": 125,
+          "functions": 2,
+          "complexity": 129
+        },
+        "usage": {},
+        "isUsed": false
+      }
+    },
+    "composables": {
+      "useAuthGuard": {
+        "name": "useAuthGuard",
+        "path": "composables\\useAuthGuard.ts",
+        "responsibilities": [
+          "routing-navigation"
+        ],
+        "exports": [
+          "requireAuth",
+          "requireGuest",
+          "requireAdmin",
+          "useAuthGuard"
+        ],
+        "dependencies": [
+          "vuefire",
+          "vue",
+          "vue-router",
+          "src/stores/players-firebase-store"
+        ],
+        "complexity": {
+          "lines": 215,
+          "functions": 4,
+          "classes": 0,
+          "imports": 4,
+          "complexity": 223
+        },
+        "usage": {}
+      },
+      "useGameImage": {
+        "name": "useGameImage",
+        "path": "composables\\useGameImage.ts",
+        "responsibilities": [
+          "data-persistence"
+        ],
+        "exports": [
+          "useGameImage",
+          "getGameImageUrl"
+        ],
+        "dependencies": [
+          "vue",
+          "vue"
+        ],
+        "complexity": {
+          "lines": 233,
+          "functions": 3,
+          "classes": 0,
+          "imports": 2,
+          "complexity": 239
+        },
+        "usage": {}
+      },
+      "useGamePreferences": {
+        "name": "useGamePreferences",
+        "path": "composables\\useGamePreferences.ts",
+        "responsibilities": [],
+        "exports": [
+          "useGamePreferences"
+        ],
+        "dependencies": [
+          "vue",
+          "src/stores/user-preferences-store",
+          "src/stores/game-notifications-store",
+          "src/services/auth-service"
+        ],
+        "complexity": {
+          "lines": 103,
+          "functions": 6,
+          "classes": 0,
+          "imports": 4,
+          "complexity": 115
+        },
+        "usage": {}
+      },
+      "useLanguage": {
+        "name": "useLanguage",
+        "path": "composables\\useLanguage.ts",
+        "responsibilities": [],
+        "exports": [
+          "SUPPORTED_LANGUAGES",
+          "useLanguage"
+        ],
+        "dependencies": [
+          "vue",
+          "vue-i18n",
+          "vuefire",
+          "src/stores/user-preferences-store"
+        ],
+        "complexity": {
+          "lines": 153,
+          "functions": 3,
+          "classes": 0,
+          "imports": 4,
+          "complexity": 159
+        },
+        "usage": {}
+      }
+    },
+    "utilities": {
+      "conversation-utils": {
+        "name": "conversation-utils",
+        "path": "utils\\conversation-utils.ts",
+        "responsibilities": [
+          "utility-functions"
+        ],
+        "exports": [
+          "formatDirectConversation",
+          "formatGroupConversation",
+          "formatConversation"
+        ],
+        "dependencies": [
+          "src/models/Player"
+        ],
+        "complexity": {
+          "lines": 61,
+          "functions": 3,
+          "classes": 0,
+          "imports": 2,
+          "complexity": 67
+        },
+        "usage": {}
+      },
+      "game-icons": {
+        "name": "game-icons",
+        "path": "utils\\game-icons.ts",
+        "responsibilities": [
+          "tag-management",
+          "utility-functions"
+        ],
+        "exports": [
+          "IconRules",
+          "getGameIcon",
+          "getCategoryForComponent"
+        ],
+        "dependencies": [],
+        "complexity": {
+          "lines": 360,
+          "functions": 3,
+          "classes": 0,
+          "imports": 0,
+          "complexity": 366
+        },
+        "usage": {}
+      },
+      "logger": {
+        "name": "logger",
+        "path": "utils\\logger.ts",
+        "responsibilities": [
+          "utility-functions",
+          "data-persistence"
+        ],
+        "exports": [
+          "logger"
+        ],
+        "dependencies": [
+          "vue",
+          "src/types/logging"
+        ],
+        "complexity": {
+          "lines": 159,
+          "functions": 0,
+          "classes": 1,
+          "imports": 2,
+          "complexity": 162
+        },
+        "usage": {}
+      },
+      "sanitization": {
+        "name": "sanitization",
+        "path": "utils\\sanitization.ts",
+        "responsibilities": [
+          "utility-functions"
+        ],
+        "exports": [
+          "SanitizationUtils"
+        ],
+        "dependencies": [],
+        "complexity": {
+          "lines": 51,
+          "functions": 0,
+          "classes": 1,
+          "imports": 0,
+          "complexity": 54
+        },
+        "usage": {}
+      },
+      "slug": {
+        "name": "slug",
+        "path": "utils\\slug.ts",
+        "responsibilities": [
+          "utility-functions"
+        ],
+        "exports": [
+          "createSlug",
+          "createEventUrl",
+          "createGameUrl"
+        ],
+        "dependencies": [],
+        "complexity": {
+          "lines": 29,
+          "functions": 3,
+          "classes": 0,
+          "imports": 0,
+          "complexity": 35
+        },
+        "usage": {}
+      }
+    },
+    "services": {
+      "api-service": {
+        "name": "api-service",
+        "path": "services\\api-service.ts",
+        "responsibilities": [],
+        "methods": [
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if"
+        ],
+        "dependencies": [
+          "src/models/Game",
+          "src/stores/games-firebase-store"
+        ],
+        "complexity": {
+          "lines": 219,
+          "functions": 0,
+          "classes": 1,
+          "imports": 2,
+          "complexity": 222
+        },
+        "usage": {}
+      },
+      "auth-service": {
+        "name": "auth-service",
+        "path": "services\\auth-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "constructor",
+          "if",
+          "isAuthenticated",
+          "currentUserId",
+          "signInWithGoogle",
+          "catch",
+          "signInWithFacebook",
+          "catch",
+          "signInWithEmail",
+          "catch",
+          "signUpWithEmail",
+          "catch",
+          "signOut",
+          "catch",
+          "loadPlayerProfile",
+          "if",
+          "if",
+          "catch",
+          "updatePlayerProfile",
+          "if",
+          "if",
+          "catch"
+        ],
+        "dependencies": [
+          "vue",
+          "firebase/firestore",
+          "src/boot/firebase",
+          "src/models/Player"
+        ],
+        "complexity": {
+          "lines": 209,
+          "functions": 0,
+          "classes": 1,
+          "imports": 5,
+          "complexity": 212
+        },
+        "usage": {}
+      },
+      "cache-service": {
+        "name": "cache-service",
+        "path": "services\\cache-service.ts",
+        "responsibilities": [],
+        "methods": [
+          "constructor",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if"
+        ],
+        "dependencies": [
+          "src/utils/logger"
+        ],
+        "complexity": {
+          "lines": 273,
+          "functions": 3,
+          "classes": 1,
+          "imports": 1,
+          "complexity": 282
+        },
+        "usage": {}
+      },
+      "calendar-export-service": {
+        "name": "calendar-export-service",
+        "path": "services\\calendar-export-service.ts",
+        "responsibilities": [
+          "data-persistence"
+        ],
+        "methods": [
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "switch"
+        ],
+        "dependencies": [
+          "src/models/Event",
+          "src/models/Game",
+          "quasar"
+        ],
+        "complexity": {
+          "lines": 249,
+          "functions": 0,
+          "classes": 1,
+          "imports": 3,
+          "complexity": 252
+        },
+        "usage": {}
+      },
+      "calendar-feed-service": {
+        "name": "calendar-feed-service",
+        "path": "services\\calendar-feed-service.ts",
+        "responsibilities": [
+          "data-persistence"
+        ],
+        "methods": [
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if"
+        ],
+        "dependencies": [
+          "src/models/Event",
+          "src/models/Game"
+        ],
+        "complexity": {
+          "lines": 282,
+          "functions": 0,
+          "classes": 1,
+          "imports": 2,
+          "complexity": 285
+        },
+        "usage": {}
+      },
+      "clca-ingest-service": {
+        "name": "clca-ingest-service",
+        "path": "services\\clca-ingest-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "constructor",
+          "if",
+          "if",
+          "if",
+          "catch",
+          "if",
+          "if",
+          "catch",
+          "catch",
+          "catch",
+          "if",
+          "if",
+          "if"
+        ],
+        "dependencies": [
+          "./rate-limit-service",
+          "./monitoring-service",
+          "src/utils/logger",
+          "src/schemas/contentdoc"
+        ],
+        "complexity": {
+          "lines": 275,
+          "functions": 0,
+          "classes": 1,
+          "imports": 5,
+          "complexity": 278
+        },
+        "usage": {}
+      },
+      "config-service": {
+        "name": "config-service",
+        "path": "services\\config-service.ts",
+        "responsibilities": [],
+        "methods": [
+          "init",
+          "if",
+          "catch",
+          "if",
+          "save",
+          "reset"
+        ],
+        "dependencies": [
+          "vue"
+        ],
+        "complexity": {
+          "lines": 82,
+          "functions": 0,
+          "classes": 1,
+          "imports": 1,
+          "complexity": 85
+        },
+        "usage": {}
+      },
+      "contentdoc-mapping-service": {
+        "name": "contentdoc-mapping-service",
+        "path": "services\\contentdoc-mapping-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "catch",
+          "catch",
+          "switch",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "catch",
+          "if",
+          "if"
+        ],
+        "dependencies": [
+          "./validation-service",
+          "src/utils/logger",
+          "src/models/Event",
+          "src/models/Game",
+          "src/schemas/contentdoc"
+        ],
+        "complexity": {
+          "lines": 297,
+          "functions": 0,
+          "classes": 1,
+          "imports": 5,
+          "complexity": 300
+        },
+        "usage": {}
+      },
+      "dead-letter-queue-service": {
+        "name": "dead-letter-queue-service",
+        "path": "services\\dead-letter-queue-service.ts",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "methods": [
+          "catch",
+          "for",
+          "if",
+          "if",
+          "catch",
+          "catch",
+          "catch",
+          "catch",
+          "catch",
+          "catch",
+          "catch"
+        ],
+        "dependencies": [
+          "src/boot/firebase",
+          "src/utils/logger",
+          "src/schemas/contentdoc",
+          "./clca-ingest-service"
+        ],
+        "complexity": {
+          "lines": 347,
+          "functions": 0,
+          "classes": 1,
+          "imports": 6,
+          "complexity": 350
+        },
+        "usage": {}
+      },
+      "featured-games-examples": {
+        "name": "featured-games-examples",
+        "path": "services\\featured-games-examples.ts",
+        "responsibilities": [],
+        "methods": [
+          "catch"
+        ],
+        "dependencies": [],
+        "complexity": {
+          "lines": 89,
+          "functions": 0,
+          "classes": 0,
+          "imports": 0,
+          "complexity": 89
+        },
+        "usage": {}
+      },
+      "featured-games-service": {
+        "name": "featured-games-service",
+        "path": "services\\featured-games-service.ts",
+        "responsibilities": [],
+        "methods": [
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if"
+        ],
+        "dependencies": [
+          "src/models/Game",
+          "src/models/Event"
+        ],
+        "complexity": {
+          "lines": 186,
+          "functions": 0,
+          "classes": 1,
+          "imports": 2,
+          "complexity": 189
+        },
+        "usage": {}
+      },
+      "game-event-notification-service": {
+        "name": "game-event-notification-service",
+        "path": "services\\game-event-notification-service.ts",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "methods": [
+          "if",
+          "catch",
+          "for",
+          "if",
+          "catch",
+          "catch",
+          "if",
+          "if",
+          "if",
+          "catch",
+          "catch",
+          "catch",
+          "switch"
+        ],
+        "dependencies": [
+          "src/boot/firebase",
+          "./user-preferences-service",
+          "src/models/Game",
+          "src/models/Event"
+        ],
+        "complexity": {
+          "lines": 256,
+          "functions": 0,
+          "classes": 1,
+          "imports": 5,
+          "complexity": 259
+        },
+        "usage": {}
+      },
+      "game-migration-service": {
+        "name": "game-migration-service",
+        "path": "services\\game-migration-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "if",
+          "if",
+          "catch",
+          "if"
+        ],
+        "dependencies": [
+          "src/stores/games-firebase-store",
+          "./image-storage-service",
+          "quasar"
+        ],
+        "complexity": {
+          "lines": 81,
+          "functions": 2,
+          "classes": 1,
+          "imports": 3,
+          "complexity": 88
+        },
+        "usage": {}
+      },
+      "game-ownership-service": {
+        "name": "game-ownership-service",
+        "path": "services\\game-ownership-service.ts",
+        "responsibilities": [],
+        "methods": [
+          "if"
+        ],
+        "dependencies": [
+          "firebase/firestore",
+          "src/boot/firebase"
+        ],
+        "complexity": {
+          "lines": 87,
+          "functions": 0,
+          "classes": 1,
+          "imports": 3,
+          "complexity": 90
+        },
+        "usage": {}
+      },
+      "google-calendar-service": {
+        "name": "google-calendar-service",
+        "path": "services\\google-calendar-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "constructor",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "catch",
+          "if",
+          "if",
+          "catch",
+          "if",
+          "if",
+          "catch",
+          "if",
+          "if",
+          "catch",
+          "if",
+          "if",
+          "catch",
+          "if",
+          "if",
+          "catch",
+          "if",
+          "if",
+          "catch"
+        ],
+        "dependencies": [
+          "src/models/Event",
+          "./vuefire-auth-service"
+        ],
+        "complexity": {
+          "lines": 425,
+          "functions": 0,
+          "classes": 1,
+          "imports": 2,
+          "complexity": 428
+        },
+        "usage": {}
+      },
+      "image-storage-service": {
+        "name": "image-storage-service",
+        "path": "services\\image-storage-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "catch",
+          "if",
+          "if",
+          "catch",
+          "catch",
+          "catch",
+          "for",
+          "catch",
+          "if",
+          "catch",
+          "catch",
+          "if",
+          "if"
+        ],
+        "dependencies": [
+          "src/boot/firebase"
+        ],
+        "complexity": {
+          "lines": 283,
+          "functions": 0,
+          "classes": 1,
+          "imports": 2,
+          "complexity": 286
+        },
+        "usage": {}
+      },
+      "monitoring-service": {
+        "name": "monitoring-service",
+        "path": "services\\monitoring-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "constructor",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "catch"
+        ],
+        "dependencies": [
+          "src/utils/logger"
+        ],
+        "complexity": {
+          "lines": 368,
+          "functions": 8,
+          "classes": 1,
+          "imports": 1,
+          "complexity": 387
+        },
+        "usage": {}
+      },
+      "rate-limit-service": {
+        "name": "rate-limit-service",
+        "path": "services\\rate-limit-service.ts",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "methods": [
+          "constructor",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if"
+        ],
+        "dependencies": [
+          "src/types/rate-limiting",
+          "src/utils/logger"
+        ],
+        "complexity": {
+          "lines": 155,
+          "functions": 0,
+          "classes": 1,
+          "imports": 2,
+          "complexity": 158
+        },
+        "usage": {}
+      },
+      "ttg-event-sync-service": {
+        "name": "ttg-event-sync-service",
+        "path": "services\\ttg-event-sync-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "for",
+          "if",
+          "if",
+          "switch",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if"
+        ],
+        "dependencies": [
+          "src/models/Event",
+          "src/models/Game",
+          "./google-calendar-service",
+          "src/stores/events-firebase-store",
+          "src/stores/games-firebase-store"
+        ],
+        "complexity": {
+          "lines": 325,
+          "functions": 0,
+          "classes": 1,
+          "imports": 5,
+          "complexity": 328
+        },
+        "usage": {}
+      },
+      "user-management-service": {
+        "name": "user-management-service",
+        "path": "services\\user-management-service.ts",
+        "responsibilities": [
+          "chat-functionality"
+        ],
+        "methods": [
+          "if",
+          "catch",
+          "catch",
+          "catch",
+          "if",
+          "if",
+          "catch",
+          "catch",
+          "if",
+          "if",
+          "catch",
+          "catch",
+          "catch",
+          "catch",
+          "catch"
+        ],
+        "dependencies": [
+          "src/boot/firebase",
+          "src/models/Player"
+        ],
+        "complexity": {
+          "lines": 406,
+          "functions": 0,
+          "classes": 1,
+          "imports": 4,
+          "complexity": 409
+        },
+        "usage": {}
+      },
+      "user-preferences-analyzer": {
+        "name": "user-preferences-analyzer",
+        "path": "services\\user-preferences-analyzer.ts",
+        "responsibilities": [],
+        "methods": [
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "analyzeUserPatterns"
+        ],
+        "dependencies": [
+          "src/models/Game",
+          "src/models/Event"
+        ],
+        "complexity": {
+          "lines": 151,
+          "functions": 0,
+          "classes": 1,
+          "imports": 2,
+          "complexity": 154
+        },
+        "usage": {}
+      },
+      "user-preferences-service": {
+        "name": "user-preferences-service",
+        "path": "services\\user-preferences-service.ts",
+        "responsibilities": [],
+        "methods": [
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "catch",
+          "catch",
+          "catch",
+          "catch",
+          "if",
+          "catch",
+          "catch",
+          "if",
+          "catch",
+          "catch",
+          "if",
+          "if",
+          "if",
+          "if",
+          "catch",
+          "catch"
+        ],
+        "dependencies": [
+          "src/boot/firebase",
+          "src/models/UserPreferences"
+        ],
+        "complexity": {
+          "lines": 314,
+          "functions": 0,
+          "classes": 1,
+          "imports": 3,
+          "complexity": 317
+        },
+        "usage": {}
+      },
+      "validation-service": {
+        "name": "validation-service",
+        "path": "services\\validation-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "constructor",
+          "initializeAJV",
+          "catch",
+          "if",
+          "if",
+          "if",
+          "for"
+        ],
+        "dependencies": [
+          "src/types/validation",
+          "src/utils/sanitization",
+          "src/schemas/contentdoc",
+          "src/schemas/contentdoc"
+        ],
+        "complexity": {
+          "lines": 212,
+          "functions": 4,
+          "classes": 1,
+          "imports": 4,
+          "complexity": 223
+        },
+        "usage": {}
+      },
+      "vuefire-auth-service": {
+        "name": "vuefire-auth-service",
+        "path": "services\\vuefire-auth-service.ts",
+        "responsibilities": [
+          "chat-functionality",
+          "data-persistence"
+        ],
+        "methods": [
+          "constructor",
+          "if",
+          "currentUser",
+          "isAuthenticated",
+          "currentUserId",
+          "loadTokenFromStorage",
+          "if",
+          "if",
+          "if",
+          "catch",
+          "if",
+          "if",
+          "if",
+          "catch",
+          "catch",
+          "saveTokenToStorage",
+          "catch",
+          "clearTokenFromStorage",
+          "catch",
+          "setupTokenRefresh",
+          "checkTokenExpiry",
+          "if",
+          "if",
+          "if",
+          "if",
+          "if",
+          "signInWithGoogle",
+          "if",
+          "catch",
+          "if",
+          "catch",
+          "linkGoogleAccount",
+          "if",
+          "if",
+          "catch",
+          "signInWithFacebook",
+          "catch",
+          "signInWithEmail",
+          "catch",
+          "signUpWithEmail",
+          "catch",
+          "signOut",
+          "if",
+          "catch",
+          "loadPlayerProfile",
+          "if",
+          "if",
+          "if",
+          "catch",
+          "updatePlayerProfile",
+          "if",
+          "if",
+          "catch"
+        ],
+        "dependencies": [
+          "vue",
+          "vuefire",
+          "firebase/firestore",
+          "src/boot/firebase",
+          "firebase/app",
+          "src/models/Player"
+        ],
+        "complexity": {
+          "lines": 508,
+          "functions": 0,
+          "classes": 1,
+          "imports": 7,
+          "complexity": 511
+        },
+        "usage": {}
+      }
+    },
+    "types": {
+      "logging": {
+        "name": "logging",
+        "path": "types\\logging.ts",
+        "responsibilities": [],
+        "exports": [
+          "LogLevel",
+          "LogEntry",
+          "LoggerConfig"
+        ],
+        "dependencies": [],
+        "usage": {}
+      },
+      "rate-limiting": {
+        "name": "rate-limiting",
+        "path": "types\\rate-limiting.ts",
+        "responsibilities": [],
+        "exports": [
+          "RateLimitConfig",
+          "RateLimitResult",
+          "RateLimitEntry"
+        ],
+        "dependencies": [],
+        "usage": {}
+      },
+      "validation": {
+        "name": "validation",
+        "path": "types\\validation.ts",
+        "responsibilities": [],
+        "exports": [
+          "ValidationRule",
+          "ValidationResult",
+          "ValidationSchema"
+        ],
+        "dependencies": [],
+        "usage": {}
+      }
+    }
+  }
+}

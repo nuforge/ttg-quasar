@@ -17,6 +17,8 @@ This document provides comprehensive API documentation for the TTG Quasar Applic
 - **Rate Limiting Service**: API protection and abuse prevention
 - **Monitoring Service**: Analytics and error tracking
 - **Cache Service**: Performance optimization and data caching
+- **CLCA Integration Services**: ContentDoc mapping and CLCA publishing
+- **Dead Letter Queue Service**: Retry logic for failed operations
 
 ### Data Models
 
@@ -25,6 +27,8 @@ This document provides comprehensive API documentation for the TTG Quasar Applic
 - **Game**: Game catalog and ownership tracking
 - **Message**: Real-time messaging system
 - **UserPreferences**: User settings and preferences
+- **ContentDoc**: Unified content format for CLCA integration
+- **CLCAStatus**: Sync status tracking for events/games
 
 ## 🔐 **Authentication Service**
 
@@ -629,6 +633,242 @@ class Game {
 }
 ```
 
+## 🔄 **CLCA Integration Services**
+
+### `ContentDocMappingService`
+
+**Location**: `src/services/contentdoc-mapping-service.ts`
+
+Converts TTG `Event` and `Game` models into unified `ContentDoc` format for CLCA integration.
+
+#### Methods
+
+##### `mapEventToContentDoc(event: Event): Promise<ContentDoc>`
+
+- **Description**: Convert TTG Event to ContentDoc format
+- **Parameters**:
+  - `event`: TTG Event object
+- **Returns**: `Promise<ContentDoc>`
+- **Example**:
+
+```typescript
+import { ContentDocMappingService } from 'src/services/contentdoc-mapping-service';
+
+const mappingService = new ContentDocMappingService();
+const contentDoc = await mappingService.mapEventToContentDoc(event);
+```
+
+##### `mapGameToContentDoc(game: Game): Promise<ContentDoc>`
+
+- **Description**: Convert TTG Game to ContentDoc format
+- **Parameters**:
+  - `game`: TTG Game object
+- **Returns**: `Promise<ContentDoc>`
+- **Example**:
+
+```typescript
+const gameContentDoc = await mappingService.mapGameToContentDoc(game);
+```
+
+### `CLCAIngestService`
+
+**Location**: `src/services/clca-ingest-service.ts`
+
+Handles communication with CLCA Courier API using JWT authentication.
+
+#### Methods
+
+##### `publishContentDoc(contentDoc: ContentDoc): Promise<IngestResult>`
+
+- **Description**: Publish ContentDoc to CLCA API
+- **Parameters**:
+  - `contentDoc`: ContentDoc object to publish
+- **Returns**: `Promise<IngestResult>`
+- **Example**:
+
+```typescript
+import { CLCAIngestService } from 'src/services/clca-ingest-service';
+
+const ingestService = new CLCAIngestService();
+const result = await ingestService.publishContentDoc(contentDoc);
+
+if (result.success) {
+  console.log('Successfully published to CLCA');
+} else {
+  console.error('Failed to publish:', result.error);
+}
+```
+
+##### `validateContentDoc(contentDoc: ContentDoc): void`
+
+- **Description**: Validate ContentDoc before publishing
+- **Parameters**:
+  - `contentDoc`: ContentDoc object to validate
+- **Returns**: `void`
+- **Throws**: `Error` if validation fails
+
+##### `isConfigured(): boolean`
+
+- **Description**: Check if CLCA integration is properly configured
+- **Returns**: `boolean`
+
+### `DeadLetterQueueService`
+
+**Location**: `src/services/dead-letter-queue-service.ts`
+
+Manages failed CLCA ingestion attempts with exponential backoff retry logic.
+
+#### Methods
+
+##### `addToDLQ(contentDoc: ContentDoc, error: Error): Promise<string>`
+
+- **Description**: Add failed item to Dead Letter Queue
+- **Parameters**:
+  - `contentDoc`: Failed ContentDoc
+  - `error`: Error that caused failure
+- **Returns**: `Promise<string>` (DLQ item ID)
+
+##### `processDLQ(): Promise<ProcessResult>`
+
+- **Description**: Process items in Dead Letter Queue
+- **Returns**: `Promise<ProcessResult>`
+- **Example**:
+
+```typescript
+import { DeadLetterQueueService } from 'src/services/dead-letter-queue-service';
+
+const dlqService = new DeadLetterQueueService();
+const result = await dlqService.processDLQ();
+console.log(`Processed ${result.successful} items, ${result.failed} failed`);
+```
+
+##### `getDLQStats(): Promise<DLQStats>`
+
+- **Description**: Get Dead Letter Queue statistics
+- **Returns**: `Promise<DLQStats>`
+
+##### `clearDLQ(): Promise<void>`
+
+- **Description**: Clear all items from Dead Letter Queue
+- **Returns**: `Promise<void>`
+
+### Enhanced Firebase Stores
+
+#### Events Firebase Store
+
+**Location**: `src/stores/events-firebase-store.ts`
+
+Enhanced with automatic CLCA publishing capabilities.
+
+##### New Methods
+
+##### `createEventWithCLCA(eventData: Partial<Event>): Promise<string>`
+
+- **Description**: Create event with automatic CLCA publishing
+- **Parameters**:
+  - `eventData`: Event data to create
+- **Returns**: `Promise<string>` (Event ID)
+
+##### `publishEventToCLCA(eventId: string): Promise<boolean>`
+
+- **Description**: Publish specific event to CLCA
+- **Parameters**:
+  - `eventId`: Event ID to publish
+- **Returns**: `Promise<boolean>` (Success status)
+
+##### `getCLCASyncStatus(eventId: string): CLCAStatus`
+
+- **Description**: Get CLCA sync status for event
+- **Parameters**:
+  - `eventId`: Event ID
+- **Returns**: `CLCAStatus`
+
+##### `retryCLCASync(eventId: string): Promise<boolean>`
+
+- **Description**: Retry failed CLCA sync for event
+- **Parameters**:
+  - `eventId`: Event ID to retry
+- **Returns**: `Promise<boolean>` (Success status)
+
+#### Games Firebase Store
+
+**Location**: `src/stores/games-firebase-store.ts`
+
+Enhanced with automatic CLCA publishing for games.
+
+##### New Methods
+
+##### `createGameWithCLCA(gameData: Partial<Game>): Promise<string>`
+
+- **Description**: Create game with automatic CLCA publishing
+- **Parameters**:
+  - `gameData`: Game data to create
+- **Returns**: `Promise<string>` (Game ID)
+
+##### `publishGameToCLCA(gameId: string): Promise<boolean>`
+
+- **Description**: Publish specific game to CLCA
+- **Parameters**:
+  - `gameId`: Game ID to publish
+- **Returns**: `Promise<boolean>` (Success status)
+
+##### `getCLCASyncStatus(gameId: string): CLCAStatus`
+
+- **Description**: Get CLCA sync status for game
+- **Parameters**:
+  - `gameId`: Game ID
+- **Returns**: `CLCAStatus`
+
+## 🎨 **CLCA UI Components**
+
+### `CLCASyncStatus`
+
+**Location**: `src/components/events/CLCASyncStatus.vue`
+
+Displays CLCA sync status for events.
+
+#### Props
+
+```typescript
+interface Props {
+  eventId: string;
+  showDetails?: boolean;
+}
+```
+
+#### Usage
+
+```vue
+<template>
+  <CLCASyncStatus :event-id="event.firebaseDocId" :show-details="true" />
+</template>
+```
+
+### `CLCAManagement`
+
+**Location**: `src/components/admin/CLCAManagement.vue`
+
+Admin interface for managing CLCA integration.
+
+#### Features
+
+- View sync statistics
+- Monitor failed items
+- Retry failed syncs
+- Clear dead letter queue
+- View integration status
+
+#### Usage
+
+```vue
+<template>
+  <div>
+    <h1>CLCA Management</h1>
+    <CLCAManagement />
+  </div>
+</template>
+```
+
 ## 🧪 **Testing**
 
 ### Test Structure
@@ -659,6 +899,9 @@ npm run test:coverage
 
 # Run security tests
 npm run test:security
+
+# Run CLCA integration tests
+npm test test/integration/clca-integration.test.ts
 ```
 
 ## 📚 **Additional Resources**
@@ -666,6 +909,7 @@ npm run test:security
 - **[Security Documentation](security/)** - Complete security implementation
 - **[Development Guide](development/)** - Development setup and best practices
 - **[Project Overview](PROJECT_OVERVIEW.md)** - High-level project information
+- **[CLCA Integration Guide](CLCA_INTEGRATION_GUIDE.md)** - Complete CLCA integration documentation
 - **[Development Roadmap](development/DEVELOPMENT_ROADMAP.md)** - Future development plans
 
 ---

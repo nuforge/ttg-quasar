@@ -37,7 +37,7 @@ This guide provides comprehensive instructions for deploying the TTG Quasar Appl
 ### ✅ **Build Verification**
 
 - [ ] TypeScript compilation successful
-- [ ] All tests passing (479/479)
+- [ ] All tests passing (495/495)
 - [ ] No linting errors
 - [ ] Production build successful
 - [ ] Bundle size optimized
@@ -48,6 +48,9 @@ This guide provides comprehensive instructions for deploying the TTG Quasar Appl
 - [ ] Firebase project settings correct
 - [ ] API keys configured
 - [ ] Domain settings configured (if applicable)
+- [ ] CLCA integration configured (if using CLCA features)
+- [ ] CLCA_INGEST_URL accessible
+- [ ] CLCA_JWT_SECRET secured
 
 ## 🏗️ **Build Process**
 
@@ -86,9 +89,14 @@ VITE_FIREBASE_APP_ID=your_app_id
 VITE_APP_NAME=TTG Quasar
 VITE_APP_VERSION=2.0.0
 VITE_APP_ENVIRONMENT=production
+VITE_APP_BASE_URL=https://your-ttg-domain.com
 
 # Google Calendar (if using calendar features)
 VITE_GOOGLE_CALENDAR_CLIENT_ID=your_client_id
+
+# CLCA Integration (Optional)
+CLCA_INGEST_URL=https://your-clca-courier-api.com
+CLCA_JWT_SECRET=your-jwt-secret-key-here
 ```
 
 ### 3. **Build Application**
@@ -212,7 +220,22 @@ curl -I https://your-domain.com/api/health
 curl -I https://your-domain.com | grep -E "(X-Content-Type-Options|X-Frame-Options|CSP)"
 ```
 
-### 2. **Firebase Services Verification**
+### 2. **CLCA Integration Verification**
+
+```bash
+# Test CLCA integration (if configured)
+# Check environment variables are set
+echo $CLCA_INGEST_URL
+echo $CLCA_JWT_SECRET
+
+# Test CLCA API connectivity
+curl -I $CLCA_INGEST_URL/health
+
+# Verify JWT token generation
+# Check browser console for CLCA integration status
+```
+
+### 3. **Firebase Services Verification**
 
 ```bash
 # Check Firestore rules
@@ -225,7 +248,7 @@ firebase storage:rules:get
 firebase hosting:sites:list
 ```
 
-### 3. **Performance Testing**
+### 4. **Performance Testing**
 
 ```bash
 # Test page load times
@@ -254,6 +277,68 @@ curl -w "@curl-format.txt" -o /dev/null -s https://your-domain.com/api/events
 - Firebase Performance Monitoring enabled
 - Track page load times and API performance
 - View performance metrics in Firebase Console
+
+### 4. **CLCA Integration Monitoring**
+
+- Monitor CLCA sync success rates
+- Track dead letter queue size
+- Monitor JWT token generation
+- View CLCA integration status in admin interface
+
+## 🔄 **CLCA Integration Deployment**
+
+### 1. **CLCA Configuration**
+
+If using CLCA integration features:
+
+```bash
+# Set CLCA environment variables
+export CLCA_INGEST_URL=https://your-clca-courier-api.com
+export CLCA_JWT_SECRET=your-secure-jwt-secret-key
+
+# Verify CLCA API accessibility
+curl -I $CLCA_INGEST_URL/health
+```
+
+### 2. **Firestore Security Rules for CLCA**
+
+Update your Firestore security rules to include CLCA collections:
+
+```javascript
+// CLCA sync status (readable by authenticated users)
+match /clcaSyncStatus/{docId} {
+  allow read, write: if request.auth != null;
+}
+
+// Dead letter queue (admin only)
+match /deadLetterQueue/{docId} {
+  allow read, write: if request.auth != null &&
+    get(/databases/$(database)/documents/players/$(request.auth.uid)).data.role == 'admin';
+}
+
+// CLCA metrics (admin only)
+match /clcaMetrics/{docId} {
+  allow read, write: if request.auth != null &&
+    get(/databases/$(database)/documents/players/$(request.auth.uid)).data.role == 'admin';
+}
+```
+
+### 3. **CLCA Integration Testing**
+
+```bash
+# Run CLCA integration tests
+npm test test/integration/clca-integration.test.ts
+
+# Test CLCA service configuration
+# Check browser console for CLCA integration status
+```
+
+### 4. **CLCA Monitoring**
+
+- Access admin interface at `/admin/clca`
+- Monitor sync statistics and failed items
+- View dead letter queue status
+- Retry failed syncs as needed
 
 ## 🛠️ **Maintenance & Updates**
 

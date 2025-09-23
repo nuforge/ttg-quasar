@@ -12,6 +12,7 @@ import {
   limit,
   deleteDoc,
   updateDoc,
+  doc,
   serverTimestamp,
   Timestamp,
   orderBy,
@@ -144,7 +145,11 @@ export class DeadLetterQueueService {
             });
           } else {
             // Failed - update retry info
-            await this.updateRetryInfo(itemDoc.ref, data, result.error);
+            await this.updateRetryInfo(
+              itemDoc.ref,
+              data,
+              result.error || new Error('Unknown ingestion error'),
+            );
             failed++;
           }
         } catch (retryError) {
@@ -192,7 +197,11 @@ export class DeadLetterQueueService {
   /**
    * Update retry information for failed attempt
    */
-  private async updateRetryInfo(docRef: any, data: DLQEntry, error: Error): Promise<void> {
+  private async updateRetryInfo(
+    docRef: Parameters<typeof updateDoc>[0],
+    data: DLQEntry,
+    error: Error,
+  ): Promise<void> {
     const newAttempt = data.context.attempt + 1;
     const retryDelay = this.getRetryDelay(newAttempt);
 
@@ -219,7 +228,7 @@ export class DeadLetterQueueService {
       });
 
       // Remove from DLQ
-      await deleteDoc(collection(db, this.DLQ_COLLECTION).doc(dlqId) as any);
+      await deleteDoc(doc(db, this.DLQ_COLLECTION, dlqId));
 
       logger.warn('Moved DLQ item to failed queue', {
         dlqId,

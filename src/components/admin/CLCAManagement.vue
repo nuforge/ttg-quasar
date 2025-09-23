@@ -362,27 +362,29 @@ const confirmClearDLQ = (): void => {
     message: t('admin.clearDLQWarning'),
     cancel: true,
     persistent: true,
-  }).onOk(async () => {
-    clearingDLQ.value = true;
-    try {
-      const deletedCount = await dlqService.clearDLQ();
+  }).onOk(() => {
+    void (async () => {
+      clearingDLQ.value = true;
+      try {
+        const deletedCount = await dlqService.clearDLQ();
 
-      $q.notify({
-        type: 'positive',
-        message: t('admin.dlqCleared'),
-        caption: t('admin.dlqClearedCount', { count: deletedCount }),
-      });
+        $q.notify({
+          type: 'positive',
+          message: t('admin.dlqCleared'),
+          caption: t('admin.dlqClearedCount', { count: deletedCount }),
+        });
 
-      await loadDLQStats(); // Refresh stats
-    } catch (error) {
-      $q.notify({
-        type: 'negative',
-        message: t('admin.dlqClearFailed'),
-        caption: (error as Error).message,
-      });
-    } finally {
-      clearingDLQ.value = false;
-    }
+        await loadDLQStats(); // Refresh stats
+      } catch (error) {
+        $q.notify({
+          type: 'negative',
+          message: t('admin.dlqClearFailed'),
+          caption: (error as Error).message,
+        });
+      } finally {
+        clearingDLQ.value = false;
+      }
+    })();
   });
 };
 

@@ -273,7 +273,7 @@ export default {
       dlqCleared: 'Dead letter queue cleared',
       dlqClearedCount: '{count} items removed',
       dlqClearFailed: 'Failed to clear queue',
-      dlqItems: 'Dead Letter Queue Items',
+      dlqQueueItems: 'Dead Letter Queue Items',
       noDLQItems: 'No items in queue',
       dlqItemsLoadFailed: 'Failed to load queue items',
       clcaSettingsDesc: 'CLCA integration settings and configuration',

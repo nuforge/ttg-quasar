@@ -234,7 +234,7 @@ export class CLCAIngestService {
   /**
    * Validate ContentDoc before sending to CLCA
    */
-  async validateContentDoc(contentDoc: ContentDoc): Promise<void> {
+  validateContentDoc(contentDoc: ContentDoc): void {
     // Basic validation
     if (!contentDoc.id || !contentDoc.title) {
       throw new Error('ContentDoc missing required fields: id, title');

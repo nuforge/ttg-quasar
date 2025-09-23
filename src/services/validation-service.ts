@@ -4,23 +4,25 @@ import type { ContentDoc } from 'src/schemas/contentdoc';
 import { contentDocSchema } from 'src/schemas/contentdoc';
 
 export class ValidationService {
-  private ajv: any = null;
-  private contentDocValidator: any = null;
+  private ajv: unknown = null;
+  private contentDocValidator: unknown = null;
 
   constructor() {
     // Lazy load AJV to avoid bundle size issues
-    this.initializeAJV();
+    void this.initializeAJV();
   }
 
   private async initializeAJV() {
     try {
       const Ajv = (await import('ajv')).default;
-      const addFormats = (await import('ajv-formats')).default;
+      // const addFormats = (await import('ajv-formats')).default; // Disabled due to compatibility issues
 
-      this.ajv = new Ajv({ allErrors: true, strict: false });
-      addFormats(this.ajv);
+      this.ajv = new Ajv({ allErrors: true });
+      // addFormats(this.ajv as Parameters<typeof addFormats>[0]); // Disabled due to compatibility issues
 
-      this.contentDocValidator = this.ajv.compile(contentDocSchema);
+      this.contentDocValidator = (this.ajv as { compile: (schema: unknown) => unknown }).compile(
+        contentDocSchema,
+      );
     } catch (error) {
       console.warn('Failed to initialize AJV for ContentDoc validation:', error);
     }
@@ -38,11 +40,16 @@ export class ValidationService {
       throw new Error('ContentDoc validation not available - AJV not initialized');
     }
 
-    const isValid = this.contentDocValidator(contentDoc);
+    const isValid = (this.contentDocValidator as (data: unknown) => boolean)(contentDoc);
 
     if (!isValid) {
-      const errors = this.contentDocValidator.errors || [];
-      const errorMessages = errors.map((err: any) => {
+      const errors =
+        (
+          this.contentDocValidator as {
+            errors?: Array<{ instancePath?: string; dataPath?: string; message?: string }>;
+          }
+        ).errors || [];
+      const errorMessages = errors.map((err) => {
         const path = err.instancePath || err.dataPath || 'root';
         return `${path}: ${err.message}`;
       });

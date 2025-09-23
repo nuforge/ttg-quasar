@@ -30,6 +30,9 @@ The TTG (Tabletop Gaming) Quasar Application is a comprehensive, production-read
 - 📊 **Admin Dashboard** - Complete administrative interface
 - 🌐 **Internationalization** - Multi-language support (English/Spanish)
 - 📱 **Responsive Design** - Mobile-first, PWA-ready
+- 🔄 **CLCA Integration** - One-way push to CLCA Courier newsletter system
+- 📦 **ContentDoc Architecture** - Unified content management system
+- 🚀 **Auto-Publishing** - Automatic event/game sync to external systems
 
 ## 🔒 **Security Status**
 
@@ -46,8 +49,9 @@ The TTG (Tabletop Gaming) Quasar Application is a comprehensive, production-read
 
 - **Critical Vulnerabilities**: 0 (Fixed from 3)
 - **Security Score**: 9/10 (Improved from 2/10)
-- **Test Coverage**: 479 tests passing
+- **Test Coverage**: 495 tests passing (100% pass rate)
 - **TypeScript**: Strict mode with enhanced configuration
+- **CLCA Integration**: Secure JWT authentication with external systems
 
 ## 📁 **Project Structure**
 
@@ -59,17 +63,28 @@ ttg-quasar/
 │   └── archive/                   # Archived documentation
 ├── src/                          # Source code
 │   ├── components/               # Vue components
+│   │   ├── admin/                # Admin components (including CLCA management)
+│   │   ├── events/               # Event components (including CLCA sync status)
+│   │   └── ...                   # Other components
 │   ├── pages/                    # Application pages
 │   ├── services/                 # Business logic services
+│   │   ├── clca-ingest-service.ts    # CLCA API integration
+│   │   ├── contentdoc-mapping-service.ts  # ContentDoc conversion
+│   │   ├── dead-letter-queue-service.ts    # Retry logic
+│   │   └── validation-service.ts           # Schema validation
 │   ├── stores/                   # Pinia state management
+│   │   ├── events-firebase-store.ts  # Enhanced with CLCA integration
+│   │   └── games-firebase-store.ts   # Enhanced with CLCA integration
 │   ├── models/                   # TypeScript data models
+│   ├── schemas/                   # ContentDoc schema definitions
 │   ├── composables/              # Vue composables
 │   ├── utils/                    # Utility functions
 │   ├── types/                    # TypeScript type definitions
-│   └── i18n/                     # Internationalization
+│   └── i18n/                     # Internationalization (including CLCA keys)
 ├── test/                         # Test files
 │   ├── unit/                     # Unit tests
 │   ├── integration/              # Integration tests
+│   │   └── clca-integration.test.ts  # CLCA integration contract tests
 │   └── security/                 # Security tests
 ├── firebase/                     # Firebase configuration
 ├── public/                       # Static assets
@@ -82,18 +97,22 @@ ttg-quasar/
 
 - **Core Application**: Fully functional with all major features
 - **Security Implementation**: Complete security hardening
-- **Testing Suite**: Comprehensive test coverage (479 tests)
+- **Testing Suite**: Comprehensive test coverage (495 tests)
 - **Documentation**: Complete technical documentation
 - **Build System**: Production-ready build configuration
 - **Performance**: Optimized with caching and rate limiting
+- **CLCA Integration**: Complete one-way push to CLCA Courier
+- **ContentDoc Architecture**: Unified content management system
+- **Auto-Publishing**: Automatic event/game sync to external systems
 
 ### 📊 **Quality Metrics**
 
-- **Test Coverage**: 100% pass rate (479/479 tests)
+- **Test Coverage**: 100% pass rate (495/495 tests)
 - **TypeScript**: Strict mode with zero compilation errors
 - **Linting**: Zero ESLint errors
 - **Build**: Successful production build
 - **Security**: Production-ready security posture
+- **CLCA Integration**: 16/16 integration tests passing
 
 ## 🛠️ **Development Setup**
 
@@ -129,14 +148,21 @@ npm run build
 1. Copy `.env.example` to `.env.local`
 2. Configure Firebase project settings
 3. Set up environment variables
-4. Run `quasar prepare` to generate Quasar configuration
+4. Configure CLCA integration (optional):
+   ```env
+   CLCA_INGEST_URL=https://your-clca-courier-api.com
+   CLCA_JWT_SECRET=your-jwt-secret-key-here
+   VITE_APP_BASE_URL=https://your-ttg-domain.com
+   ```
+5. Run `quasar prepare` to generate Quasar configuration
 
 ## 📚 **Documentation**
 
 - **[Security Documentation](security/)** - Complete security implementation details
 - **[Development Guides](development/)** - Development setup and best practices
-- **[API Documentation](api/)** - Service and component documentation
-- **[Deployment Guide](deployment/)** - Production deployment instructions
+- **[API Documentation](API_DOCUMENTATION.md)** - Service and component documentation
+- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Production deployment instructions
+- **[CLCA Integration Guide](CLCA_INTEGRATION_GUIDE.md)** - CLCA integration documentation
 
 ## 🔮 **Next Development Phase**
 
