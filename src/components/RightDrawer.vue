@@ -33,7 +33,12 @@ const currentUserId = computed(() => authService.currentUserId.value);
 const upcomingEvents = computed(() => {
   return eventsStore.events
     .filter(event => event.isUpcoming())
-    .sort((a, b) => a.getDateObject().getTime() - b.getDateObject().getTime());
+    .sort((a, b) => {
+      const dateA = a.getDateObject();
+      const dateB = b.getDateObject();
+      if (dateA === null || dateB === null) return 0;
+      return dateA.getTime() - dateB.getTime();
+    });
 });
 
 // Events user has confirmed RSVP for
@@ -41,7 +46,12 @@ const myConfirmedEvents = computed(() => {
   if (!currentUserId.value) return [];
   return eventsStore.events.filter(event =>
     event.isUpcoming() && event.isPlayerConfirmed(parseInt(currentUserId.value!))
-  ).sort((a, b) => a.getDateObject().getTime() - b.getDateObject().getTime());
+  ).sort((a, b) => {
+    const dateA = a.getDateObject();
+    const dateB = b.getDateObject();
+    if (dateA === null || dateB === null) return 0;
+    return dateA.getTime() - dateB.getTime();
+  });
 });
 
 // Events user is interested in
@@ -49,7 +59,12 @@ const myInterestedEvents = computed(() => {
   if (!currentUserId.value) return [];
   return eventsStore.events.filter(event =>
     event.isUpcoming() && event.isPlayerInterested(parseInt(currentUserId.value!))
-  ).sort((a, b) => a.getDateObject().getTime() - b.getDateObject().getTime());
+  ).sort((a, b) => {
+    const dateA = a.getDateObject();
+    const dateB = b.getDateObject();
+    if (dateA === null || dateB === null) return 0;
+    return dateA.getTime() - dateB.getTime();
+  });
 });
 
 // Events for the selected date
@@ -57,7 +72,12 @@ const selectedDateEvents = computed(() => {
   if (!calendarStore.selectedDate) return [];
   return eventsStore.events.filter(event =>
     event.date === calendarStore.selectedDate && event.isUpcoming()
-  ).sort((a, b) => a.getDateObject().getTime() - b.getDateObject().getTime());
+  ).sort((a, b) => {
+    const dateA = a.getDateObject();
+    const dateB = b.getDateObject();
+    if (dateA === null || dateB === null) return 0;
+    return dateA.getTime() - dateB.getTime();
+  });
 });
 </script>
 

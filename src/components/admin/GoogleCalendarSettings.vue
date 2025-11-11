@@ -228,7 +228,7 @@
 import { ref, reactive, onMounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Notify, copyToClipboard } from 'quasar';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import { ttgEventSyncService, type SyncConfiguration } from 'src/services/ttg-event-sync-service';
 import { googleCalendarService } from 'src/services/google-calendar-service';
 import { vueFireAuthService } from 'src/services/vuefire-auth-service';

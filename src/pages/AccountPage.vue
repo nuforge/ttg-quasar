@@ -169,7 +169,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';

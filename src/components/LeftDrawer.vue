@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import QRDialog from 'src/components/qrcode/QRDialog.vue';
 
 const leftDrawerOpen = ref(true);

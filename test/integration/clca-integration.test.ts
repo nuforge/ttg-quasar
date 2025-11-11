@@ -212,7 +212,7 @@ describe('CLCA Integration Contract Tests', () => {
           time: '19:00',
           endTime: '20:00',
           location: 'Test Location',
-          status: testCase.eventStatus as any,
+          status: testCase.eventStatus as never,
           minPlayers: 1,
           maxPlayers: 4,
           host: { name: 'Test', email: 'test@example.com', phone: '', playerId: 1 },

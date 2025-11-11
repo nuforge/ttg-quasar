@@ -185,7 +185,11 @@ export class CalendarFeedService {
       // Filter by date range if specified
       if (filters.dateRange) {
         const eventDate = event.getDateObject();
-        if (eventDate < filters.dateRange.start || eventDate > filters.dateRange.end) {
+        if (
+          eventDate === null ||
+          eventDate < filters.dateRange.start ||
+          eventDate > filters.dateRange.end
+        ) {
           console.log(`Event ${event.title} filtered out by date range`);
           return false;
         }

@@ -135,7 +135,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import { vueFireAuthService } from 'src/services/vuefire-auth-service';
 import { Notify } from 'quasar';
 

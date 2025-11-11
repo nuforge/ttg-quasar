@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import { useRouter } from 'vue-router';
 import { vueFireAuthService } from 'src/services/vuefire-auth-service';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';

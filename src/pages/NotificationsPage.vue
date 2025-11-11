@@ -110,9 +110,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { date } from 'quasar';
 import { useGameNotificationsStore } from 'src/stores/game-notifications-store';
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
+import { getRelativeTime } from 'src/utils/date-formatter';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { GameEventNotification } from 'src/services/game-event-notification-service';
 import { createGameUrl } from 'src/utils/slug';
@@ -262,19 +262,8 @@ const getNotificationTypeLabel = (type: string) => {
 const formatTime = (timestamp: unknown) => {
     if (!timestamp) return '';
 
-    const notificationDate = (timestamp as { toDate?: () => Date }).toDate?.() || new Date(timestamp as string | number | Date);
-    const now = new Date();
-    const diffMs = now.getTime() - notificationDate.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-
-    return date.formatDate(notificationDate, 'MMM D, YYYY');
+    // Use the centralized date formatter for relative time
+    return getRelativeTime(timestamp as string | number | Date);
 };
 
 // Watch for filter changes

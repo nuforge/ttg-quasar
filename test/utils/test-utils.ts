@@ -9,17 +9,17 @@ export interface TestOptions {
   shallow?: boolean;
   global?: {
     plugins?: any[];
-    mocks?: Record<string, any>;
-    stubs?: Record<string, any>;
+    mocks?: Record<string, unknown>;
+    stubs?: Record<string, unknown>;
   };
-  props?: Record<string, any>;
-  slots?: Record<string, any>;
+  props?: Record<string, unknown>;
+  slots?: any;
 }
 
 /**
  * Creates a properly configured Vue Test Utils wrapper with Quasar, Pinia, and i18n
  */
-export function createTestWrapper(component: any, options: TestOptions = {}) {
+export function createTestWrapper(component: unknown, options: TestOptions = {}) {
   const pinia = createPinia();
   const i18n = createI18n({
     legacy: false,
@@ -160,7 +160,7 @@ export function createTestWrapper(component: any, options: TestOptions = {}) {
 /**
  * Creates mock data for testing
  */
-export const createMockPlayer = (overrides: Partial<any> = {}) => ({
+export const createMockPlayer = (overrides: Partial<Record<string, unknown>> = {}) => ({
   id: 1,
   name: 'Test Player',
   email: 'test@example.com',
@@ -173,7 +173,7 @@ export const createMockPlayer = (overrides: Partial<any> = {}) => ({
   ...overrides,
 });
 
-export const createMockEvent = (overrides: Partial<any> = {}) => ({
+export const createMockEvent = (overrides: Partial<Record<string, unknown>> = {}) => ({
   id: 1,
   title: 'Test Event',
   description: 'Test event description',
@@ -184,7 +184,7 @@ export const createMockEvent = (overrides: Partial<any> = {}) => ({
   ...overrides,
 });
 
-export const createMockGame = (overrides: Partial<any> = {}) => ({
+export const createMockGame = (overrides: Partial<Record<string, unknown>> = {}) => ({
   id: 1,
   name: 'Test Game',
   description: 'Test game description',

@@ -41,7 +41,7 @@ describe('Game Icons Utility', () => {
     });
 
     it('should handle unknown categories gracefully', () => {
-      const result = getGameIcon('unknown' as any, 'test');
+      const result = getGameIcon('unknown' as never, 'test');
 
       expect(result).toHaveProperty('icon');
       expect(result).toHaveProperty('type');
@@ -91,9 +91,9 @@ describe('Game Icons Utility', () => {
   describe('edge cases', () => {
     it('should handle null/undefined inputs gracefully', () => {
       // These tests ensure the function doesn't crash with bad inputs
-      expect(() => getGameIcon(null as any, 'test')).not.toThrow();
-      expect(() => getGameIcon('players', null as any)).not.toThrow();
-      expect(() => getGameIcon(undefined as any, undefined as any)).not.toThrow();
+      expect(() => getGameIcon(null as never, 'test')).not.toThrow();
+      expect(() => getGameIcon('players', null as never)).not.toThrow();
+      expect(() => getGameIcon(undefined as never, undefined as never)).not.toThrow();
     });
 
     it('should handle special characters in values', () => {

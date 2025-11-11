@@ -78,7 +78,13 @@ const sortedEvents = computed(() => {
     let comparison = 0;
 
     if (sortBy.value === 'date') {
-      comparison = a.getDateObject().getTime() - b.getDateObject().getTime();
+      const dateA = a.getDateObject();
+      const dateB = b.getDateObject();
+      if (dateA === null || dateB === null) {
+        comparison = 0;
+      } else {
+        comparison = dateA.getTime() - dateB.getTime();
+      }
     } else if (sortBy.value === 'title') {
       comparison = a.title.localeCompare(b.title);
     } else if (sortBy.value === 'players') {

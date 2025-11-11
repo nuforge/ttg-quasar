@@ -7,7 +7,7 @@ import GameIcon from './GameIcon.vue';
 import { getGameImageUrl } from 'src/composables/useGameImage';
 import { useGamePreferences } from 'src/composables/useGamePreferences';
 import { useGameOwnershipsStore } from 'src/stores/game-ownerships-store';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import { Notify } from 'quasar';
 import { createGameUrl } from 'src/utils/slug';
 

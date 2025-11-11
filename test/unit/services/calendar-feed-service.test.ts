@@ -7,7 +7,7 @@ import { Game } from 'src/models/Game';
 global.URL = {
   createObjectURL: vi.fn(() => 'blob:mock-url'),
   revokeObjectURL: vi.fn(),
-} as any;
+} as unknown as typeof URL;
 
 // Mock DOM document
 global.document = {
@@ -20,13 +20,13 @@ global.document = {
     appendChild: vi.fn(),
     removeChild: vi.fn(),
   },
-} as any;
+} as unknown as Document;
 
 // Mock Blob
 global.Blob = vi.fn((content, options) => ({
   type: options?.type || 'text/plain',
   size: content.length,
-})) as any;
+})) as unknown as typeof Blob;
 
 describe('CalendarFeedService', () => {
   let mockEvents: Event[];

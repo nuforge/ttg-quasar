@@ -1,3 +1,5 @@
+import { formatDate, normalizeDate } from 'src/utils/date-formatter';
+
 export interface RSVP {
   playerId: number;
   status: 'confirmed' | 'interested' | 'waiting' | 'cancelled';
@@ -66,23 +68,12 @@ export class Event {
 
   // Helper methods
   getFormattedDate(): string {
-    // Parse the date components to avoid timezone issues
-    const [year, month, day] = this.date.split('-').map(Number) as [number, number, number];
-    // Create date using local timezone (month is 0-indexed in JS Date)
-    const date = new Date(year, month - 1, day);
-
-    // Format the date as "Day, Month Date"
-    const options: Intl.DateTimeFormatOptions = {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    };
-    return date.toLocaleDateString(undefined, options);
+    // Use the centralized date formatter
+    return formatDate(this.date, 'FULL');
   }
 
-  getDateObject(): Date {
-    const [year, month, day] = this.date.split('-').map(Number) as [number, number, number];
-    return new Date(year, month - 1, day);
+  getDateObject(): Date | null {
+    return normalizeDate(this.date);
   }
 
   isFull(): boolean {
@@ -90,7 +81,8 @@ export class Event {
   }
 
   isUpcoming(): boolean {
-    return this.status === 'upcoming' && this.getDateObject() >= new Date();
+    const dateObj = this.getDateObject();
+    return this.status === 'upcoming' && dateObj !== null && dateObj >= new Date();
   }
 
   // Get player IDs from RSVPs

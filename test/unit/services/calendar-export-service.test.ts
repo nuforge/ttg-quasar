@@ -303,7 +303,7 @@ describe('CalendarExportService', () => {
 
     it('should throw error for unsupported format', () => {
       expect(() => {
-        service.openCalendar(mockEvent, 'unsupported' as any, mockGame);
+        service.openCalendar(mockEvent, 'unsupported' as never, mockGame);
       }).toThrow('Unsupported calendar format: unsupported');
     });
   });

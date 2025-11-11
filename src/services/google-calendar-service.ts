@@ -348,6 +348,9 @@ export class GoogleCalendarService {
    */
   public convertTTGEventToCalendarEvent(ttgEvent: Event): CalendarEvent {
     const eventDate = ttgEvent.getDateObject();
+    if (eventDate === null) {
+      throw new Error('Invalid event date');
+    }
 
     // Parse time safely
     const timeParts = ttgEvent.time?.split(':') || ['18', '00'];

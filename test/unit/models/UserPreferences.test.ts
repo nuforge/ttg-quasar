@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { UserPreferences } from 'src/models/UserPreferences';
 import type { FirebaseUserPreferences } from 'src/models/UserPreferences';
+import type { Timestamp } from 'firebase/firestore';
 
 describe('UserPreferences Model', () => {
   let mockFirebaseData: Partial<FirebaseUserPreferences>;
@@ -24,8 +25,8 @@ describe('UserPreferences Model', () => {
         pushNotifications: false,
         defaultNotifyDaysBefore: 5,
       },
-      createdAt: { toDate: () => new Date('2025-01-01') } as any,
-      updatedAt: { toDate: () => new Date('2025-01-02') } as any,
+      createdAt: { toDate: () => new Date('2025-01-01') } as Timestamp,
+      updatedAt: { toDate: () => new Date('2025-01-02') } as Timestamp,
     };
   });
 

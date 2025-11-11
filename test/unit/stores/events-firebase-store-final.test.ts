@@ -981,9 +981,9 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 1,
           title: malformedData.title || 'Untitled Event',
           host: {
-            name: malformedData.host?.name || 'Unknown Host',
-            email: malformedData.host?.email || 'unknown@example.com',
-            phone: malformedData.host?.phone || '000-000-0000',
+            name: (malformedData.host as any)?.name || 'Unknown Host',
+            email: (malformedData.host as any)?.email || 'unknown@example.com',
+            phone: (malformedData.host as any)?.phone || '000-000-0000',
           },
           gameId: malformedData.gameId || 0,
           date: malformedData.date || '1970-01-01',

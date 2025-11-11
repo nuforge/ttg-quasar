@@ -1,6 +1,6 @@
 import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
 
 // Supported languages

@@ -295,8 +295,8 @@ describe('Security Tests', () => {
 
       expect(sanitized.items[0]).toBe('safe item');
       expect(sanitized.items[1]).not.toContain('<script>');
-      expect((sanitized.items[2] as any).password).toBe('***');
-      expect((sanitized.items[2] as any).name).toBe('test');
+      expect((sanitized.items[2] as Record<string, unknown>).password).toBe('***');
+      expect((sanitized.items[2] as Record<string, unknown>).name).toBe('test');
     });
   });
 

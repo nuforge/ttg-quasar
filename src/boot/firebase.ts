@@ -3,17 +3,39 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
-import { VueFire, VueFireAuth } from 'vuefire';
+import { VueFire } from 'vuefire';
 
 // Firebase configuration - replace with your config
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY || '',
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
-  projectId: process.env.FIREBASE_PROJECT_ID || '',
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: process.env.FIREBASE_APP_ID || '',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
 };
+
+console.log('🔧 Firebase Config Debug:', {
+  apiKey: firebaseConfig.apiKey ? `${firebaseConfig.apiKey.substring(0, 10)}...` : 'MISSING',
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+  storageBucket: firebaseConfig.storageBucket,
+  messagingSenderId: firebaseConfig.messagingSenderId,
+  appId: firebaseConfig.appId ? `${firebaseConfig.appId.substring(0, 10)}...` : 'MISSING',
+});
+
+console.log('🔧 Environment Variables Debug:', {
+  VITE_FIREBASE_API_KEY: import.meta.env.VITE_FIREBASE_API_KEY
+    ? `${import.meta.env.VITE_FIREBASE_API_KEY.substring(0, 10)}...`
+    : 'MISSING',
+  VITE_FIREBASE_AUTH_DOMAIN: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  VITE_FIREBASE_PROJECT_ID: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  VITE_FIREBASE_STORAGE_BUCKET: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  VITE_FIREBASE_MESSAGING_SENDER_ID: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  VITE_FIREBASE_APP_ID: import.meta.env.VITE_FIREBASE_APP_ID
+    ? `${import.meta.env.VITE_FIREBASE_APP_ID.substring(0, 10)}...`
+    : 'MISSING',
+});
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -23,15 +45,33 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
+// Verify Firebase initialization
+console.log('🔧 Firebase App Debug:', {
+  app: app.name,
+  auth: auth.app.name,
+  db: db.app.name,
+  storage: storage.app.name,
+});
+
+// Test Firebase connection
+try {
+  console.log('🔧 Testing Firebase connection...');
+  // This will trigger the auth service initialization
+  console.log('🔧 Auth service status:', auth.app.name);
+} catch (error) {
+  console.error('❌ Firebase connection test failed:', error);
+}
+
 // Connect to emulators in development (only if explicitly enabled)
 const shouldUseEmulator =
-  process.env.NODE_ENV === 'development' &&
-  (process.env.USE_FIREBASE_EMULATOR === 'true' || process.env.USE_FIREBASE_EMULATOR === true);
+  import.meta.env.DEV &&
+  (import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true' ||
+    import.meta.env.VITE_USE_FIREBASE_EMULATOR === true);
 
 console.log('🔧 Environment check:', {
-  NODE_ENV: process.env.NODE_ENV,
-  USE_FIREBASE_EMULATOR: process.env.USE_FIREBASE_EMULATOR,
-  USE_FIREBASE_EMULATOR_type: typeof process.env.USE_FIREBASE_EMULATOR,
+  NODE_ENV: import.meta.env.MODE,
+  USE_FIREBASE_EMULATOR: import.meta.env.VITE_USE_FIREBASE_EMULATOR,
+  USE_FIREBASE_EMULATOR_type: typeof import.meta.env.VITE_USE_FIREBASE_EMULATOR,
   shouldUseEmulator: shouldUseEmulator,
 });
 
@@ -62,12 +102,19 @@ if (shouldUseEmulator) {
   console.log('🌐 Using production Firebase');
 }
 
-export default boot(({ app: vueApp }) => {
-  // Initialize VueFire
-  vueApp.use(VueFire, {
-    firebaseApp: app,
-    modules: [VueFireAuth()],
-  });
+export default boot(async ({ app: vueApp }) => {
+  // Wait for Firebase to be fully ready
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
-  console.log('Firebase and VueFire initialized');
+  // Initialize VueFire WITHOUT authentication module to avoid timing issues
+  try {
+    vueApp.use(VueFire, {
+      firebaseApp: app,
+      modules: [], // Remove VueFireAuth() to prevent auth timing issues
+    });
+    console.log('✅ Firebase and VueFire initialized successfully (auth disabled)');
+  } catch (error) {
+    console.error('❌ Firebase/VueFire initialization failed:', error);
+    throw error;
+  }
 });

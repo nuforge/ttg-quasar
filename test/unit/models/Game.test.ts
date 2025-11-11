@@ -2,22 +2,18 @@ import { describe, it, expect, vi } from 'vitest';
 import { Game, type FirebaseGame } from 'src/models/Game';
 
 // Mock Firebase Timestamp
-vi.mock('firebase/firestore', () => ({
-  Timestamp: {
-    fromDate: vi.fn((date: Date) => ({
-      toDate: () => date,
-      seconds: Math.floor(date.getTime() / 1000),
-      nanoseconds: 0,
-    })),
-    now: vi.fn(() => ({
-      toDate: () => new Date(),
-      seconds: Math.floor(Date.now() / 1000),
-      nanoseconds: 0,
-    })),
-  },
-}));
-
-const { Timestamp } = await import('firebase/firestore');
+const mockTimestamp = {
+  toDate: () => new Date('2025-01-15T10:00:00Z'),
+  seconds: Math.floor(new Date('2025-01-15T10:00:00Z').getTime() / 1000),
+  nanoseconds: 0,
+  toMillis: () => new Date('2025-01-15T10:00:00Z').getTime(),
+  isEqual: vi.fn(() => false),
+  toJSON: vi.fn(() => ({
+    seconds: Math.floor(new Date('2025-01-15T10:00:00Z').getTime() / 1000),
+    nanoseconds: 0,
+    type: 'timestamp'
+  })),
+} as any;
 
 describe('Game Model', () => {
   const mockDate = new Date('2025-01-15T10:00:00Z');
@@ -588,8 +584,8 @@ describe('Game Model', () => {
         playTime: '15 min',
         components: ['Test'],
         description: 'Game with Date objects',
-        createdAt: mockDate as any, // Direct Date object
-        updatedAt: mockDate as any,
+        createdAt: mockTimestamp, // Use mock timestamp
+        updatedAt: mockTimestamp,
         approved: true,
         status: 'active',
       };
@@ -610,8 +606,8 @@ describe('Game Model', () => {
         playTime: '15 min',
         components: ['Test'],
         description: 'Game with string dates',
-        createdAt: '2025-01-15T10:00:00Z' as any,
-        updatedAt: mockDate.getTime() as any, // Number timestamp
+        createdAt: mockTimestamp,
+        updatedAt: mockTimestamp,
         approved: true,
         status: 'active',
       };

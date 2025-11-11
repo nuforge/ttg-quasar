@@ -24,7 +24,7 @@ describe('GameIcon Component', () => {
         expect(() => {
           createTestWrapper(GameIcon, {
             props: {
-              category: category as any,
+              category: category as never,
               value: 'test-value',
             },
           });

@@ -1,4 +1,4 @@
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import { computed, watch } from 'vue';
 import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';

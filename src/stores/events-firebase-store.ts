@@ -54,7 +54,12 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
   const upcomingEvents = computed(() => {
     return events.value
       .filter((event) => event.status === 'upcoming')
-      .sort((a, b) => a.getDateObject().getTime() - b.getDateObject().getTime());
+      .sort((a, b) => {
+        const dateA = a.getDateObject();
+        const dateB = b.getDateObject();
+        if (dateA === null || dateB === null) return 0;
+        return dateA.getTime() - dateB.getTime();
+      });
   });
 
   const myEvents = computed(() => {

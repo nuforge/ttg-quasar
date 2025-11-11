@@ -1,5 +1,5 @@
 import { computed, ref, watch } from 'vue';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import {
   signInWithPopup,
   linkWithPopup,
@@ -28,16 +28,7 @@ export class VueFireAuthService {
   private facebookProvider = new FacebookAuthProvider();
 
   // Create a separate auth instance for real Google OAuth (bypasses emulator)
-  private realAuth = getAuth(
-    initializeApp(
-      {
-        apiKey: process.env.FIREBASE_API_KEY || '',
-        authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
-        projectId: process.env.FIREBASE_PROJECT_ID || '',
-      },
-      'google-oauth-app',
-    ),
-  );
+  private realAuth: ReturnType<typeof getAuth> | null = null;
 
   // Storage keys for persisting tokens
   private readonly GOOGLE_TOKEN_KEY = 'ttg_google_access_token';
@@ -75,6 +66,22 @@ export class VueFireAuthService {
       },
       { immediate: true },
     );
+  }
+
+  private getRealAuth() {
+    if (!this.realAuth) {
+      this.realAuth = getAuth(
+        initializeApp(
+          {
+            apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+          },
+          'google-oauth-app',
+        ),
+      );
+    }
+    return this.realAuth;
   }
 
   // VueFire provides reactive current user
@@ -273,7 +280,7 @@ export class VueFireAuthService {
       console.log('🔑 Getting REAL Google OAuth token for Calendar API...');
 
       // Use the real auth instance to get actual Google OAuth tokens
-      const result = await signInWithPopup(this.realAuth, this.googleProvider);
+      const result = await signInWithPopup(this.getRealAuth(), this.googleProvider);
       const credential = GoogleAuthProvider.credentialFromResult(result);
 
       if (credential?.accessToken) {

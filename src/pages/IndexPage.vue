@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import GameCard from 'src/components/GameCard.vue';
 import EventCard from 'src/components/events/EventCard.vue';
 import { type Game } from 'src/models/Game';
@@ -112,7 +112,12 @@ const featuredGames = computed(() => {
 const upcomingEvents = computed(() =>
   eventsStore.events
     .filter(event => event.status === 'upcoming')
-    .sort((a, b) => a.getDateObject().getTime() - b.getDateObject().getTime())
+    .sort((a, b) => {
+      const dateA = a.getDateObject();
+      const dateB = b.getDateObject();
+      if (dateA === null || dateB === null) return 0;
+      return dateA.getTime() - dateB.getTime();
+    })
     .slice(0, 3)
 );
 

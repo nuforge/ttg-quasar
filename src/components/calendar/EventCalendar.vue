@@ -3,6 +3,7 @@ import { computed, watch, onMounted } from 'vue';
 import { useCalendarStore } from 'src/stores/calendar-store';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import { authService } from 'src/services/auth-service';
+import { getLocalDateString } from 'src/utils/date-formatter';
 
 const calendarStore = useCalendarStore();
 const eventsStore = useEventsFirebaseStore();
@@ -46,7 +47,7 @@ const selectedDate = computed({
   get: () => {
     // Convert the store's YYYY-MM-DD to YYYY/MM/DD for q-date
     // Default to current date if selectedDate is undefined
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    const today = getLocalDateString(new Date()); // Use date formatter
     const dateToFormat = calendarStore.selectedDate ?? today;
     return formatToSlash(dateToFormat || '');
   },

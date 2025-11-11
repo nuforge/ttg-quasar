@@ -143,9 +143,10 @@ describe('Event Model', () => {
       it('should convert string date to Date object', () => {
         const dateObj = event.getDateObject();
         expect(dateObj).toBeInstanceOf(Date);
-        expect(dateObj.getFullYear()).toBe(2025);
-        expect(dateObj.getMonth()).toBe(11); // December is month 11 (0-indexed)
-        expect(dateObj.getDate()).toBe(25);
+        expect(dateObj).not.toBeNull();
+        expect(dateObj!.getFullYear()).toBe(2025);
+        expect(dateObj!.getMonth()).toBe(11); // December is month 11 (0-indexed)
+        expect(dateObj!.getDate()).toBe(25);
       });
 
       it('should handle different dates correctly', () => {
@@ -155,9 +156,10 @@ describe('Event Model', () => {
         });
 
         const dateObj = febEvent.getDateObject();
-        expect(dateObj.getFullYear()).toBe(2025);
-        expect(dateObj.getMonth()).toBe(1); // February is month 1
-        expect(dateObj.getDate()).toBe(14);
+        expect(dateObj).not.toBeNull();
+        expect(dateObj!.getFullYear()).toBe(2025);
+        expect(dateObj!.getMonth()).toBe(1); // February is month 1
+        expect(dateObj!.getDate()).toBe(14);
       });
     });
   });

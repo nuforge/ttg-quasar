@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import { useGameOwnershipsStore } from 'src/stores/game-ownerships-store';

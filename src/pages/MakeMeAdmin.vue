@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useCurrentUser } from 'vuefire';
+import { useCurrentUser } from 'src/composables/useFirebaseAuth';
 import { userManagementService } from 'src/services/user-management-service';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 

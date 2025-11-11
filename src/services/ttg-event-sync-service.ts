@@ -184,6 +184,9 @@ export class TTGEventSyncService {
   private static convertTTGEventToCalendarEvent(event: Event, game?: Game): CalendarEvent {
     // Parse event date and time
     const eventDate = event.getDateObject();
+    if (eventDate === null) {
+      throw new Error('Invalid event date');
+    }
 
     // Calculate end time
     let endDateTime: Date;
