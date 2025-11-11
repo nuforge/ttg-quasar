@@ -7,13 +7,22 @@ import { VueFire, VueFireAuth } from 'vuefire';
 
 // Firebase configuration - replace with your config
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY || '',
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
-  projectId: process.env.FIREBASE_PROJECT_ID || '',
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: process.env.FIREBASE_APP_ID || '',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
 };
+
+// Validate Firebase configuration
+if (!firebaseConfig.apiKey) {
+  const errorMessage =
+    '❌ Firebase API Key is missing! Please set VITE_FIREBASE_API_KEY in your .env file.\n' +
+    'See docs/development/DEV_SETUP.md for setup instructions.';
+  console.error(errorMessage);
+  throw new Error(errorMessage);
+}
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -25,13 +34,14 @@ export const storage = getStorage(app);
 
 // Connect to emulators in development (only if explicitly enabled)
 const shouldUseEmulator =
-  process.env.NODE_ENV === 'development' &&
-  (process.env.USE_FIREBASE_EMULATOR === 'true' || process.env.USE_FIREBASE_EMULATOR === true);
+  import.meta.env.DEV &&
+  (import.meta.env.USE_FIREBASE_EMULATOR === 'true' || import.meta.env.USE_FIREBASE_EMULATOR === true);
 
 console.log('🔧 Environment check:', {
-  NODE_ENV: process.env.NODE_ENV,
-  USE_FIREBASE_EMULATOR: process.env.USE_FIREBASE_EMULATOR,
-  USE_FIREBASE_EMULATOR_type: typeof process.env.USE_FIREBASE_EMULATOR,
+  MODE: import.meta.env.MODE,
+  DEV: import.meta.env.DEV,
+  USE_FIREBASE_EMULATOR: import.meta.env.USE_FIREBASE_EMULATOR,
+  USE_FIREBASE_EMULATOR_type: typeof import.meta.env.USE_FIREBASE_EMULATOR,
   shouldUseEmulator: shouldUseEmulator,
 });
 

@@ -225,7 +225,7 @@ class ImageStorageService {
       } else if (errorMessage.includes('storage/bucket-not-found')) {
         return {
           success: false,
-          error: 'Firebase Storage bucket not found. Check FIREBASE_STORAGE_BUCKET in .env file.',
+          error: 'Firebase Storage bucket not found. Check VITE_FIREBASE_STORAGE_BUCKET in .env file.',
         };
       } else if (errorMessage.includes('network')) {
         return {
