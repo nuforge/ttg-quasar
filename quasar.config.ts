@@ -169,22 +169,26 @@ export default defineConfig((ctx) => {
           (req: any, res: any, next: any) => {
             // Security headers
             res.setHeader('X-Content-Type-Options', 'nosniff');
-            res.setHeader('X-Frame-Options', 'DENY');
+            // Note: X-Frame-Options is set to SAMEORIGIN to allow OAuth popups
+            // CSP frame-ancestors provides additional protection
+            res.setHeader('X-Frame-Options', 'SAMEORIGIN');
             res.setHeader('X-XSS-Protection', '1; mode=block');
             res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
             res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
             res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+            // Allow OAuth popup communication for Google sign-in
+            res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
 
             // Content Security Policy
             res.setHeader(
               'Content-Security-Policy',
               "default-src 'self'; " +
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://www.google.com https://www.gstatic.com/firebasejs/; " +
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://www.google.com https://apis.google.com https://www.gstatic.com/firebasejs/; " +
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
                 "font-src 'self' https://fonts.gstatic.com; " +
                 "img-src 'self' data: https: blob:; " +
                 "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.google.com wss://*.firebaseio.com; " +
-                "frame-src 'none'; " +
+                "frame-src https://accounts.google.com https://*.google.com https://*.firebaseapp.com; " +
                 "object-src 'none'; " +
                 "base-uri 'self'; " +
                 "form-action 'self'; " +
