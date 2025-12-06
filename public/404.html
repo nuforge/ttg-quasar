@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Looking For Group</title>
+    <script>
+      // GitHub Pages SPA redirect
+      // This script takes the current page URL, extracts the path segment
+      // after the repository name, and redirects to the index.html page
+      // with the path as a query parameter that can be handled by the SPA router
+
+      var pathSegmentsToKeep = 1; // For GitHub Pages (username.github.io/repo-name/)
+
+      var l = window.location;
+      var redirect =
+        l.protocol +
+        '//' +
+        l.hostname +
+        (l.port ? ':' + l.port : '') +
+        l.pathname
+          .split('/')
+          .slice(0, 1 + pathSegmentsToKeep)
+          .join('/') +
+        '/?/' +
+        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+        l.hash;
+
+      window.location.replace(redirect);
+    </script>
+  </head>
+  <body>
+    <p>Redirecting...</p>
+  </body>
+</html>
