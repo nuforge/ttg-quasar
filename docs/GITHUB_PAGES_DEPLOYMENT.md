@@ -41,11 +41,58 @@ git push -u origin main
 
 **Important:** If you see Jekyll processing errors, it means GitHub Pages is still configured to use branch deployment instead of GitHub Actions. Make sure "GitHub Actions" is selected as the source.
 
-### Step 3: Verify Workflow File
+### Step 3: Configure Environment Variables (GitHub Secrets)
+
+Your application requires Firebase configuration and other environment variables. These must be set as **GitHub Secrets**:
+
+1. Go to your repository: `https://github.com/nuforge/ttg-quasar`
+2. Click **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret** for each of the following:
+
+#### Required Firebase Secrets:
+
+- **Name**: `VITE_FIREBASE_API_KEY`  
+  **Value**: Your Firebase API Key (from Firebase Console → Project Settings)
+
+- **Name**: `VITE_FIREBASE_AUTH_DOMAIN`  
+  **Value**: Your Firebase Auth Domain (e.g., `your-project.firebaseapp.com`)
+
+- **Name**: `VITE_FIREBASE_PROJECT_ID`  
+  **Value**: Your Firebase Project ID
+
+- **Name**: `VITE_FIREBASE_STORAGE_BUCKET`  
+  **Value**: Your Firebase Storage Bucket (e.g., `your-project.appspot.com`)
+
+- **Name**: `VITE_FIREBASE_MESSAGING_SENDER_ID`  
+  **Value**: Your Firebase Messaging Sender ID
+
+- **Name**: `VITE_FIREBASE_APP_ID`  
+  **Value**: Your Firebase App ID
+
+#### Optional Secrets:
+
+- **Name**: `VITE_FIREBASE_MEASUREMENT_ID`  
+  **Value**: Your Firebase Analytics Measurement ID (if using Analytics)
+
+- **Name**: `SHARED_CALENDAR_ID`  
+  **Value**: Google Calendar ID (if using Google Calendar integration)
+
+**Where to find these values:**
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Select your project
+3. Click the gear icon → **Project settings**
+4. Scroll to **Your apps** section
+5. Click on your web app (or create one if needed)
+6. Copy the configuration values
+
+### Step 4: Verify Workflow File
 
 The GitHub Actions workflow file (`.github/workflows/deploy-gh-pages.yml`) is already configured. It will:
+
 - Trigger on pushes to `main` or `master` branch
 - Build your Quasar application with the correct base path for GitHub Pages
+- Use environment variables from GitHub Secrets
 - Deploy to GitHub Pages automatically
 
 ## Deployment Process
@@ -53,16 +100,19 @@ The GitHub Actions workflow file (`.github/workflows/deploy-gh-pages.yml`) is al
 ### Automatic Deployment
 
 Once GitHub Pages is enabled, every push to the `main` or `master` branch will automatically:
+
 1. Build the application
 2. Deploy it to GitHub Pages
 
 You can monitor the deployment progress:
+
 1. Go to the **Actions** tab in your GitHub repository
 2. Click on the latest workflow run to see the build and deployment status
 
 ### Manual Deployment
 
 You can also trigger a manual deployment:
+
 1. Go to the **Actions** tab
 2. Select **Deploy to GitHub Pages** workflow
 3. Click **Run workflow**
@@ -98,6 +148,7 @@ publicPath: process.env.GITHUB_PAGES ? '/your-repo-name/' : '/',
 ### Router Mode
 
 The application uses **history mode** for routing, which requires proper base path configuration. The configuration ensures that:
+
 - All routes work correctly on GitHub Pages
 - Assets (CSS, JS, images) are loaded from the correct paths
 - Deep linking to specific pages works as expected
@@ -121,6 +172,7 @@ If you see Jekyll processing errors in the GitHub Actions logs:
 ### 404 Errors on Routes
 
 If you're getting 404 errors when navigating to routes:
+
 1. Verify the base path in `quasar.config.ts` matches your repository name
 2. Ensure the workflow is setting `GITHUB_PAGES=true` during build
 3. Check that `.nojekyll` file exists in the `public` folder (it prevents Jekyll from processing files)
@@ -128,6 +180,7 @@ If you're getting 404 errors when navigating to routes:
 ### Assets Not Loading
 
 If images, CSS, or JavaScript files aren't loading:
+
 1. Check the browser console for 404 errors
 2. Verify the `publicPath` in `quasar.config.ts` is correct
 3. Ensure all assets are in the `public` folder or properly imported
@@ -135,6 +188,7 @@ If images, CSS, or JavaScript files aren't loading:
 ### Build Failures
 
 If the GitHub Actions workflow fails:
+
 1. Check the Actions tab for error messages
 2. Verify all dependencies are in `package.json`
 3. Ensure Node.js version compatibility (project requires Node 20+)
@@ -156,11 +210,28 @@ Then visit `http://localhost:3000/ttg-quasar/` (or whatever port serve uses) to 
 
 ## Firebase Configuration
 
+### Environment Variables
+
+All Firebase configuration is stored as GitHub Secrets (see Step 3 above). The workflow automatically injects these during the build process.
+
+### Authorized Domains
+
 **Important:** Ensure your Firebase configuration allows requests from your GitHub Pages domain:
 
-1. Go to Firebase Console → Authentication → Settings → Authorized domains
-2. Add `nuforge.github.io` to the authorized domains list
-3. Update any CORS or security rules if needed
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Select your project
+3. Go to **Authentication** → **Settings** → **Authorized domains**
+4. Add `nuforge.github.io` to the authorized domains list
+5. Update any CORS or security rules if needed
+
+### Updating Secrets
+
+If you need to update your Firebase configuration:
+
+1. Go to **Settings** → **Secrets and variables** → **Actions**
+2. Click on the secret you want to update
+3. Click **Update** and enter the new value
+4. Push a new commit to trigger a rebuild with the updated values
 
 ## Custom Domain (Optional)
 
@@ -189,4 +260,3 @@ To update your deployed application:
 - [GitHub Pages Documentation](https://docs.github.com/en/pages)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [Quasar Framework Documentation](https://quasar.dev)
-
