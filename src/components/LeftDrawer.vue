@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useCurrentUser } from 'vuefire';
 import QRDialog from 'src/components/qrcode/QRDialog.vue';
+import logoUrl from 'src/assets/ttg-logo.svg';
 
 const leftDrawerOpen = ref(true);
 const qrdialog = ref(false);
@@ -16,7 +17,7 @@ const currentUser = useCurrentUser();
         <q-item clickable v-ripple to="/">
           <q-item-section avatar>
             <q-avatar square>
-              <img src="/images/ttg-logo.svg" alt="TTG Logo" />
+              <img :src="logoUrl" alt="TTG Logo" />
             </q-avatar>
           </q-item-section>
           <q-item-section>

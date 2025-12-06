@@ -11,6 +11,8 @@ import EventCard from 'src/components/events/EventCard.vue';
 import { type Game } from 'src/models/Game';
 import { UserPreferencesAnalyzer } from 'src/services/user-preferences-analyzer';
 
+import heroImageUrl from 'src/assets/tabletop-hero.png';
+
 const { t } = useI18n();
 const router = useRouter();
 const gamesStore = useGamesFirebaseStore();
@@ -173,7 +175,7 @@ const steps = [
   <div class="landing-page">
     <!-- Hero Section -->
     <section class="hero-section q-pa-md q-mb-lg">
-      <q-parallax :height="300" src="/images/tabletop-hero.png">
+      <q-parallax :height="300" :src="heroImageUrl">
         <div class="absolute-center text-center">
           <div class="text-h4 text-weight-bold text-primary hero-title">{{ t('lookingForGroup') }}</div>
           <div class="text-h5 q-mt-md text-white text-weight-medium">{{ $t('heroSubtitle') }}
