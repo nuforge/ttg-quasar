@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 export default defineConfig((ctx) => {
   return {
+    base: '/ttg-quasar/',
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
 
@@ -188,7 +189,7 @@ export default defineConfig((ctx) => {
                 "font-src 'self' https://fonts.gstatic.com; " +
                 "img-src 'self' data: https: blob:; " +
                 "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.google.com wss://*.firebaseio.com; " +
-                "frame-src https://accounts.google.com https://*.google.com https://*.firebaseapp.com; " +
+                'frame-src https://accounts.google.com https://*.google.com https://*.firebaseapp.com; ' +
                 "object-src 'none'; " +
                 "base-uri 'self'; " +
                 "form-action 'self'; " +
