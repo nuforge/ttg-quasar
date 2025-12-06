@@ -93,6 +93,8 @@ service cloud.firestore {
   
   // Helper function to check admin permissions
   function isAdmin(userId) {
+    // Access userRoles collection using relative path
+    // The database variable from the match statement is available in this scope
     let userRole = get(/databases/$(database)/documents/userRoles/$(userId));
     return userRole != null && 
            userRole.data != null && 
