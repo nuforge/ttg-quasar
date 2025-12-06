@@ -5,6 +5,29 @@ import type { Ref } from 'vue';
 const imageCache = new Map<string, string>();
 
 /**
+ * Gets the base path for the application
+ * Works for both localhost and GitHub Pages deployment
+ */
+function getBasePath(): string {
+  // In Vite, import.meta.env.BASE_URL is set to the publicPath
+  if (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) {
+    return import.meta.env.BASE_URL;
+  }
+
+  // Fallback: detect from window location (for GitHub Pages)
+  if (typeof window !== 'undefined') {
+    const pathname = window.location.pathname;
+    // Check if we're on GitHub Pages (path starts with /ttg-quasar/)
+    if (pathname.startsWith('/ttg-quasar/')) {
+      return '/ttg-quasar/';
+    }
+  }
+
+  // Default to root for local development
+  return '/';
+}
+
+/**
  * Mapping of game titles to their local image filenames
  * Only includes games that actually have local image files
  */
@@ -103,13 +126,20 @@ export function useGameImage(imageValue: Ref<string | undefined>) {
       return imageValue.value;
     }
 
-    // If it starts with '/', treat as absolute path
+    // If it starts with '/', treat as absolute path but prepend base path
     if (imageValue.value.startsWith('/')) {
-      return imageValue.value;
+      const basePath = getBasePath();
+      // Remove leading slash from the path
+      const pathWithoutLeadingSlash = imageValue.value.substring(1);
+      // Ensure basePath ends with '/' and path doesn't start with '/'
+      const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+      return `${normalizedBasePath}${pathWithoutLeadingSlash}`;
     }
 
     // Otherwise, assume it's a filename in the local games folder
-    return `/images/games/${imageValue.value}`;
+    const basePath = getBasePath();
+    const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+    return `${normalizedBasePath}images/games/${imageValue.value}`;
   });
 
   /**
@@ -163,7 +193,9 @@ export function useGameImage(imageValue: Ref<string | undefined>) {
 
       // Try fallback to default image
       try {
-        const fallbackUrl = '/images/games/default.svg';
+        const basePath = getBasePath();
+        const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+        const fallbackUrl = `${normalizedBasePath}images/games/default.svg`;
         const loadedFallback = await preloadImage(fallbackUrl);
         cachedUrl.value = loadedFallback;
         hasError.value = false;
@@ -213,20 +245,31 @@ export function getGameImageUrl(imageValue: string | undefined, gameTitle?: stri
       return imageValue;
     }
 
-    // Absolute path
+    // Absolute path - prepend base path
     if (imageValue.startsWith('/')) {
-      return imageValue;
+      const basePath = getBasePath();
+      // Remove leading slash from the path
+      const pathWithoutLeadingSlash = imageValue.substring(1);
+      // Ensure basePath ends with '/' and path doesn't start with '/'
+      const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+      return `${normalizedBasePath}${pathWithoutLeadingSlash}`;
     }
 
     // Filename only - assume local games folder
-    return `/images/games/${imageValue}`;
+    const basePath = getBasePath();
+    const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+    return `${normalizedBasePath}images/games/${imageValue}`;
   }
 
   // If no image value but we have a game title, try to map it
   if (gameTitle && titleToImageMap[gameTitle]) {
-    return `/images/games/${titleToImageMap[gameTitle]}`;
+    const basePath = getBasePath();
+    const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+    return `${normalizedBasePath}images/games/${titleToImageMap[gameTitle]}`;
   }
 
   // Fallback to default image
-  return '/images/games/default.svg';
+  const basePath = getBasePath();
+  const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+  return `${normalizedBasePath}images/games/default.svg`;
 }

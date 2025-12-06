@@ -296,7 +296,7 @@ onMounted(() => {
     </q-card-section>
     <q-card-section horizontal class="q-gutter-md q-px-sm justify-between game-card-body">
       <q-img :src="gameImageUrl" style="max-width: 100px; max-height: 110px; align-self: start;" no-spinner
-        fit="scale-down" @error="($event.target as HTMLImageElement).src = '/images/games/default.svg'" />
+        fit="scale-down" @error="($event.target as HTMLImageElement).src = getGameImageUrl(undefined)" />
 
       <div class="game-card-description col text-body2 text-grey ">
         {{ game.description }}

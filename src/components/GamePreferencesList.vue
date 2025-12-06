@@ -19,7 +19,7 @@
             <q-item v-for="game in games" :key="game.id" class="q-pa-md">
                 <q-item-section avatar>
                     <q-img :src="getGameImageUrl(game.image, game.title)" style="width: 60px; height: 60px;" fit="cover"
-                        @error="($event.target as HTMLImageElement).src = '/images/games/default.svg'" />
+                        @error="($event.target as HTMLImageElement).src = getGameImageUrl(undefined)" />
                 </q-item-section>
 
                 <q-item-section>

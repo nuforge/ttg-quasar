@@ -412,7 +412,7 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
               <q-item-section avatar class="game-avatar-section">
                 <div class="game-image-container">
                   <img :src="getGameImageUrl(game.image)" :alt="game.title"
-                    @error="(e) => { (e.target as HTMLImageElement).src = '/images/games/default.svg' }"
+                    @error="(e) => { (e.target as HTMLImageElement).src = getGameImageUrl(undefined) }"
                     class="game-image" />
                 </div>
               </q-item-section>
