@@ -46,13 +46,13 @@ export default defineConfig((ctx) => {
       },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
-      // vueRouterBase,
+      vueRouterBase: process.env.GITHUB_PAGES ? '/ttg-quasar/' : '/',
       // vueDevtools,
       // vueOptionsAPI: false,
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      // publicPath: '/',
+      publicPath: process.env.GITHUB_PAGES ? '/ttg-quasar/' : '/',
       // analyze: true,
       // env: {},
       // rawDefine: {}
