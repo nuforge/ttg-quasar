@@ -52,3 +52,7 @@ firebase-debug.log
 firestore-debug.log
 firebase/*.backup
 firebase/*.dev
+
+# Backup directories - contain sensitive authentication data
+/backup/
+/temp-export/
