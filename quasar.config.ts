@@ -6,7 +6,6 @@ import { fileURLToPath } from 'node:url';
 
 export default defineConfig((ctx) => {
   return {
-    base: '/ttg-quasar/',
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
 
