@@ -72,9 +72,10 @@ service cloud.firestore {
     // Game event notifications - users can only access their own notifications
     match /gameEventNotifications/{notificationId} {
       // Users can read their own notifications
+      // For queries, resource.data.userId is checked for each document
+      // For single document reads, resource.data.userId is also checked
       allow read: if request.auth != null && 
-        (request.resource.data.userId == request.auth.uid || 
-         resource.data.userId == request.auth.uid ||
+        (resource.data.userId == request.auth.uid ||
          isAdmin(request.auth.uid));
       
       // Users can create notifications (for the service to create them)
