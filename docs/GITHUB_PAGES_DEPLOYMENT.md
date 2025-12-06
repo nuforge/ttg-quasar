@@ -30,12 +30,16 @@ git push -u origin main
 
 ### Step 2: Enable GitHub Pages
 
+**CRITICAL:** You must use GitHub Actions as the source, NOT a branch deployment.
+
 1. Go to your repository on GitHub: `https://github.com/nuforge/ttg-quasar`
 2. Click on **Settings** (in the repository navigation bar)
 3. Scroll down to **Pages** in the left sidebar
 4. Under **Source**, select:
-   - **Source**: `GitHub Actions` (not "Deploy from a branch")
+   - **Source**: `GitHub Actions` (NOT "Deploy from a branch" - this will cause Jekyll to process your files)
 5. Click **Save**
+
+**Important:** If you see Jekyll processing errors, it means GitHub Pages is still configured to use branch deployment instead of GitHub Actions. Make sure "GitHub Actions" is selected as the source.
 
 ### Step 3: Verify Workflow File
 
@@ -103,8 +107,16 @@ The application uses **history mode** for routing, which requires proper base pa
 ### Site Not Loading
 
 1. **Check the Actions tab**: Ensure the workflow completed successfully
-2. **Verify GitHub Pages settings**: Make sure "GitHub Actions" is selected as the source
+2. **Verify GitHub Pages settings**: Make sure "GitHub Actions" is selected as the source (NOT "Deploy from a branch")
 3. **Wait a few minutes**: First deployment can take 5-10 minutes
+
+### Jekyll Processing Errors
+
+If you see Jekyll processing errors in the GitHub Actions logs:
+
+1. **Check GitHub Pages Source**: Go to Settings → Pages and ensure "GitHub Actions" is selected (NOT a branch)
+2. **Verify .nojekyll file**: The workflow automatically creates this file, but you can verify it exists in `dist/spa/.nojekyll` after build
+3. **Clear cache**: Sometimes GitHub Pages caches Jekyll settings - try disabling and re-enabling Pages
 
 ### 404 Errors on Routes
 

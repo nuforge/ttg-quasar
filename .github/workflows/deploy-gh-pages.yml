@@ -37,6 +37,9 @@ jobs:
           GITHUB_PAGES: true
         run: npm run build
 
+      - name: Ensure .nojekyll file exists
+        run: touch dist/spa/.nojekyll
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
