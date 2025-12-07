@@ -66,10 +66,15 @@ function getInitialLocale(): MessageLanguages {
 }
 
 export default defineBoot(({ app }) => {
+  const initialLocale = getInitialLocale();
+
   const i18n = createI18n<{ message: MessageSchema }, MessageLanguages>({
-    locale: getInitialLocale(),
+    locale: initialLocale,
+    fallbackLocale: 'en-US',
     legacy: false,
     messages,
+    // Suppress warnings about fallback usage since we're intentionally using fallbackLocale
+    silentFallbackWarn: true,
     modifiers: {
       //snakeCase: (str) => str.split(' ').join('_').toLowerCase(),
     },

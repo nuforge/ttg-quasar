@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-import playersData from 'src/assets/data/players.json';
-import { Player } from 'src/models/Player';
+import type { Player } from 'src/models/Player';
 import { usePlayersFirebaseStore } from './players-firebase-store';
 
 export const usePlayersStore = defineStore('players', {
@@ -49,20 +48,6 @@ export const usePlayersStore = defineStore('players', {
       if (this.useFirebase) {
         const firebaseStore = usePlayersFirebaseStore();
         return firebaseStore.fetchAllPlayers();
-      }
-
-      this.loading = true;
-      this.error = null;
-
-      try {
-        // Simulate API request
-        await Promise.resolve();
-        this.players = Player.fromJSON(playersData);
-      } catch (error) {
-        this.error = (error as Error).message;
-        console.error('Error fetching players:', error);
-      } finally {
-        this.loading = false;
       }
     },
   },

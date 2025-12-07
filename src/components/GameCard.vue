@@ -177,6 +177,7 @@ const handleToggleOwnership = async () => {
 
   try {
     ownershipLoading.value = true;
+    console.log('handleToggleOwnership', props.game.id, user.value.uid, ownsGame.value, ownership.value);
 
     if (ownsGame.value) {
       const currentOwnership = ownership.value;
@@ -196,7 +197,8 @@ const handleToggleOwnership = async () => {
         position: 'top',
       });
     }
-  } catch {
+  } catch (error) {
+    console.error('Error toggling ownership:', error);
     Notify.create({
       type: 'negative',
       message: t('failedUpdateGameCollection'),

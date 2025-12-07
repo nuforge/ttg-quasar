@@ -64,20 +64,27 @@ export function useLanguage() {
     loading.value = true;
 
     try {
+      // Normalize language to ensure it's valid (defensive check)
+      const normalizedLanguage = language in SUPPORTED_LANGUAGES ? language : 'en-US';
+      if (normalizedLanguage !== language) {
+        console.warn(`Invalid language "${language}" normalized to "${normalizedLanguage}"`);
+      }
+      
       // Update i18n locale immediately
-      locale.value = language;
+      locale.value = normalizedLanguage;
 
       // Always save to localStorage for development persistence and performance
-      localStorage.setItem('ttg-preferred-language', language);
+      localStorage.setItem('ttg-preferred-language', normalizedLanguage);
 
       // Save to user preferences if authenticated
       if (user.value) {
-        await userPreferencesStore.updateLanguagePreference(language);
+        await userPreferencesStore.updateLanguagePreference(normalizedLanguage);
       }
     } catch (error) {
       console.error('Failed to set language:', error);
       // Even if Firebase fails, localStorage should still work
-      localStorage.setItem('ttg-preferred-language', language);
+      const normalizedLanguage = language in SUPPORTED_LANGUAGES ? language : 'en-US';
+      localStorage.setItem('ttg-preferred-language', normalizedLanguage);
       throw error;
     } finally {
       loading.value = false;
@@ -105,7 +112,9 @@ export function useLanguage() {
       targetLanguage = detectBrowserLanguage();
     }
 
-    locale.value = targetLanguage;
+    // Ensure targetLanguage is valid before setting
+    const normalizedTarget = targetLanguage in SUPPORTED_LANGUAGES ? targetLanguage : 'en-US';
+    locale.value = normalizedTarget;
   };
 
   // Current language information
@@ -125,7 +134,11 @@ export function useLanguage() {
       await userPreferencesStore.loadPreferences();
       const userLanguage = userPreferencesStore.preferences?.preferredLanguage;
       if (userLanguage && userLanguage in SUPPORTED_LANGUAGES) {
-        locale.value = userLanguage;
+        locale.value = userLanguage as SupportedLanguage;
+      } else if (userLanguage) {
+        // Normalize invalid user language preference
+        console.warn(`Invalid user language preference "${userLanguage}" normalized to "en-US"`);
+        locale.value = 'en-US';
       }
     } else {
       // User logged out - revert to browser/localStorage language
@@ -133,7 +146,8 @@ export function useLanguage() {
       if (savedLanguage && savedLanguage in SUPPORTED_LANGUAGES) {
         locale.value = savedLanguage;
       } else {
-        locale.value = detectBrowserLanguage();
+        const browserLang = detectBrowserLanguage();
+        locale.value = browserLang;
       }
     }
   });

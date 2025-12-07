@@ -2,7 +2,6 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file
 
 import { defineConfig } from '#q-app/wrappers';
-import { fileURLToPath } from 'node:url';
 
 export default defineConfig((ctx) => {
   return {
@@ -76,9 +75,6 @@ export default defineConfig((ctx) => {
             // runtimeOnly: false,
 
             ssr: ctx.modeName === 'ssr',
-
-            // you need to set i18n resource including paths !
-            include: [fileURLToPath(new URL('./src/i18n/**', import.meta.url))],
           },
         ],
 

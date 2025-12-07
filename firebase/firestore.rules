@@ -46,8 +46,10 @@ service cloud.firestore {
     }
     
     // Game ownerships - user can only access their own
-    match /gameOwnerships/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    match /gameOwnerships/{ownershipId} {
+      allow read: if request.auth != null && resource.data.playerId == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.playerId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.playerId == request.auth.uid;
     }
     
     // Game submissions - authenticated users can create, admins can manage
