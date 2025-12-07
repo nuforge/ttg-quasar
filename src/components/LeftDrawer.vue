@@ -35,15 +35,6 @@ const currentUser = useCurrentUser();
           </q-item-section>
         </q-item>
 
-        <q-item v-if="currentUser" clickable v-ripple to="/calendar/subscription">
-          <q-item-section avatar>
-            <q-icon name="mdi-calendar-export" />
-          </q-item-section>
-
-          <q-item-section>
-            {{ $t('calendar.subscription.navTitle') }}
-          </q-item-section>
-        </q-item>
 
         <q-item clickable v-ripple to="/games">
           <q-item-section avatar>
@@ -90,6 +81,16 @@ const currentUser = useCurrentUser();
           </q-item-section>
           <q-item-section>
             {{ $t('setting') }}
+          </q-item-section>
+        </q-item>
+
+        <q-item v-if="currentUser" clickable v-ripple to="/calendar/subscription">
+          <q-item-section avatar>
+            <q-icon name="mdi-calendar-export" />
+          </q-item-section>
+
+          <q-item-section>
+            {{ $t('calendar.subscription.navTitle') }}
           </q-item-section>
         </q-item>
         <q-item clickable v-ripple @click="qrdialog = true">
