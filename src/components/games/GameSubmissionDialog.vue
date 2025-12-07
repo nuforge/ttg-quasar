@@ -14,7 +14,7 @@
       <q-card-section>
         <q-form @submit="submitGame" class="q-gutter-md">
           <!-- Basic Game Information -->
-          <div class="row q-gutter-md">
+          <div class="row q-col-gutter-md">
             <div class="col">
               <q-input v-model="gameData.title" :label="$t('gameTitle') + ' *'" outlined dense
                 :rules="[val => !!val || $t('gameTitleRequired')]" lazy-rules />
@@ -26,7 +26,7 @@
           </div>
 
           <!-- Genre and Difficulty -->
-          <div class="row q-gutter-md">
+          <div class="row q-col-gutter-md">
             <div class="col">
               <q-select v-model="gameData.genre" :options="genreOptions" :label="t('genre') + ' *'" outlined dense
                 use-input fill-input hide-selected input-debounce="0" new-value-mode="add-unique"
@@ -39,7 +39,7 @@
           </div>
 
           <!-- Players and Age -->
-          <div class="row q-gutter-md">
+          <div class="row q-col-gutter-md">
             <div class="col">
               <q-input v-model="gameData.numberOfPlayers" :label="t('numberOfPlayers') + ' *'" outlined dense
                 hint="e.g., '2-4', '3+', '1-6'" :rules="[val => !!val || 'Number of players is required']" lazy-rules />
@@ -51,7 +51,7 @@
           </div>
 
           <!-- Play Time and Release Year -->
-          <div class="row q-gutter-md">
+          <div class="row q-col-gutter-md">
             <div class="col">
               <q-input v-model="gameData.playTime" :label="t('playTime') + ' *'" outlined dense
                 hint="e.g., '30-60 minutes', '1-2 hours'" :rules="[val => !!val || 'Play time is required']"
@@ -82,7 +82,7 @@
             hint="Add tags to help with searching (optional)" />
 
           <!-- Links -->
-          <div class="row q-gutter-md">
+          <div class="row q-col-gutter-md">
             <div class="col">
               <q-input v-model="gameData.link" :label="t('boardGameGeekLink')" outlined dense
                 hint="Optional - Link to BoardGameGeek page" type="url" />

@@ -6,7 +6,7 @@
     </div>
 
     <!-- Search and Filters -->
-    <div class="row q-gutter-md q-mb-md">
+    <div class="row q-col-gutter-md q-mb-md">
       <div class="col-12 col-md-8">
         <q-input v-model="searchTerm" placeholder="Search users by name or email..." outlined dense
           @keyup.enter="searchUsers" clearable>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="row q-gutter-md q-mb-md">
+    <div class="row q-col-gutter-md q-mb-md">
       <div class="col-12 col-sm-6 col-md-3">
         <q-card class="stats-card">
           <q-card-section>

@@ -5,7 +5,7 @@
       <div class="text-body1 text-grey-6">Manage game submissions and approvals</div>
     </div>
 
-    <div class="row q-gutter-lg">
+    <div class="row q-col-gutter-lg">
       <!-- Game Submissions Panel -->
       <div class="col-12">
         <q-card>

@@ -133,7 +133,7 @@ onMounted(() => {
       </p>
     </div>
 
-    <div class="row q-gutter-lg">
+    <div class="row q-col-gutter-lg">
       <!-- App Settings Card -->
       <div class="col-12 col-md-6">
         <q-card flat bordered>
@@ -167,7 +167,7 @@ onMounted(() => {
                       </q-item-section>
                       <q-item-section>
                         <q-item-label>{{languageOptions.find(opt => opt.value === selectedLanguage)?.label || 'English'
-                        }}</q-item-label>
+                          }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </template>
@@ -199,7 +199,7 @@ onMounted(() => {
                       </q-item-section>
                       <q-item-section>
                         <q-item-label>{{themeOptions.find(opt => opt.value === themeMode)?.label || 'Auto (System)'
-                          }}</q-item-label>
+                        }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </template>

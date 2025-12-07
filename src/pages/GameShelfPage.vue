@@ -82,7 +82,7 @@ onMounted(async () => {
       </p>
     </div>
 
-    <div class="row q-gutter-lg">
+    <div class="row q-col-gutter-lg">
       <!-- Statistics Card -->
       <div class="col-12">
         <q-card flat bordered>

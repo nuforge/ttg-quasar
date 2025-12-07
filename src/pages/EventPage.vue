@@ -185,7 +185,7 @@ const sendEventComment = (message: string) => {
               {{ event.status }}
             </q-badge>
           </div>
-          <div class="col-auto q-gutter-sm">
+          <div class="col-auto q-col-gutter-sm">
             <EventRSVPButtons :event="event" />
             <CalendarExportButton :event="event" color="primary" flat />
           </div>

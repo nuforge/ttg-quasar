@@ -116,7 +116,7 @@ const statusColor = computed(() => {
     </q-card-section>
 
     <q-card-section class="q-py-xs">
-      <div class="row items-center justify-between q-gutter-md">
+      <div class="row items-center justify-between q-col-gutter-md">
 
         <!-- Left: Event info (compact) -->
         <div class="col-auto">
@@ -130,7 +130,7 @@ const statusColor = computed(() => {
             <q-icon name="mdi-dice-multiple" size="xs" />
             <router-link :to="createGameUrl(game.id, game.title)" class="no-underline" @click.stop>{{
               game.title
-            }}</router-link>
+              }}</router-link>
           </div>
         </div>
         <!-- Right: Action buttons (horizontal) -->
