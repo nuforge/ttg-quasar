@@ -67,6 +67,14 @@ const currentUser = useCurrentUser();
             {{ $t('account') }}
           </q-item-section>
         </q-item>
+        <q-item clickable v-ripple to="/game-shelf">
+          <q-item-section avatar>
+            <q-icon name="mdi-bookshelf" />
+          </q-item-section>
+          <q-item-section>
+            {{ $t('account') }}
+          </q-item-section>
+        </q-item>
         <q-item clickable v-ripple to="/messages">
           <q-item-section avatar>
             <q-icon name="mdi-forum" />
