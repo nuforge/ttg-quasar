@@ -204,11 +204,9 @@ const copyDataUri = async () => {
 
 // Initialize component
 onMounted(async () => {
-    await Promise.all([
-        eventsStore.subscribeToEvents(),
-        gamesStore.subscribeToGames(),
-        playersStore.fetchAllPlayers()
-    ]);
+    eventsStore.subscribeToEvents();
+    gamesStore.subscribeToGames();
+    await playersStore.fetchAllPlayers();
 });
 </script>
 

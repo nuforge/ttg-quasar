@@ -10,7 +10,6 @@ export default defineConfigWithVueTs(
     // Move parserOptions inside languageOptions for flat config format
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.json'],
         tsconfigRootDir: import.meta.dirname,
         extraFileExtensions: ['.vue'],
       },
@@ -62,8 +61,6 @@ export default defineConfigWithVueTs(
           // This is needed for <template>
           '<template>': '@typescript-eslint/parser',
         },
-        // Forward the project config to @typescript-eslint/parser
-        project: ['./tsconfig.json'],
         extraFileExtensions: ['.vue'],
         tsconfigRootDir: import.meta.dirname,
       },
