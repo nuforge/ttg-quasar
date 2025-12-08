@@ -88,19 +88,16 @@ service cloud.firestore {
         (resource.data.userId == request.auth.uid || 
          isAdmin(request.auth.uid));
       
-      // Only admins can delete notifications
+           // Only admins can delete notifications
       allow delete: if request.auth != null && isAdmin(request.auth.uid);
     }
-  }
-  
-  // Helper function to check admin permissions
-  function isAdmin(userId) {
-    // Access userRoles collection using relative path
-    // The database variable from the match statement is available in this scope
-    let userRole = get(/databases/$(database)/documents/userRoles/$(userId));
-    return userRole != null && 
-           userRole.data != null && 
-           userRole.data.permissions != null && 
-           userRole.data.permissions.hasAny(['admin']);
+        // Helper function to check admin permissions
+    function isAdmin(userId) {
+      let userRole = get(/databases/(default)/documents/userRoles/$(userId));
+      return userRole.data != null && 
+             userRole.data.permissions != null && 
+             userRole.data.permissions is list &&
+             userRole.data.permissions.hasAny(['admin']);
+    }
   }
 }

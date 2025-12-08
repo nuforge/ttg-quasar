@@ -1,3 +1,130 @@
+<script setup lang="ts">
+import { onMounted } from 'vue';
+import { useQuasar } from 'quasar';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
+import { authService } from 'src/services/auth-service';
+
+const $q = useQuasar();
+const gamesStore = useGamesFirebaseStore();
+
+// Methods
+const loadSubmissions = async () => {
+  try {
+    await gamesStore.loadGames(); // Load all games including pending ones
+  } catch (error) {
+    console.error('Failed to load games:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Failed to load games',
+    });
+  }
+};
+
+const approveSubmission = async (gameId: string) => {
+  try {
+    await gamesStore.approveGame(gameId);
+    $q.notify({
+      type: 'positive',
+      message: 'Game approved and added to collection!',
+    });
+  } catch (error) {
+    console.error('Failed to approve submission:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Failed to approve submission',
+    });
+  }
+};
+
+const rejectSubmission = (gameId: string) => {
+  $q.dialog({
+    title: 'Reject Submission',
+    message: 'Why is this submission being rejected?',
+    prompt: {
+      model: '',
+      type: 'text'
+    },
+    cancel: true,
+  }).onOk(() => {
+    void (async () => {
+      try {
+        await gamesStore.rejectGame(gameId);
+        $q.notify({
+          type: 'info',
+          message: 'Submission rejected',
+        });
+      } catch (error) {
+        console.error('Failed to reject submission:', error);
+        $q.notify({
+          type: 'negative',
+          message: 'Failed to reject submission',
+        });
+      }
+    })();
+  });
+};
+
+// Game approval/rejection methods for main games list
+const approveGameInList = async (gameId: string) => {
+  try {
+    await gamesStore.approveGame(gameId);
+    $q.notify({
+      type: 'positive',
+      message: 'Game approved!',
+    });
+  } catch (error) {
+    console.error('Failed to approve game:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Failed to approve game',
+    });
+  }
+};
+
+const rejectGameInList = (gameId: string) => {
+  $q.dialog({
+    title: 'Reject Game',
+    message: 'Why is this game being rejected?',
+    prompt: {
+      model: '',
+      type: 'text'
+    },
+    cancel: true,
+  }).onOk(() => {
+    void (async () => {
+      try {
+        // TODO: Store rejection reason in game metadata
+        await gamesStore.rejectGame(gameId);
+        $q.notify({
+          type: 'info',
+          message: 'Game rejected',
+        });
+      } catch (error) {
+        console.error('Failed to reject game:', error);
+        $q.notify({
+          type: 'negative',
+          message: 'Failed to reject game',
+        });
+      }
+    })();
+  });
+};
+
+// Initialize
+onMounted(async () => {
+  if (!authService.isAuthenticated.value) {
+    $q.notify({
+      type: 'negative',
+      message: 'You must be logged in to access admin features',
+    });
+    return;
+  }
+
+  // Load initial data
+  await gamesStore.loadGames(); // Load all games including pending ones
+});
+</script>
+
 <template>
   <q-page padding class="admin-games">
     <div class="page-header q-mb-md">
@@ -157,132 +284,6 @@
   </q-page>
 </template>
 
-<script setup lang="ts">
-import { onMounted } from 'vue';
-import { useQuasar } from 'quasar';
-import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
-import { authService } from 'src/services/auth-service';
-
-const $q = useQuasar();
-const gamesStore = useGamesFirebaseStore();
-
-// Methods
-const loadSubmissions = async () => {
-  try {
-    await gamesStore.loadGames(); // Load all games including pending ones
-  } catch (error) {
-    console.error('Failed to load games:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Failed to load games',
-    });
-  }
-};
-
-const approveSubmission = async (gameId: string) => {
-  try {
-    await gamesStore.approveGame(gameId);
-    $q.notify({
-      type: 'positive',
-      message: 'Game approved and added to collection!',
-    });
-  } catch (error) {
-    console.error('Failed to approve submission:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Failed to approve submission',
-    });
-  }
-};
-
-const rejectSubmission = (gameId: string) => {
-  $q.dialog({
-    title: 'Reject Submission',
-    message: 'Why is this submission being rejected?',
-    prompt: {
-      model: '',
-      type: 'text'
-    },
-    cancel: true,
-  }).onOk(() => {
-    void (async () => {
-      try {
-        await gamesStore.rejectGame(gameId);
-        $q.notify({
-          type: 'info',
-          message: 'Submission rejected',
-        });
-      } catch (error) {
-        console.error('Failed to reject submission:', error);
-        $q.notify({
-          type: 'negative',
-          message: 'Failed to reject submission',
-        });
-      }
-    })();
-  });
-};
-
-// Game approval/rejection methods for main games list
-const approveGameInList = async (gameId: string) => {
-  try {
-    await gamesStore.approveGame(gameId);
-    $q.notify({
-      type: 'positive',
-      message: 'Game approved!',
-    });
-  } catch (error) {
-    console.error('Failed to approve game:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Failed to approve game',
-    });
-  }
-};
-
-const rejectGameInList = (gameId: string) => {
-  $q.dialog({
-    title: 'Reject Game',
-    message: 'Why is this game being rejected?',
-    prompt: {
-      model: '',
-      type: 'text'
-    },
-    cancel: true,
-  }).onOk(() => {
-    void (async () => {
-      try {
-        // TODO: Store rejection reason in game metadata
-        await gamesStore.rejectGame(gameId);
-        $q.notify({
-          type: 'info',
-          message: 'Game rejected',
-        });
-      } catch (error) {
-        console.error('Failed to reject game:', error);
-        $q.notify({
-          type: 'negative',
-          message: 'Failed to reject game',
-        });
-      }
-    })();
-  });
-};
-
-// Initialize
-onMounted(async () => {
-  if (!authService.isAuthenticated.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'You must be logged in to access admin features',
-    });
-    return;
-  }
-
-  // Load initial data
-  await gamesStore.loadGames(); // Load all games including pending ones
-});
-</script>
 
 <style scoped>
 .admin-games {

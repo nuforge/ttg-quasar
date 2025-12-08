@@ -158,7 +158,7 @@
       </q-card-section>
       <q-card-section>
         <q-expansion-item icon="code" :label="$t('rawPermissionsObject')" class="text-weight-bold">
-          <div class="q-pa-md bg-grey-1">
+          <div class="q-pa-md ">
             <pre class="text-caption">{{ JSON.stringify(permissionsInfo, null, 2) }}</pre>
           </div>
         </q-expansion-item>
