@@ -181,6 +181,7 @@ export const usePlayersFirebaseStore = defineStore('playersFirebase', () => {
       const statusUpdate: UserStatus = {
         id: firebaseId,
         status,
+        reason: reason || undefined,
         updatedAt: new Date(),
         updatedBy: authService.currentUser.value?.uid || '',
       };

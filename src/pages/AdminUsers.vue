@@ -1,220 +1,3 @@
-<template>
-  <q-page padding class="admin-users">
-    <div class="page-header q-mb-md">
-      <div class="text-h4">User Administration</div>
-      <div class="text-body1 text-grey-6">Manage users, roles, and permissions</div>
-    </div>
-
-    <!-- Search and Filters -->
-    <div class="row q-col-gutter-md q-mb-md">
-      <div class="col-12 col-md-8">
-        <q-input v-model="searchTerm" placeholder="Search users by name or email..." outlined dense
-          @keyup.enter="searchUsers" clearable>
-          <template v-slot:prepend>
-            <q-icon name="search" />
-          </template>
-          <template v-slot:append>
-            <q-btn flat round dense icon="search" @click="searchUsers" :loading="searching" />
-          </template>
-        </q-input>
-      </div>
-      <div class="col-12 col-md-4">
-        <q-select v-model="statusFilter" :options="statusOptions" placeholder="Filter by status" outlined dense
-          clearable emit-value map-options />
-      </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="row q-col-gutter-md q-mb-md">
-      <div class="col-12 col-sm-6 col-md-3">
-        <q-card class="stats-card">
-          <q-card-section>
-            <div class="flex items-center">
-              <q-icon name="group" size="md" color="primary" class="q-mr-sm" />
-              <div>
-                <div class="text-h5">{{ totalUsers }}</div>
-                <div class="text-caption text-grey-6">Total Users</div>
-              </div>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="col-12 col-sm-6 col-md-3">
-        <q-card class="stats-card">
-          <q-card-section>
-            <div class="flex items-center">
-              <q-icon name="check_circle" size="md" color="positive" class="q-mr-sm" />
-              <div>
-                <div class="text-h5">{{ activeUsers }}</div>
-                <div class="text-caption text-grey-6">Active Users</div>
-              </div>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="col-12 col-sm-6 col-md-3">
-        <q-card class="stats-card">
-          <q-card-section>
-            <div class="flex items-center">
-              <q-icon name="block" size="md" color="negative" class="q-mr-sm" />
-              <div>
-                <div class="text-h5">{{ blockedUsers }}</div>
-                <div class="text-caption text-grey-6">Blocked Users</div>
-              </div>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="col-12 col-sm-6 col-md-3">
-        <q-card class="stats-card">
-          <q-card-section>
-            <div class="flex items-center">
-              <q-icon name="admin_panel_settings" size="md" color="warning" class="q-mr-sm" />
-              <div>
-                <div class="text-h5">{{ adminUsers }}</div>
-                <div class="text-caption text-grey-6">Admin Users</div>
-              </div>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
-
-    <!-- Users Table -->
-    <q-card>
-      <q-card-section>
-        <q-table flat :rows="filteredUsers" :columns="columns" :loading="playersStore.loading" :pagination="pagination"
-          row-key="firebaseId" selection="multiple" v-model:selected="selected" @request="onRequest">
-          <template v-slot:top>
-            <div class="full-width flex justify-between items-center">
-              <div class="text-h6">Users</div>
-              <div class="q-gutter-sm">
-                <q-btn v-if="selected.length > 0" color="negative" icon="block" label="Block Selected"
-                  @click="bulkUpdateStatus('blocked')" outline />
-                <q-btn v-if="selected.length > 0" color="positive" icon="check_circle" label="Activate Selected"
-                  @click="bulkUpdateStatus('active')" outline />
-                <q-btn color="primary" icon="refresh" label="Refresh" @click="refreshUsers"
-                  :loading="playersStore.loading" />
-              </div>
-            </div>
-          </template>
-
-          <template v-slot:body-cell-avatar="props">
-            <q-td :props="props">
-              <q-avatar size="32px">
-                <img v-if="props.row.avatar" :src="props.row.avatar" :alt="props.row.name" />
-                <span v-else class="text-white">{{ props.row.getInitials() }}</span>
-              </q-avatar>
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-status="props">
-            <q-td :props="props">
-              <q-chip :color="getStatusColor(props.row)" :icon="getStatusIcon(props.row)" text-color="white"
-                :label="getDisplayStatus(props.row)" size="sm" />
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-role="props">
-            <q-td :props="props">
-              <q-chip v-for="role in getUserRoles(props.row)" :key="role" :color="getRoleColor(role)" text-color="white"
-                :label="role" size="sm" class="q-mr-xs" />
-              <span v-if="!getUserRoles(props.row).length" class="text-grey-6">User</span>
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-joinDate="props">
-            <q-td :props="props">
-              {{ formatDate(props.row.joinDate) }}
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-actions="props">
-            <q-td :props="props">
-              <q-btn-group flat>
-                <q-btn flat round dense icon="edit" size="sm" @click="editUser(props.row)">
-                  <q-tooltip>Edit User</q-tooltip>
-                </q-btn>
-                <q-btn flat round dense icon="security" size="sm" @click="manageRoles(props.row)">
-                  <q-tooltip>Manage Roles</q-tooltip>
-                </q-btn>
-                <q-btn v-if="getDisplayStatus(props.row) === 'active'" flat round dense icon="block" size="sm"
-                  color="negative" @click="blockUser(props.row)">
-                  <q-tooltip>Block User</q-tooltip>
-                </q-btn>
-                <q-btn v-else-if="getDisplayStatus(props.row) === 'blocked'" flat round dense icon="check_circle"
-                  size="sm" color="positive" @click="unblockUser(props.row)">
-                  <q-tooltip>Unblock User</q-tooltip>
-                </q-btn>
-                <q-btn flat round dense icon="delete" size="sm" color="negative" @click="deleteUser(props.row)">
-                  <q-tooltip>Delete User</q-tooltip>
-                </q-btn>
-              </q-btn-group>
-            </q-td>
-          </template>
-        </q-table>
-      </q-card-section>
-    </q-card>
-
-    <!-- Edit User Dialog -->
-    <q-dialog v-model="editDialog" persistent>
-      <q-card style="min-width: 400px">
-        <q-card-section>
-          <div class="text-h6">Edit User</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-input v-model="editForm.name" label="Name" outlined dense :rules="[val => !!val || 'Name is required']" />
-          <q-input v-model="editForm.email" label="Email" outlined dense type="email" class="q-mt-md"
-            :rules="[val => !!val || 'Email is required']" />
-          <q-input v-model="editForm.bio" label="Bio" outlined dense type="textarea" class="q-mt-md" />
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" @click="editDialog = false" />
-          <q-btn color="primary" label="Save" @click="saveUser" :loading="saving" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Role Management Dialog -->
-    <q-dialog v-model="roleDialog" persistent>
-      <q-card style="min-width: 400px">
-        <q-card-section>
-          <div class="text-h6">Manage User Roles</div>
-          <div class="text-body2 text-grey-6">{{ selectedUser?.name }}</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-          <q-option-group v-model="selectedRoles" :options="roleOptions" color="primary" type="checkbox" />
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" @click="roleDialog = false" />
-          <q-btn color="primary" label="Save Roles" @click="saveRoles" :loading="saving" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <!-- Confirmation Dialogs -->
-    <q-dialog v-model="confirmDialog" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-avatar icon="warning" color="warning" text-color="white" />
-          <span class="q-ml-sm">{{ confirmMessage }}</span>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" @click="confirmDialog = false" />
-          <q-btn :color="confirmAction === 'delete' ? 'negative' : 'primary'"
-            :label="confirmAction === 'delete' ? 'Delete' : 'Confirm'" @click="executeConfirmAction"
-            :loading="saving" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </q-page>
-</template>
-
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
@@ -453,6 +236,20 @@ const manageRoles = (user: Player) => {
   roleDialog.value = true;
 };
 
+const approveUser = (user: Player) => {
+  selectedUser.value = user;
+  confirmMessage.value = `Are you sure you want to approve ${user.name}?`;
+  confirmAction.value = 'activate';
+  confirmCallback.value = async () => {
+    await playersStore.updateUserStatus(user.firebaseId || '', 'active', 'Approved by administrator');
+    $q.notify({
+      type: 'positive',
+      message: `${user.name} has been approved`,
+    });
+  };
+  confirmDialog.value = true;
+};
+
 const blockUser = (user: Player) => {
   selectedUser.value = user;
   confirmMessage.value = `Are you sure you want to block ${user.name}?`;
@@ -472,7 +269,7 @@ const unblockUser = (user: Player) => {
   confirmMessage.value = `Are you sure you want to unblock ${user.name}?`;
   confirmAction.value = 'unblock';
   confirmCallback.value = async () => {
-    await playersStore.updateUserStatus(user.firebaseId || '', 'active');
+    await playersStore.updateUserStatus(user.firebaseId || '', 'active', 'Unblocked by administrator');
     $q.notify({
       type: 'positive',
       message: `${user.name} has been unblocked`,
@@ -591,6 +388,230 @@ onMounted(async () => {
   await refreshUsers();
 });
 </script>
+
+<template>
+  <q-page padding class="admin-users">
+    <div class="page-header q-mb-md">
+      <div class="text-h4">User Administration</div>
+      <div class="text-body1 text-grey-6">Manage users, roles, and permissions</div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="row q-col-gutter-md q-mb-md">
+      <div class="col-12 col-md-8">
+        <q-input v-model="searchTerm" placeholder="Search users by name or email..." outlined dense
+          @keyup.enter="searchUsers" clearable>
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+          <template v-slot:append>
+            <q-btn flat round dense icon="search" @click="searchUsers" :loading="searching" />
+          </template>
+        </q-input>
+      </div>
+      <div class="col-12 col-md-4">
+        <q-select v-model="statusFilter" :options="statusOptions" placeholder="Filter by status" outlined dense
+          clearable emit-value map-options />
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row q-col-gutter-md q-mb-md">
+      <div class="col-12 col-sm-6 col-md-3">
+        <q-card class="stats-card">
+          <q-card-section>
+            <div class="flex items-center">
+              <q-icon name="group" size="md" color="primary" class="q-mr-sm" />
+              <div>
+                <div class="text-h5">{{ totalUsers }}</div>
+                <div class="text-caption text-grey-6">Total Users</div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-6 col-md-3">
+        <q-card class="stats-card">
+          <q-card-section>
+            <div class="flex items-center">
+              <q-icon name="check_circle" size="md" color="positive" class="q-mr-sm" />
+              <div>
+                <div class="text-h5">{{ activeUsers }}</div>
+                <div class="text-caption text-grey-6">Active Users</div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-6 col-md-3">
+        <q-card class="stats-card">
+          <q-card-section>
+            <div class="flex items-center">
+              <q-icon name="block" size="md" color="negative" class="q-mr-sm" />
+              <div>
+                <div class="text-h5">{{ blockedUsers }}</div>
+                <div class="text-caption text-grey-6">Blocked Users</div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-12 col-sm-6 col-md-3">
+        <q-card class="stats-card">
+          <q-card-section>
+            <div class="flex items-center">
+              <q-icon name="admin_panel_settings" size="md" color="warning" class="q-mr-sm" />
+              <div>
+                <div class="text-h5">{{ adminUsers }}</div>
+                <div class="text-caption text-grey-6">Admin Users</div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <q-card>
+      <q-card-section>
+        <q-table flat :rows="filteredUsers" :columns="columns" :loading="playersStore.loading" :pagination="pagination"
+          row-key="firebaseId" selection="multiple" v-model:selected="selected" @request="onRequest">
+          <template v-slot:top>
+            <div class="full-width flex justify-between items-center">
+              <div class="text-h6">Users</div>
+              <div class="q-gutter-sm">
+                <q-btn v-if="selected.length > 0" color="negative" icon="block" label="Block Selected"
+                  @click="bulkUpdateStatus('blocked')" outline />
+                <q-btn v-if="selected.length > 0" color="positive" icon="check_circle" label="Activate Selected"
+                  @click="bulkUpdateStatus('active')" outline />
+                <q-btn color="primary" icon="refresh" label="Refresh" @click="refreshUsers"
+                  :loading="playersStore.loading" />
+              </div>
+            </div>
+          </template>
+
+          <template v-slot:body-cell-avatar="props">
+            <q-td :props="props">
+              <q-avatar size="32px">
+                <img v-if="props.row.avatar" :src="props.row.avatar" :alt="props.row.name" />
+                <span v-else class="text-white">{{ props.row.getInitials() }}</span>
+              </q-avatar>
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-status="props">
+            <q-td :props="props">
+              <q-chip :color="getStatusColor(props.row)" :icon="getStatusIcon(props.row)" text-color="white"
+                :label="getDisplayStatus(props.row)" size="sm" />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-role="props">
+            <q-td :props="props">
+              <q-chip v-for="role in getUserRoles(props.row)" :key="role" :color="getRoleColor(role)" text-color="white"
+                :label="role" size="sm" class="q-mr-xs" />
+              <q-chip v-if="!getUserRoles(props.row).length" :color="getRoleColor('User')" text-color="white"
+                :label="'User'" size="sm" class="q-mr-xs" />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-joinDate="props">
+            <q-td :props="props">
+              {{ formatDate(props.row.joinDate) }}
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-actions="props">
+            <q-td :props="props">
+              <q-btn-group flat>
+                <q-btn flat round dense icon="edit" size="sm" @click="editUser(props.row)">
+                  <q-tooltip>Edit User</q-tooltip>
+                </q-btn>
+                <q-btn flat round dense icon="security" size="sm" @click="manageRoles(props.row)">
+                  <q-tooltip>Manage Roles</q-tooltip>
+                </q-btn>
+                <q-btn v-if="getDisplayStatus(props.row) === 'active'" flat round dense icon="block" size="sm"
+                  color="negative" @click="blockUser(props.row)">
+                  <q-tooltip>Block User</q-tooltip>
+                </q-btn>
+                <q-btn v-if="getDisplayStatus(props.row) === 'pending'" flat round dense icon="check" size="sm"
+                  color="positive" @click="approveUser(props.row)">
+                  <q-tooltip>Approve User</q-tooltip>
+                </q-btn>
+                <q-btn v-else-if="getDisplayStatus(props.row) === 'blocked'" flat round dense icon="check_circle"
+                  size="sm" color="positive" @click="unblockUser(props.row)">
+                  <q-tooltip>Unblock User</q-tooltip>
+                </q-btn>
+                <q-btn flat round dense icon="delete" size="sm" color="negative" @click="deleteUser(props.row)">
+                  <q-tooltip>Delete User</q-tooltip>
+                </q-btn>
+              </q-btn-group>
+            </q-td>
+          </template>
+        </q-table>
+      </q-card-section>
+    </q-card>
+
+    <!-- Edit User Dialog -->
+    <q-dialog v-model="editDialog" persistent>
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">Edit User</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input v-model="editForm.name" label="Name" outlined dense :rules="[val => !!val || 'Name is required']" />
+          <q-input v-model="editForm.email" label="Email" outlined dense type="email" class="q-mt-md"
+            :rules="[val => !!val || 'Email is required']" />
+          <q-input v-model="editForm.bio" label="Bio" outlined dense type="textarea" class="q-mt-md" />
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" @click="editDialog = false" />
+          <q-btn color="primary" label="Save" @click="saveUser" :loading="saving" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Role Management Dialog -->
+    <q-dialog v-model="roleDialog" persistent>
+      <q-card style="min-width: 400px">
+        <q-card-section>
+          <div class="text-h6">Manage User Roles</div>
+          <div class="text-body2 text-grey-6">{{ selectedUser?.name }}</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-option-group v-model="selectedRoles" :options="roleOptions" color="primary" type="checkbox" />
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" @click="roleDialog = false" />
+          <q-btn color="primary" label="Save Roles" @click="saveRoles" :loading="saving" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Confirmation Dialogs -->
+    <q-dialog v-model="confirmDialog" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="warning" color="warning" text-color="white" />
+          <span class="q-ml-sm">{{ confirmMessage }}</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" @click="confirmDialog = false" />
+          <q-btn :color="confirmAction === 'delete' ? 'negative' : 'primary'"
+            :label="confirmAction === 'delete' ? 'Delete' : 'Confirm'" @click="executeConfirmAction"
+            :loading="saving" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  </q-page>
+</template>
+
+
 
 <style scoped lang="scss">
 .admin-users {
