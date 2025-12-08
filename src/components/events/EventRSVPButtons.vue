@@ -161,7 +161,7 @@ const handleInterested = async () => {
 
     <!-- Host cannot change RSVP -->
     <div v-else-if="isHost" class="text-center">
-      <q-chip color="green" icon="mdi-crown" :size="size" outline>
+      <q-chip color="primary" icon="mdi-crown" :size="size" outline>
         {{ showLabels ? t('eventHost') : t('host') }}
       </q-chip>
     </div>
@@ -169,7 +169,7 @@ const handleInterested = async () => {
     <!-- RSVP and Interest Buttons -->
     <div v-else class="column wrap q-gutter-xs">
       <!-- RSVP Button -->
-      <q-btn flat :loading="rsvpLoading" :color="isConfirmed ? 'green' : 'grey'" :size="size" dense
+      <q-btn flat :loading="rsvpLoading" :color="isConfirmed ? 'primary' : 'grey'" :size="size" dense
         :icon="isConfirmed ? 'mdi-calendar-check' : 'mdi-calendar-plus'"
         :label="showLabels ? (isConfirmed ? t('rsvpd') : t('rsvp')) : undefined"
         @click.stop="isConfirmed ? handleCancel() : handleConfirm()"

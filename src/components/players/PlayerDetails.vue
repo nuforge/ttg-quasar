@@ -67,7 +67,7 @@ defineProps({
             <q-item-label caption>{{ event.getFormattedDate() }}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-badge :color="event.status === 'upcoming' ? 'green' : 'grey'">
+            <q-badge :color="event.status === 'upcoming' ? 'primary' : 'grey'">
               {{ event.status }}
             </q-badge>
           </q-item-section>

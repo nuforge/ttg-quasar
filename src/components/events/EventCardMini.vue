@@ -88,9 +88,9 @@ const timeDisplay = computed(() => {
 // Add computed property for badge color
 const statusColor = computed(() => {
   switch (playerStatus.value) {
-    case 'needsMore': return 'orange';
-    case 'tooMany': return 'red';
-    case 'optimal': return 'green';
+    case 'needsMore': return 'secondary';
+    case 'tooMany': return 'error';
+    case 'optimal': return 'primary';
     default: return 'grey';
   }
 });

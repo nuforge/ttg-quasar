@@ -80,14 +80,14 @@ const eventDates = computed(() => {
       if (currentUserId.value) {
         const userId = parseInt(currentUserId.value);
         if (event.isPlayerConfirmed(userId)) {
-          color = 'green'; // Confirmed events are green
+          color = 'primary'; // Confirmed events are primary
         } else if (event.isPlayerInterested(userId)) {
-          color = 'orange'; // Interested events are orange
+          color = 'secondary'; // Interested events are secondary
         } else {
-          color = 'blue'; // Other upcoming events are blue
+          color = 'information'; // Other upcoming events are information
         }
       } else {
-        color = 'blue'; // Default for non-authenticated users
+        color = 'information'; // Default for non-authenticated users
       }
 
       eventColors.set(dateStr, color);
@@ -111,14 +111,14 @@ const getEventColor = computed(() => {
       if (currentUserId.value) {
         const userId = parseInt(currentUserId.value);
         if (event.isPlayerConfirmed(userId)) {
-          eventColors.set(dateStr, 'green');
+          eventColors.set(dateStr, 'primary');
         } else if (event.isPlayerInterested(userId)) {
-          eventColors.set(dateStr, 'orange');
+          eventColors.set(dateStr, 'secondary');
         } else {
-          eventColors.set(dateStr, 'blue');
+          eventColors.set(dateStr, 'information');
         }
       } else {
-        eventColors.set(dateStr, 'blue');
+        eventColors.set(dateStr, 'information');
       }
     }
   });

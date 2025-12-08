@@ -55,7 +55,7 @@ a {
 }
 
 // Standard Quasar colors (not in theme variables)
-$orange: #ff9800;
+$secondray: #ff9800;
 
 // Global button text color overrides based on background color
 // This ensures accessible contrast for all colored buttons
@@ -157,16 +157,16 @@ body.body--dark .q-btn.bg-warning.text-white {
   color: contrast-text($warning) !important;
 }
 
-// Orange color buttons (standard Quasar color)
-.q-btn.q-btn--orange,
-.q-btn.q-btn--orange.text-white,
-.q-btn.bg-orange,
-.q-btn.bg-orange.text-white,
-body.body--dark .q-btn.q-btn--orange,
-body.body--dark .q-btn.q-btn--orange.text-white,
-body.body--dark .q-btn.bg-orange,
-body.body--dark .q-btn.bg-orange.text-white {
-  color: contrast-text($orange) !important;
+// secondray color buttons (standard Quasar color)
+.q-btn.q-btn--secondray,
+.q-btn.q-btn--secondray.text-white,
+.q-btn.bg-secondray,
+.q-btn.bg-secondray.text-white,
+body.body--dark .q-btn.q-btn--secondray,
+body.body--dark .q-btn.q-btn--secondray.text-white,
+body.body--dark .q-btn.bg-secondray,
+body.body--dark .q-btn.bg-secondray.text-white {
+  color: contrast-text($secondray) !important;
 }
 
 // Chips - Primary
@@ -241,16 +241,16 @@ body.body--dark .q-chip.bg-warning.text-white {
   color: contrast-text($warning) !important;
 }
 
-// Chips - Orange (standard Quasar color)
-.q-chip.q-chip--orange,
-.q-chip.q-chip--orange.text-white,
-.q-chip.bg-orange,
-.q-chip.bg-orange.text-white,
-body.body--dark .q-chip.q-chip--orange,
-body.body--dark .q-chip.q-chip--orange.text-white,
-body.body--dark .q-chip.bg-orange,
-body.body--dark .q-chip.bg-orange.text-white {
-  color: contrast-text($orange) !important;
+// Chips - secondray (standard Quasar color)
+.q-chip.q-chip--secondray,
+.q-chip.q-chip--secondray.text-white,
+.q-chip.bg-secondray,
+.q-chip.bg-secondray.text-white,
+body.body--dark .q-chip.q-chip--secondray,
+body.body--dark .q-chip.q-chip--secondray.text-white,
+body.body--dark .q-chip.bg-secondray,
+body.body--dark .q-chip.bg-secondray.text-white {
+  color: contrast-text($secondray) !important;
 }
 
 // Badges - Primary
@@ -269,15 +269,15 @@ body.body--dark .q-badge.bg-secondary.text-white {
   color: contrast-text($secondary) !important;
 }
 
-// Badges - Positive (green)
+// Badges - Positive (primary)
 .q-badge.bg-positive,
 .q-badge.bg-positive.text-white,
-.q-badge.bg-green,
-.q-badge.bg-green.text-white,
+.q-badge.bg-primary,
+.q-badge.bg-primary.text-white,
 body.body--dark .q-badge.bg-positive,
 body.body--dark .q-badge.bg-positive.text-white,
-body.body--dark .q-badge.bg-green,
-body.body--dark .q-badge.bg-green.text-white {
+body.body--dark .q-badge.bg-primary,
+body.body--dark .q-badge.bg-primary.text-white {
   color: contrast-text($positive) !important;
 }
 
@@ -305,10 +305,10 @@ body.body--dark .q-badge.bg-warning.text-white {
   color: contrast-text($warning) !important;
 }
 
-// Badges - Orange (standard Quasar color)
-.q-badge.bg-orange,
-.q-badge.bg-orange.text-white,
-body.body--dark .q-badge.bg-orange,
-body.body--dark .q-badge.bg-orange.text-white {
-  color: contrast-text($orange) !important;
+// Badges - secondray (standard Quasar color)
+.q-badge.bg-secondray,
+.q-badge.bg-secondray.text-white,
+body.body--dark .q-badge.bg-secondray,
+body.body--dark .q-badge.bg-secondray.text-white {
+  color: contrast-text($secondray) !important;
 }

@@ -54,7 +54,7 @@
               <div class="col">
                 <div class="text-subtitle1">{{ $t('calendar.subscription.outlook.title') }}</div>
                 <div class="text-caption text-grey">{{ $t('calendar.subscription.outlook.description')
-                }}</div>
+                  }}</div>
               </div>
               <q-btn color="blue" outline :label="$t('calendar.subscription.outlook.action')" icon="mdi-plus"
                 @click="subscribeToOutlook" />
@@ -78,13 +78,13 @@
           <!-- Generic/Other -->
           <q-card flat bordered>
             <q-card-section class="row items-center q-gutter-md">
-              <q-icon name="mdi-calendar-import" size="2rem" color="green" />
+              <q-icon name="mdi-calendar-import" size="2rem" color="primary" />
               <div class="col">
                 <div class="text-subtitle1">{{ $t('calendar.subscription.other.title') }}</div>
                 <div class="text-caption text-grey">{{ $t('calendar.subscription.other.description') }}
                 </div>
               </div>
-              <q-btn color="green" outline :label="$t('calendar.subscription.other.action')" icon="mdi-content-copy"
+              <q-btn color="primary" outline :label="$t('calendar.subscription.other.action')" icon="mdi-content-copy"
                 @click="copyCalendarUrl" :loading="copying" />
             </q-card-section>
           </q-card>

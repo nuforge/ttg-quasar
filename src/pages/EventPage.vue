@@ -181,7 +181,7 @@ const sendEventComment = (message: string) => {
         <div class="row items-center q-mb-md">
           <div class="col">
             <h1 class="text-h4 q-mb-none">{{ event.title }}</h1>
-            <q-badge :color="event.status === 'upcoming' ? 'green' : 'grey'" class="q-mt-sm">
+            <q-badge :color="event.status === 'upcoming' ? 'primary' : 'grey'" class="q-mt-sm">
               {{ event.status }}
             </q-badge>
           </div>
@@ -347,7 +347,7 @@ const sendEventComment = (message: string) => {
               <q-item-section>
                 <q-item-label>{{ availableEvent.title }}</q-item-label>
                 <q-item-label caption>ID: {{ availableEvent.id }} | Date: {{ availableEvent.getFormattedDate()
-                  }}</q-item-label>
+                }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
