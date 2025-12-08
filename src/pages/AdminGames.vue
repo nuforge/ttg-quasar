@@ -14,7 +14,7 @@
               <q-icon name="mdi-inbox" class="q-mr-sm" />
               Game Submissions
               <q-chip v-if="gamesStore.pendingGames.length > 0" :label="gamesStore.pendingGames.length" color="orange"
-                text-color="white" size="sm" class="q-ml-sm" />
+                size="sm" class="q-ml-sm" />
             </div>
             <div class="text-body2 text-grey-6 q-mt-sm">
               Review and approve submitted games
@@ -65,7 +65,7 @@
 
             <q-item-section side>
               <div class="column q-gutter-xs">
-                <q-chip color="orange" label="Pending Review" text-color="white" size="sm" />
+                <q-chip color="orange" label="Pending Review" size="sm" />
                 <div class="row q-gutter-xs">
                   <q-btn color="positive" icon="mdi-check" size="sm" round @click="approveSubmission(game.id)"
                     :loading="gamesStore.loading">

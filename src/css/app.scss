@@ -1,6 +1,8 @@
 // app global css in SCSS form
 @use './reset' as *;
 @use './typography' as *;
+@use 'sass:math';
+@use 'sass:color';
 
 // Import Quasar variables to access theme colors
 @import 'quasar.variables.scss';
@@ -18,4 +20,295 @@
 a {
   color: var(--q-primary);
   text-decoration: none;
+}
+
+// Function to calculate relative luminance (WCAG formula)
+@function luminance($color) {
+  $r: math.div(color.channel($color, 'red'), 255);
+  $g: math.div(color.channel($color, 'green'), 255);
+  $b: math.div(color.channel($color, 'blue'), 255);
+
+  $r: if($r <= 0.03928, math.div($r, 12.92), math.pow(math.div($r + 0.055, 1.055), 2.4));
+  $g: if($g <= 0.03928, math.div($g, 12.92), math.pow(math.div($g + 0.055, 1.055), 2.4));
+  $b: if($b <= 0.03928, math.div($b, 12.92), math.pow(math.div($b + 0.055, 1.055), 2.4));
+
+  @return 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
+}
+
+// Function to determine if text should be dark or light based on background
+@function contrast-text($bg-color) {
+  $bg-luminance: luminance($bg-color);
+  $light-text-luminance: luminance(#ffffff);
+  $dark-text-luminance: luminance(#000000);
+
+  // Calculate contrast ratios
+  $light-contrast: math.div($light-text-luminance + 0.05, $bg-luminance + 0.05);
+  $dark-contrast: math.div($bg-luminance + 0.05, $dark-text-luminance + 0.05);
+
+  // Use dark text if it provides better contrast (background is light)
+  // Use light text if it provides better contrast (background is dark)
+  @if $dark-contrast > $light-contrast {
+    @return #000000;
+  } @else {
+    @return #ffffff;
+  }
+}
+
+// Standard Quasar colors (not in theme variables)
+$orange: #ff9800;
+
+// Global button text color overrides based on background color
+// This ensures accessible contrast for all colored buttons
+// Using maximum specificity to override Quasar's default dark mode text colors
+
+// Primary color buttons - target both q-btn--primary and bg-primary classes
+.q-btn.q-btn--primary,
+.q-btn.q-btn--primary.text-white,
+.q-btn.bg-primary,
+.q-btn.bg-primary.text-white,
+body.body--dark .q-btn.q-btn--primary,
+body.body--dark .q-btn.q-btn--primary.text-white,
+body.body--dark .q-btn.bg-primary,
+body.body--dark .q-btn.bg-primary.text-white {
+  color: contrast-text($primary) !important;
+}
+
+// Secondary color buttons
+.q-btn.q-btn--secondary,
+.q-btn.q-btn--secondary.text-white,
+.q-btn.bg-secondary,
+.q-btn.bg-secondary.text-white,
+body.body--dark .q-btn.q-btn--secondary,
+body.body--dark .q-btn.q-btn--secondary.text-white,
+body.body--dark .q-btn.bg-secondary,
+body.body--dark .q-btn.bg-secondary.text-white {
+  color: contrast-text($secondary) !important;
+}
+
+// Tertiary color buttons
+.q-btn.q-btn--tertiary,
+.q-btn.q-btn--tertiary.text-white,
+.q-btn.bg-tertiary,
+.q-btn.bg-tertiary.text-white,
+body.body--dark .q-btn.q-btn--tertiary,
+body.body--dark .q-btn.q-btn--tertiary.text-white,
+body.body--dark .q-btn.bg-tertiary,
+body.body--dark .q-btn.bg-tertiary.text-white {
+  color: contrast-text($tertiary) !important;
+}
+
+// Accent color buttons
+.q-btn.q-btn--accent,
+.q-btn.q-btn--accent.text-white,
+.q-btn.bg-accent,
+.q-btn.bg-accent.text-white,
+body.body--dark .q-btn.q-btn--accent,
+body.body--dark .q-btn.q-btn--accent.text-white,
+body.body--dark .q-btn.bg-accent,
+body.body--dark .q-btn.bg-accent.text-white {
+  color: contrast-text($accent) !important;
+}
+
+// Positive color buttons
+.q-btn.q-btn--positive,
+.q-btn.q-btn--positive.text-white,
+.q-btn.bg-positive,
+.q-btn.bg-positive.text-white,
+body.body--dark .q-btn.q-btn--positive,
+body.body--dark .q-btn.q-btn--positive.text-white,
+body.body--dark .q-btn.bg-positive,
+body.body--dark .q-btn.bg-positive.text-white {
+  color: contrast-text($positive) !important;
+}
+
+// Negative color buttons
+.q-btn.q-btn--negative,
+.q-btn.q-btn--negative.text-white,
+.q-btn.bg-negative,
+.q-btn.bg-negative.text-white,
+body.body--dark .q-btn.q-btn--negative,
+body.body--dark .q-btn.q-btn--negative.text-white,
+body.body--dark .q-btn.bg-negative,
+body.body--dark .q-btn.bg-negative.text-white {
+  color: contrast-text($negative) !important;
+}
+
+// Info color buttons
+.q-btn.q-btn--info,
+.q-btn.q-btn--info.text-white,
+.q-btn.bg-info,
+.q-btn.bg-info.text-white,
+body.body--dark .q-btn.q-btn--info,
+body.body--dark .q-btn.q-btn--info.text-white,
+body.body--dark .q-btn.bg-info,
+body.body--dark .q-btn.bg-info.text-white {
+  color: contrast-text($info) !important;
+}
+
+// Warning color buttons
+.q-btn.q-btn--warning,
+.q-btn.q-btn--warning.text-white,
+.q-btn.bg-warning,
+.q-btn.bg-warning.text-white,
+body.body--dark .q-btn.q-btn--warning,
+body.body--dark .q-btn.q-btn--warning.text-white,
+body.body--dark .q-btn.bg-warning,
+body.body--dark .q-btn.bg-warning.text-white {
+  color: contrast-text($warning) !important;
+}
+
+// Orange color buttons (standard Quasar color)
+.q-btn.q-btn--orange,
+.q-btn.q-btn--orange.text-white,
+.q-btn.bg-orange,
+.q-btn.bg-orange.text-white,
+body.body--dark .q-btn.q-btn--orange,
+body.body--dark .q-btn.q-btn--orange.text-white,
+body.body--dark .q-btn.bg-orange,
+body.body--dark .q-btn.bg-orange.text-white {
+  color: contrast-text($orange) !important;
+}
+
+// Chips - Primary
+.q-chip.q-chip--primary,
+.q-chip.q-chip--primary.text-white,
+.q-chip.bg-primary,
+.q-chip.bg-primary.text-white,
+body.body--dark .q-chip.q-chip--primary,
+body.body--dark .q-chip.q-chip--primary.text-white,
+body.body--dark .q-chip.bg-primary,
+body.body--dark .q-chip.bg-primary.text-white {
+  color: contrast-text($primary) !important;
+}
+
+// Chips - Secondary
+.q-chip.q-chip--secondary,
+.q-chip.q-chip--secondary.text-white,
+.q-chip.bg-secondary,
+.q-chip.bg-secondary.text-white,
+body.body--dark .q-chip.q-chip--secondary,
+body.body--dark .q-chip.q-chip--secondary.text-white,
+body.body--dark .q-chip.bg-secondary,
+body.body--dark .q-chip.bg-secondary.text-white {
+  color: contrast-text($secondary) !important;
+}
+
+// Chips - Positive
+.q-chip.q-chip--positive,
+.q-chip.q-chip--positive.text-white,
+.q-chip.bg-positive,
+.q-chip.bg-positive.text-white,
+body.body--dark .q-chip.q-chip--positive,
+body.body--dark .q-chip.q-chip--positive.text-white,
+body.body--dark .q-chip.bg-positive,
+body.body--dark .q-chip.bg-positive.text-white {
+  color: contrast-text($positive) !important;
+}
+
+// Chips - Negative
+.q-chip.q-chip--negative,
+.q-chip.q-chip--negative.text-white,
+.q-chip.bg-negative,
+.q-chip.bg-negative.text-white,
+body.body--dark .q-chip.q-chip--negative,
+body.body--dark .q-chip.q-chip--negative.text-white,
+body.body--dark .q-chip.bg-negative,
+body.body--dark .q-chip.bg-negative.text-white {
+  color: contrast-text($negative) !important;
+}
+
+// Chips - Info
+.q-chip.q-chip--info,
+.q-chip.q-chip--info.text-white,
+.q-chip.bg-info,
+.q-chip.bg-info.text-white,
+body.body--dark .q-chip.q-chip--info,
+body.body--dark .q-chip.q-chip--info.text-white,
+body.body--dark .q-chip.bg-info,
+body.body--dark .q-chip.bg-info.text-white {
+  color: contrast-text($info) !important;
+}
+
+// Chips - Warning
+.q-chip.q-chip--warning,
+.q-chip.q-chip--warning.text-white,
+.q-chip.bg-warning,
+.q-chip.bg-warning.text-white,
+body.body--dark .q-chip.q-chip--warning,
+body.body--dark .q-chip.q-chip--warning.text-white,
+body.body--dark .q-chip.bg-warning,
+body.body--dark .q-chip.bg-warning.text-white {
+  color: contrast-text($warning) !important;
+}
+
+// Chips - Orange (standard Quasar color)
+.q-chip.q-chip--orange,
+.q-chip.q-chip--orange.text-white,
+.q-chip.bg-orange,
+.q-chip.bg-orange.text-white,
+body.body--dark .q-chip.q-chip--orange,
+body.body--dark .q-chip.q-chip--orange.text-white,
+body.body--dark .q-chip.bg-orange,
+body.body--dark .q-chip.bg-orange.text-white {
+  color: contrast-text($orange) !important;
+}
+
+// Badges - Primary
+.q-badge.bg-primary,
+.q-badge.bg-primary.text-white,
+body.body--dark .q-badge.bg-primary,
+body.body--dark .q-badge.bg-primary.text-white {
+  color: contrast-text($primary) !important;
+}
+
+// Badges - Secondary
+.q-badge.bg-secondary,
+.q-badge.bg-secondary.text-white,
+body.body--dark .q-badge.bg-secondary,
+body.body--dark .q-badge.bg-secondary.text-white {
+  color: contrast-text($secondary) !important;
+}
+
+// Badges - Positive (green)
+.q-badge.bg-positive,
+.q-badge.bg-positive.text-white,
+.q-badge.bg-green,
+.q-badge.bg-green.text-white,
+body.body--dark .q-badge.bg-positive,
+body.body--dark .q-badge.bg-positive.text-white,
+body.body--dark .q-badge.bg-green,
+body.body--dark .q-badge.bg-green.text-white {
+  color: contrast-text($positive) !important;
+}
+
+// Badges - Negative
+.q-badge.bg-negative,
+.q-badge.bg-negative.text-white,
+body.body--dark .q-badge.bg-negative,
+body.body--dark .q-badge.bg-negative.text-white {
+  color: contrast-text($negative) !important;
+}
+
+// Badges - Info
+.q-badge.bg-info,
+.q-badge.bg-info.text-white,
+body.body--dark .q-badge.bg-info,
+body.body--dark .q-badge.bg-info.text-white {
+  color: contrast-text($info) !important;
+}
+
+// Badges - Warning
+.q-badge.bg-warning,
+.q-badge.bg-warning.text-white,
+body.body--dark .q-badge.bg-warning,
+body.body--dark .q-badge.bg-warning.text-white {
+  color: contrast-text($warning) !important;
+}
+
+// Badges - Orange (standard Quasar color)
+.q-badge.bg-orange,
+.q-badge.bg-orange.text-white,
+body.body--dark .q-badge.bg-orange,
+body.body--dark .q-badge.bg-orange.text-white {
+  color: contrast-text($orange) !important;
 }

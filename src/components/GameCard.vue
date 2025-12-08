@@ -273,7 +273,7 @@ onMounted(() => {
       </div>
     </q-card-section>
 
-    <q-card-section class="q-px-sm q-py-xs">
+    <q-card-section class="q-pa-xs">
       <q-list dense class="d-flex row full-width justify-between">
         <q-item>
           <q-tooltip class="bg-primary text-black">{{ t('genre') }}: {{ game.genre }}</q-tooltip>
@@ -296,11 +296,12 @@ onMounted(() => {
         </q-item>
       </q-list>
     </q-card-section>
-    <q-card-section horizontal class="q-col-gutter-md q-px-sm justify-between game-card-body">
-      <q-img :src="gameImageUrl" style="max-width: 100px; max-height: 110px; align-self: start;" no-spinner
+
+    <q-card-section horizontal class="q-gutter-sm justify-between game-card-body">
+      <q-img :src="gameImageUrl" style="max-width: 150px; max-height: 110px; align-self: start;" no-spinner
         fit="scale-down" @error="($event.target as HTMLImageElement).src = getGameImageUrl(undefined)" />
 
-      <div class="game-card-description col text-body2 text-grey ">
+      <div class="game-card-description text-body2 text-grey ">
         {{ game.description }}
       </div>
       <!-- Game information icons with tooltips -->
@@ -320,8 +321,8 @@ onMounted(() => {
             {{ favorite ? t('removeFromFavorites') : t('addToFavorites') }}
           </q-tooltip>
         </q-btn>
-        <q-btn :icon="`mdi-package${ownsGame ? '' : '-variant'}`" @click="handleToggleOwnership()"
-          :color="ownsGame ? 'positive' : 'grey-7'" round flat :loading="ownershipLoading">
+        <q-btn :icon="`mdi-bookshelf`" @click="handleToggleOwnership()" :color="ownsGame ? 'positive' : 'grey-7'" round
+          flat :loading="ownershipLoading">
           <q-tooltip class="bg-positive text-black">
             {{ ownsGame ? t('removeFromCollection') : t('addToCollection') }}
           </q-tooltip>

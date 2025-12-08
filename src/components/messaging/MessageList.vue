@@ -24,11 +24,16 @@ const currentUserId = computed(() => messagesStore.currentUserId);
 const messageContainer = ref<HTMLElement | null>(null);
 
 watch(() => props.messages.length, () => {
-  setTimeout(() => {
-    if (messageContainer.value) {
-      messageContainer.value.scrollTop = messageContainer.value.scrollHeight;
-    }
-  }, 50);
+  // Use requestAnimationFrame to avoid forced reflow
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (messageContainer.value) {
+        // Batch the read and write operations
+        const scrollHeight = messageContainer.value.scrollHeight;
+        messageContainer.value.scrollTop = scrollHeight;
+      }
+    });
+  });
 });
 </script>
 

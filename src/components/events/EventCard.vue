@@ -64,8 +64,8 @@ const isUserInterested = computed(() => currentUserRSVP.value?.status === 'inter
 
 // Status badge with RSVP indicator
 const statusBadgeColor = computed(() => {
-  if (isUserConfirmed.value) return 'green';
-  if (isUserInterested.value) return 'orange';
+  if (isUserConfirmed.value) return 'primary';
+  if (isUserInterested.value) return 'secondary';
   return statusColor.value;
 });
 
@@ -76,7 +76,7 @@ const statusBadgeText = computed(() => {
 });
 
 const statusColor = computed(() => {
-  return props.event.status === 'upcoming' ? 'green' : 'grey';
+  return props.event.status === 'upcoming' ? 'primary' : 'secondary';
 });
 
 // Replace gameTitle with full game object
@@ -166,7 +166,7 @@ const selectEventDate = () => {
             </q-item-section>
             <q-item-section>
               <q-item-label>{{ event.getConfirmedCount() }} / {{ event.maxPlayers }} {{ $t('player', 2)
-                }}</q-item-label>
+              }}</q-item-label>
               <q-item-label v-if="event.getInterestedCount() > 0" caption class="text-orange">
                 +{{ event.getInterestedCount() }} interested
               </q-item-label>

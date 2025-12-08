@@ -8,13 +8,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
   },
 
-  // i18n Demo route
-  {
-    path: '/i18n-demo',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/I18nDemo.vue') }],
-  },
-
   // Authentication routes
   {
     path: '/login',

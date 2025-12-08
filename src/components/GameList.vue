@@ -68,22 +68,39 @@ const filters = ref({
 
 const sortBy = ref('title');
 
-// Computed
+// Memoized filter options - only recalculate when games array changes
 const genreOptions = computed(() => {
-  const genres = [...new Set(props.games.map(game => game.genre))].sort();
-  return genres.map(genre => ({ label: genre, value: genre }));
+  // Use a Set for O(1) lookup and only recalculate if games length changed
+  const genres = new Set<string>();
+  for (const game of props.games) {
+    if (game.genre) {
+      genres.add(game.genre);
+    }
+  }
+  return Array.from(genres).sort().map(genre => ({ label: genre, value: genre }));
 });
 
 const playerCountOptions = computed(() => {
-  const counts = [...new Set(props.games.map(game => game.numberOfPlayers))].sort();
-  return counts.map(count => ({ label: count, value: count }));
+  const counts = new Set<string>();
+  for (const game of props.games) {
+    if (game.numberOfPlayers) {
+      counts.add(game.numberOfPlayers);
+    }
+  }
+  return Array.from(counts).sort().map(count => ({ label: count, value: count }));
 });
 
 const playTimeOptions = computed(() => {
-  const times = [...new Set(props.games.map(game => game.playTime))].sort();
-  return times.map(time => ({ label: time, value: time }));
+  const times = new Set<string>();
+  for (const game of props.games) {
+    if (game.playTime) {
+      times.add(game.playTime);
+    }
+  }
+  return Array.from(times).sort().map(time => ({ label: time, value: time }));
 });
 
+// Static sort options - no need for reactivity
 const sortOptions = [
   { label: 'Title', value: 'title' },
   { label: 'Genre', value: 'genre' },
@@ -93,47 +110,77 @@ const sortOptions = [
 ];
 
 const hasActiveFilters = computed(() => {
-  return filters.value.genre || filters.value.playerCount || filters.value.playTime;
+  return !!(filters.value.genre || filters.value.playerCount || filters.value.playTime);
 });
 
+// Optimized filtering - combine all filters in a single pass
 const filteredGames = computed(() => {
-  let result = [...props.games];
+  const games = props.games;
+  const query = searchQuery.value.toLowerCase();
+  const genreFilter = filters.value.genre;
+  const playerCountFilter = filters.value.playerCount;
+  const playTimeFilter = filters.value.playTime;
 
-  // Apply search
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    result = result.filter(game =>
-      game.title.toLowerCase().includes(query) ||
-      game.description.toLowerCase().includes(query) ||
-      game.genre.toLowerCase().includes(query)
-    );
+  // Early return if no filters
+  if (!query && !genreFilter && !playerCountFilter && !playTimeFilter) {
+    return games;
   }
 
-  // Apply filters
-  if (filters.value.genre) {
-    result = result.filter(game => game.genre === filters.value.genre);
-  }
-  if (filters.value.playerCount) {
-    result = result.filter(game => game.numberOfPlayers === filters.value.playerCount);
-  }
-  if (filters.value.playTime) {
-    result = result.filter(game => game.playTime === filters.value.playTime);
+  // Single pass filtering
+  const result: Game[] = [];
+  for (const game of games) {
+    // Search filter
+    if (query) {
+      const matchesSearch = 
+        game.title.toLowerCase().includes(query) ||
+        game.description?.toLowerCase().includes(query) ||
+        game.genre.toLowerCase().includes(query);
+      if (!matchesSearch) continue;
+    }
+
+    // Genre filter
+    if (genreFilter && game.genre !== genreFilter) continue;
+
+    // Player count filter
+    if (playerCountFilter && game.numberOfPlayers !== playerCountFilter) continue;
+
+    // Play time filter
+    if (playTimeFilter && game.playTime !== playTimeFilter) continue;
+
+    result.push(game);
   }
 
   return result;
 });
 
+// Optimized sorting - use a more efficient comparison
 const displayedGames = computed(() => {
-  const sorted = [...filteredGames.value];
+  const games = filteredGames.value;
+  const sortKey = sortBy.value;
 
+  // Early return for empty or single item
+  if (games.length <= 1) {
+    return games;
+  }
+
+  // Create sorted copy
+  const sorted = [...games];
+  
   sorted.sort((a, b) => {
-    const aValue = a[sortBy.value as keyof Game];
-    const bValue = b[sortBy.value as keyof Game];
+    const aValue = a[sortKey as keyof Game];
+    const bValue = b[sortKey as keyof Game];
 
+    // Handle null/undefined
+    if (aValue == null && bValue == null) return 0;
+    if (aValue == null) return 1;
+    if (bValue == null) return -1;
+
+    // String comparison
     if (typeof aValue === 'string' && typeof bValue === 'string') {
       return aValue.localeCompare(bValue);
     }
 
+    // Fallback to string conversion
     return String(aValue).localeCompare(String(bValue));
   });
 
@@ -276,37 +323,35 @@ watch(user, (newUser) => {
     </div>
 
     <!-- Filters -->
-    <q-slide-transition v-if="showControls">
-      <div v-show="showFilters">
-        <q-card bordered class="q-mb-md">
-          <q-card-section>
-            <div class="row q-col-gutter-md">
-              <!-- Genre Filter -->
-              <div class="col-12 col-sm-6 col-md-3">
-                <q-select v-model="filters.genre" :options="genreOptions" label="Genre" outlined dense clearable />
-              </div>
-
-              <!-- Player Count Filter -->
-              <div class="col-12 col-sm-6 col-md-3">
-                <q-select v-model="filters.playerCount" :options="playerCountOptions" label="Player Count" outlined
-                  dense clearable />
-              </div>
-
-              <!-- Play Time Filter -->
-              <div class="col-12 col-sm-6 col-md-3">
-                <q-select v-model="filters.playTime" :options="playTimeOptions" label="Play Time" outlined dense
-                  clearable />
-              </div>
-
-              <!-- Sort -->
-              <div class="col-12 col-sm-6 col-md-3">
-                <q-select v-model="sortBy" :options="sortOptions" label="Sort By" outlined dense />
-              </div>
+    <div v-if="showControls" class="filters-container" :class="{ 'filters-visible': showFilters }">
+      <q-card bordered class="q-mb-md">
+        <q-card-section>
+          <div class="row q-col-gutter-md">
+            <!-- Genre Filter -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <q-select v-model="filters.genre" :options="genreOptions" label="Genre" outlined dense clearable />
             </div>
-          </q-card-section>
-        </q-card>
-      </div>
-    </q-slide-transition>
+
+            <!-- Player Count Filter -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <q-select v-model="filters.playerCount" :options="playerCountOptions" label="Player Count" outlined
+                dense clearable />
+            </div>
+
+            <!-- Play Time Filter -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <q-select v-model="filters.playTime" :options="playTimeOptions" label="Play Time" outlined dense
+                clearable />
+            </div>
+
+            <!-- Sort -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <q-select v-model="sortBy" :options="sortOptions" label="Sort By" outlined dense />
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="text-center q-pa-lg">
@@ -407,6 +452,20 @@ watch(user, (newUser) => {
 .list-header {
   border-bottom: 1px solid var(--q-color-separator);
   padding-bottom: 16px;
+}
+
+.filters-container {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out;
+  margin: 0;
+}
+
+.filters-container.filters-visible {
+  max-height: 500px;
+  opacity: 1;
+  margin-bottom: 16px;
 }
 
 .game-image-container {
