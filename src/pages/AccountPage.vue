@@ -4,8 +4,6 @@ import { useCurrentUser } from 'vuefire';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-import CalendarSubscriptionManager from 'src/components/calendar/CalendarSubscriptionManager.vue';
-
 const { t } = useI18n();
 const $q = useQuasar();
 const currentUser = useCurrentUser();
@@ -69,7 +67,7 @@ onMounted(async () => {
     <div class="row q-col-gutter-md q-mb-md">
       <div class="col-12 col-md-6">
         <!-- User Info Card -->
-        <q-card>
+        <q-card flat class="q-mb-md">
           <q-card-section>
             <div class="text-h6">{{ $t('userInformation') }}</div>
           </q-card-section>
@@ -118,6 +116,7 @@ onMounted(async () => {
             </div>
           </q-card-section>
         </q-card>
+
         <!-- Firebase Document Info -->
         <q-card v-if="permissionsInfo && isDevelopment" class="q-mb-md">
           <q-card-section>
@@ -230,19 +229,6 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Calendar Subscription Card -->
-    <q-card class="q-mb-md">
-      <q-card-section>
-        <div class="text-h6">{{ $t('calendar.subscription.title') }}</div>
-        <div class="text-subtitle2 text-grey-7">
-          {{ $t('calendar.subscription.subtitle') }}
-        </div>
-      </q-card-section>
-
-      <q-card-section>
-        <CalendarSubscriptionManager />
-      </q-card-section>
-    </q-card>
   </q-page>
 </template>
 

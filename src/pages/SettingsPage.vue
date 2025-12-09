@@ -5,6 +5,9 @@ import { ref, onMounted, watch } from 'vue'
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
 import { useLanguage } from 'src/composables/useLanguage';
 
+import CalendarSubscriptionManager from 'src/components/calendar/CalendarSubscriptionManager.vue';
+
+
 const { t } = useI18n({ useScope: 'global' });
 const $q = useQuasar();
 const preferencesStore = useUserPreferencesStore();
@@ -136,7 +139,7 @@ onMounted(() => {
     <div class="row q-col-gutter-lg">
       <!-- App Settings Card -->
       <div class="col-12 col-md-6">
-        <q-card flat bordered>
+        <q-card flat>
           <q-card-section>
             <div class="text-h6 q-mb-md">
               <q-icon name="mdi-tune" class="q-mr-sm" />
@@ -167,7 +170,7 @@ onMounted(() => {
                       </q-item-section>
                       <q-item-section>
                         <q-item-label>{{languageOptions.find(opt => opt.value === selectedLanguage)?.label || 'English'
-                          }}</q-item-label>
+                        }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </template>
@@ -199,7 +202,7 @@ onMounted(() => {
                       </q-item-section>
                       <q-item-section>
                         <q-item-label>{{themeOptions.find(opt => opt.value === themeMode)?.label || 'Auto (System)'
-                        }}</q-item-label>
+                          }}</q-item-label>
                       </q-item-section>
                     </q-item>
                   </template>
@@ -212,7 +215,7 @@ onMounted(() => {
 
       <!-- Notification Settings Card -->
       <div class="col-12 col-md-6">
-        <q-card flat bordered>
+        <q-card flat>
           <q-card-section>
             <div class="text-h6 q-mb-md">
               <q-icon name="mdi-bell-cog" class="q-mr-sm" />
@@ -238,6 +241,23 @@ onMounted(() => {
             </div>
           </q-card-section>
         </q-card>
+      </div>
+
+      <!-- Calendar Subscription Card -->
+      <div class="col-12 col-md-6">
+        <q-card class="q-mb-md">
+          <q-card-section>
+            <div class="text-h6">{{ $t('calendar.subscription.title') }}</div>
+            <div class="text-subtitle2 text-grey-7">
+              {{ $t('calendar.subscription.subtitle') }}
+            </div>
+          </q-card-section>
+
+          <q-card-section>
+            <CalendarSubscriptionManager />
+          </q-card-section>
+        </q-card>
+
       </div>
     </div>
   </q-page>
