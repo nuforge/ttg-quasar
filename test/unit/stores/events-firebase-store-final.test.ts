@@ -711,10 +711,15 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
 
   describe('Business Logic Simulation (Action Logic)', () => {
     it('should simulate createEvent validation logic', () => {
+      // Use a date that's definitely in the future (1 day from now)
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 1);
+      const dateString = futureDate.toISOString().split('T')[0];
+
       const newEventData = {
         title: 'New Test Event',
         gameId: 'game1',
-        date: '2025-09-15',
+        date: dateString,
         time: '19:00',
         endTime: '23:00',
         location: 'Test Location',
