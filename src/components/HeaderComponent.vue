@@ -103,7 +103,7 @@ onMounted(async () => {
                 <q-item-label>{{ $t('gameShelf') }}</q-item-label>
               </q-item-section>
             </q-item>
-            
+
             <!-- Admin section (only show if user is admin) -->
             <template v-if="isAdmin">
               <q-separator />
@@ -123,6 +123,14 @@ onMounted(async () => {
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ $t('adminGames') }}</q-item-label>
+                </q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="navigateToAdmin('/admin/events')">
+                <q-item-section avatar>
+                  <q-icon name="mdi-calendar-account" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{ $t('adminEvents.navTitle') }}</q-item-label>
                 </q-item-section>
               </q-item>
 

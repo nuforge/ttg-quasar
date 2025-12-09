@@ -251,6 +251,7 @@ export default {
 
   // Admin Events
   adminEvents: {
+    navTitle: 'Eventos de Admin',
     title: 'Administración de Eventos',
     subtitle: 'Gestiona eventos, horarios y asistentes',
     addEvent: 'Agregar Evento',

@@ -248,6 +248,7 @@ export default {
 
   // Admin Events
   adminEvents: {
+    navTitle: 'Admin Events',
     title: 'Event Administration',
     subtitle: 'Manage events, schedules, and attendees',
     addEvent: 'Add Event',
@@ -263,8 +264,10 @@ export default {
     deleteEvent: 'Delete event',
     cancelAll: 'Cancel All',
     cancelAllTitle: 'Cancel Events',
-    areYouSureCancel: 'Are you sure you want to cancel {count} event(s)? All attendees will be notified.',
-    areYouSureDelete: 'Are you sure you want to permanently delete {count} event(s)? This cannot be undone.',
+    areYouSureCancel:
+      'Are you sure you want to cancel {count} event(s)? All attendees will be notified.',
+    areYouSureDelete:
+      'Are you sure you want to permanently delete {count} event(s)? This cannot be undone.',
     attendance: 'Attendance',
     confirmedRsvps: 'Confirmed RSVPs',
     interestedRsvps: 'Interested',
@@ -377,7 +380,7 @@ export default {
   rsvpFailed: 'Failed to update RSVP',
   interestFailed: 'Failed to toggle interest',
 
-  // Tooltips
+  // Tooltips & RSVP
   showQrCode: 'Show QR Code',
   reserveGame: 'Reserve game',
   removeReservation: 'Remove reservation',
@@ -385,7 +388,6 @@ export default {
   shareGame: 'Share game',
   checkOutThisGame: 'Check out this cool game: {description}',
   openExternalLink: 'Open external link',
-  confirmedRsvps: 'Confirmed RSVPs',
   playersShowingInterest: 'Players showing interest',
   clickToUnRsvp: 'Click to UN-RSVP',
   clickToRsvp: 'Click to RSVP (confirmed attendance)',
@@ -439,7 +441,7 @@ export default {
   gamesCount: '{count} game | {count} games',
   messagesCount: '{count} message | {count} messages',
 
-  // Additional interface elements
+  // Game Shelf & Collection
   gameShelf: 'Game Shelf',
   gameShelfDescription:
     'Manage your game collection, favorites, bookmarks, and notification preferences',
@@ -456,11 +458,10 @@ export default {
   favoriteGamesEmptyMessage: 'Games you mark as favorites will appear here',
   bookmarkedGamesEmptyMessage: 'Games you bookmark will appear here',
   notificationGamesEmptyMessage: 'Games with event notifications enabled will appear here',
-  adminGames: 'Admin Games',
-  adminUsers: 'Admin Users',
-  noNotifications: 'No notifications yet',
-
-  // Tooltips
+  noOwnedGamesYet: 'No owned games yet',
+  noFavoriteGamesYet: 'No favorite games yet',
+  noBookmarkedGamesYet: 'No bookmarked games yet',
+  noNotificationPreferences: 'No notification preferences set',
   toggleOwnership: 'Toggle ownership',
   toggleFavorite: 'Toggle favorite',
   toggleBookmark: 'Toggle bookmark',
@@ -471,38 +472,37 @@ export default {
   addToCollection: 'Add to collection',
   removeFromCollection: 'Remove from collection',
   pleaseSignInFavorites: 'Please sign in to add games to favorites',
+  pleaseSignInBookmarks: 'Please sign in to bookmark games',
+  pleaseSignInCollection: 'Please sign in to manage your game collection',
   ownGameToToggleBring: 'You must own this game to toggle bring status',
   canBringToEvents: 'Can bring to events',
-  selectConversationToView: 'Select a conversation to view messages',
-  getStarted: 'Get Started',
-  noEventsMatchCriteria: 'No events match your criteria.',
-  noGamesFound: 'No games found',
-  pleaseSignInToAddFavorites: 'Please sign in to add to favorites',
-  pleaseFillAllRequiredFields: 'Please fill in all required fields',
-  noOwnedGamesYet: 'No owned games yet',
-  noFavoriteGamesYet: 'No favorite games yet',
-  noBookmarkedGamesYet: 'No bookmarked games yet',
-  noNotificationPreferences: 'No notification preferences set',
-  gamesYouMarkFavorites: 'Games you mark as favorites will appear here',
-  gamesYouBookmark: 'Games you bookmark will appear here',
+  cannotBringToEvents: 'Cannot bring to events',
   eventNotificationsEnabled: 'Event notifications enabled',
   getNotifiedAboutEvents: 'Get notified about events',
-  canBringToEventsTooltip: 'Can bring to events',
-  cannotBringToEvents: 'Cannot bring to events',
   addedToFavorites: 'added to favorites!',
   removedFromFavorites: 'removed from favorites',
+  addedToCollection: 'added to your collection!',
+  removedFromCollection: 'removed from your collection',
   failedUpdateFavorites: 'Failed to update favorites. Please try again.',
   failedUpdateGameCollection: 'Failed to update game collection. Please try again.',
   failedUpdateBringStatus: 'Failed to update bring status. Please try again.',
   failedUpdateNotifications: 'Failed to update event notifications. Please try again.',
-  pleaseSignInBookmarks: 'Please sign in to bookmark games',
-  pleaseSignInCollection: 'Please sign in to manage your game collection',
-  addedToCollection: 'added to your collection!',
-  removedFromCollection: 'removed from your collection',
   youCanNowBring: 'You can now bring {game} to events!',
   youCanNoLongerBring: 'You can no longer bring {game} to events',
   notifyAboutEvents: "You'll be notified about events for {game}!",
   notificationsDisabledFor: 'Event notifications disabled for {game}',
+
+  // Admin Navigation
+  adminGames: 'Admin Games',
+  adminUsers: 'Admin Users',
+
+  // Misc UI Elements
+  noNotifications: 'No notifications yet',
+  selectConversationToView: 'Select a conversation to view messages',
+  getStarted: 'Get Started',
+  noEventsMatchCriteria: 'No events match your criteria.',
+  noGamesFound: 'No games found',
+  pleaseFillAllRequiredFields: 'Please fill in all required fields',
   heroSubtitle: 'Find tabletop gaming sessions and players near you',
   featuredGames: 'Featured Games',
   upcomingEvents: 'Upcoming Events',

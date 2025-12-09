@@ -267,7 +267,7 @@ onMounted(() => {
         <q-btn :icon="`mdi-briefcase${canBringGame ? '' : '-outline'}`" @click="handleToggleCanBring()"
           :color="canBringGame ? 'positive' : 'grey-9'" round dense size="sm" flat :loading="ownershipLoading">
           <q-tooltip class="bg-positive text-black">
-            {{ canBringGame ? t('canBringToEventsTooltip') : t('cannotBringToEvents') }}
+            {{ canBringGame ? t('canBringToEvents') : t('cannotBringToEvents') }}
           </q-tooltip>
         </q-btn>
       </div>
