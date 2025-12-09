@@ -14,7 +14,6 @@ vi.mock('src/composables/useGameImage', () => ({
 const createMockGameForComponent = () => {
   return new Game(
     'test-game-1', // id
-    1, // legacyId
     'Test Game', // title
     'Strategy', // genre
     '2-4', // numberOfPlayers
@@ -64,7 +63,6 @@ describe('GamePreferencesList - Business Logic Tests', () => {
     it('should work with multiple games', () => {
       const game2 = new Game(
         'test-game-2',
-        2,
         'Second Game',
         'Adventure',
         '1-2',
@@ -148,7 +146,6 @@ describe('GamePreferencesList - Business Logic Tests', () => {
     it('should handle games with minimal data', () => {
       const minimalGame = new Game(
         'minimal-game',
-        999,
         'Minimal Game',
         'Unknown',
         '1+',

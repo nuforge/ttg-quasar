@@ -49,12 +49,12 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
   });
 
   const eventsByGame = computed(() => {
-    return (gameId: number) => events.value.filter((event) => event.gameId === gameId);
+    return (gameId: string) => events.value.filter((event) => event.gameId === gameId);
   });
 
   // Actions
   const createEvent = async (eventData: {
-    gameId: number;
+    gameId: string;
     title: string;
     date: string;
     time: string;
@@ -335,7 +335,7 @@ export const useEventsFirebaseStore = defineStore('eventsFirebase', () => {
     }
   };
 
-  const subscribeToEvents = (gameId?: number) => {
+  const subscribeToEvents = (gameId?: string) => {
     // Clean up existing subscriptions
     unsubscribes.value.forEach((unsubscribe) => unsubscribe());
     unsubscribes.value = [];

@@ -74,6 +74,7 @@ import { useRouter } from 'vue-router';
 import { date } from 'quasar';
 import { useGameNotificationsStore } from 'src/stores/game-notifications-store';
 import type { GameEventNotification } from 'src/services/game-event-notification-service';
+import type { Game } from 'src/models/Game';
 import { createGameUrl } from 'src/utils/slug';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 
@@ -98,7 +99,7 @@ const handleNotificationClick = async (notification: GameEventNotification) => {
     }
 
     // Find the game to get proper URL
-    const game = gamesStore.games.find(g => g.legacyId === parseInt(notification.gameId));
+    const game = gamesStore.games.find((g: Game) => g.id === notification.gameId);
     if (game) {
         void router.push(createGameUrl(game.id, game.title));
     } else {

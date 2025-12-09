@@ -88,7 +88,6 @@ describe('CalendarExportService', () => {
     // Create mock game
     mockGame = {
       id: 'game-123',
-      legacyId: 1,
       title: 'Catan',
       description: 'Strategy board game about building settlements',
     } as Game;

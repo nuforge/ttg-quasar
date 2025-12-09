@@ -16,8 +16,7 @@ export type EventStatus = 'upcoming' | 'completed' | 'cancelled';
 export class Event {
   id: number;
   firebaseDocId?: string; // Store original Firebase document ID
-  legacyId?: number; // For migrated events from JSON (still needed for compatibility)
-  gameId: number;
+  gameId: string; // Firebase document ID of the game
   title: string;
   date: string;
   time: string;
@@ -41,10 +40,7 @@ export class Event {
     if (eventData.firebaseDocId !== undefined) {
       this.firebaseDocId = eventData.firebaseDocId;
     }
-    if (eventData.legacyId !== undefined) {
-      this.legacyId = eventData.legacyId;
-    }
-    this.gameId = eventData.gameId || 0;
+    this.gameId = eventData.gameId || '';
     this.title = eventData.title || '';
     this.date = eventData.date || '';
     this.time = eventData.time || '';

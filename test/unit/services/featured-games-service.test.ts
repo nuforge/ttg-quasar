@@ -5,13 +5,11 @@ import { Game } from 'src/models/Game';
 describe('FeaturedGamesService', () => {
   const createMockGame = (
     id: string,
-    legacyId: number,
     title: string,
     genre = 'Strategy',
   ): Game => {
     return new Game(
       id,
-      legacyId,
       title,
       genre,
       '2-4',
@@ -36,11 +34,11 @@ describe('FeaturedGamesService', () => {
   };
 
   const mockGames: Game[] = [
-    createMockGame('game1', 1, 'Catan', 'Strategy'),
-    createMockGame('game2', 2, 'Ticket to Ride', 'Family'),
-    createMockGame('game3', 3, 'Azul', 'Strategy'),
-    createMockGame('game4', 4, 'Pandemic', 'Cooperative'),
-    createMockGame('game5', 5, 'Splendor', 'Engine Building'),
+    createMockGame('game1', 'Catan', 'Strategy'),
+    createMockGame('game2', 'Ticket to Ride', 'Family'),
+    createMockGame('game3', 'Azul', 'Strategy'),
+    createMockGame('game4', 'Pandemic', 'Cooperative'),
+    createMockGame('game5', 'Splendor', 'Engine Building'),
   ];
 
   describe('getFeaturedGames', () => {

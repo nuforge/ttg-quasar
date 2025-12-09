@@ -7,6 +7,7 @@ import { useMessagesFirebaseStore } from 'src/stores/messages-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { Event } from 'src/models/Event';
 import type { Player } from 'src/models/Player';
+import type { Game } from 'src/models/Game';
 import PlayerDetails from 'src/components/players/PlayerDetails.vue';
 import PlayersList from 'src/components/players/PlayersList.vue';
 import MessageList from 'src/components/messaging/MessageList.vue';
@@ -31,7 +32,7 @@ const showPlayerDetailsDialog = ref(false);
 // Get game details for this event
 const game = computed(() => {
   if (!event.value) return null;
-  return gamesStore.games.find(g => g.legacyId === event.value?.gameId) || null;
+  return gamesStore.games.find((g: Game) => g.id === event.value?.gameId) || null;
 });
 
 // Get players for this event (confirmed only)

@@ -38,7 +38,7 @@ const statuses = [
 const gameOptions = computed(() => {
   return gamesStore.games.map(game => ({
     label: game.title,
-    value: game.legacyId // Use legacyId to match with event.gameId
+    value: game.id // Use id to match with event.gameId
   }));
 });
 

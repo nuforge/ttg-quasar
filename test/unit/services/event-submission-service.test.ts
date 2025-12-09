@@ -120,7 +120,6 @@ describe('EventSubmissionService', () => {
 
   const mockGame: FirebaseGame = {
     id: '1',
-    legacyId: 1,
     title: 'Test Game',
     genre: 'Strategy',
     numberOfPlayers: '2-4',

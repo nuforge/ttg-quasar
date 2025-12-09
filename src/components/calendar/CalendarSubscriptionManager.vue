@@ -252,7 +252,7 @@ onMounted(async () => {
 
       <!-- Game Selection -->
       <div class="q-mb-lg">
-        <q-select v-model="selectedGames" :options="availableGames" option-value="legacyId" option-label="title"
+        <q-select v-model="selectedGames" :options="availableGames" option-value="id" option-label="title"
           multiple use-chips stack-label :label="$t('calendar.subscription.selectGames')" outlined clearable
           class="q-mb-sm" />
         <div class="text-caption text-grey-6">

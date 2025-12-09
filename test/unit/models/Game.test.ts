@@ -25,7 +25,6 @@ describe('Game Model', () => {
 
   const baseGameData = {
     id: 'game123',
-    legacyId: 42,
     title: 'Test Strategy Game',
     genre: 'Strategy',
     numberOfPlayers: '2-4',
@@ -52,7 +51,6 @@ describe('Game Model', () => {
     it('should create Game with all fields', () => {
       const game = new Game(
         baseGameData.id,
-        baseGameData.legacyId,
         baseGameData.title,
         baseGameData.genre,
         baseGameData.numberOfPlayers,
@@ -76,7 +74,6 @@ describe('Game Model', () => {
       );
 
       expect(game.id).toBe('game123');
-      expect(game.legacyId).toBe(42);
       expect(game.title).toBe('Test Strategy Game');
       expect(game.genre).toBe('Strategy');
       expect(game.numberOfPlayers).toBe('2-4');
@@ -102,7 +99,6 @@ describe('Game Model', () => {
     it('should create Game with minimal required fields', () => {
       const game = new Game(
         'minimal123',
-        1,
         'Minimal Game',
         'Card Game',
         '2',
@@ -113,7 +109,6 @@ describe('Game Model', () => {
       );
 
       expect(game.id).toBe('minimal123');
-      expect(game.legacyId).toBe(1);
       expect(game.title).toBe('Minimal Game');
       expect(game.genre).toBe('Card Game');
       expect(game.numberOfPlayers).toBe('2');
@@ -141,7 +136,6 @@ describe('Game Model', () => {
     it('should handle default values correctly', () => {
       const game = new Game(
         'defaults123',
-        2,
         'Default Game',
         'Party',
         '4-8',
@@ -173,10 +167,9 @@ describe('Game Model', () => {
   });
 
   describe('URL Generation', () => {
-    it('should generate correct URL from legacy ID and title', () => {
+    it('should generate correct URL from id and title', () => {
       const game = new Game(
         'game123',
-        42,
         'Test Strategy Game',
         'Strategy',
         '2-4',
@@ -187,13 +180,12 @@ describe('Game Model', () => {
       );
 
       const url = game.url;
-      expect(url).toBe('/42/Test Strategy Game');
+      expect(url).toBe('/games/game123/Test Strategy Game');
     });
 
     it('should handle titles with special characters', () => {
       const game = new Game(
         'special123',
-        5,
         'Game with "Quotes" & Symbols!',
         'Party',
         '4-8',
@@ -204,13 +196,12 @@ describe('Game Model', () => {
       );
 
       const url = game.url;
-      expect(url).toBe('/5/Game with "Quotes" & Symbols!');
+      expect(url).toBe('/games/special123/Game with "Quotes" & Symbols!');
     });
 
     it('should handle empty title', () => {
       const game = new Game(
         'empty123',
-        99,
         '',
         'Misc',
         '1',
@@ -221,7 +212,7 @@ describe('Game Model', () => {
       );
 
       const url = game.url;
-      expect(url).toBe('/99/');
+      expect(url).toBe('/games/empty123/');
     });
   });
 
@@ -245,7 +236,6 @@ describe('Game Model', () => {
         const game = Game.fromJSON(jsonData);
 
         expect(game.id).toBe('100'); // Converted to string
-        expect(game.legacyId).toBe(100);
         expect(game.title).toBe('JSON Game');
         expect(game.genre).toBe('Adventure');
         expect(game.numberOfPlayers).toBe('1-6');
@@ -272,7 +262,6 @@ describe('Game Model', () => {
         const game = Game.fromJSON(minimalJson);
 
         expect(game.title).toBe('Minimal JSON Game');
-        expect(game.legacyId).toBe(0); // Default value when id not provided
         expect(game.id).toMatch(/^\d+$/); // Should be timestamp string
         expect(game.releaseYear).toBeUndefined();
         expect(game.image).toBeUndefined();
@@ -295,7 +284,6 @@ describe('Game Model', () => {
         const game = Game.fromJSON(partialJson);
 
         expect(game.id).toBe('50');
-        expect(game.legacyId).toBe(50);
         expect(game.title).toBe('Partial Game');
         expect(game.releaseYear).toBeUndefined();
         expect(game.image).toBeUndefined();
@@ -312,7 +300,6 @@ describe('Game Model', () => {
 
       it('should create Game from Firebase data with all fields', () => {
         const firebaseData: FirebaseGame = {
-          legacyId: 75,
           title: 'Firebase Game',
           genre: 'Economic',
           numberOfPlayers: '3-5',
@@ -338,7 +325,6 @@ describe('Game Model', () => {
         const game = Game.fromFirebase('firebase123', firebaseData);
 
         expect(game.id).toBe('firebase123');
-        expect(game.legacyId).toBe(75);
         expect(game.title).toBe('Firebase Game');
         expect(game.genre).toBe('Economic');
         expect(game.numberOfPlayers).toBe('3-5');
@@ -363,7 +349,6 @@ describe('Game Model', () => {
 
       it('should create Game from minimal Firebase data', () => {
         const minimalFirebaseData: FirebaseGame = {
-          legacyId: 10,
           title: 'Minimal Firebase Game',
           genre: 'Trivia',
           numberOfPlayers: '4-10',
@@ -378,7 +363,6 @@ describe('Game Model', () => {
         const game = Game.fromFirebase('minimal456', minimalFirebaseData);
 
         expect(game.id).toBe('minimal456');
-        expect(game.legacyId).toBe(10);
         expect(game.title).toBe('Minimal Firebase Game');
         expect(game.approved).toBe(false);
         expect(game.status).toBe('pending');
@@ -397,7 +381,6 @@ describe('Game Model', () => {
 
       it('should handle Firebase Timestamp conversion', () => {
         const firebaseData: FirebaseGame = {
-          legacyId: 15,
           title: 'Timestamp Game',
           genre: 'Abstract',
           numberOfPlayers: '2',
@@ -428,7 +411,6 @@ describe('Game Model', () => {
 
         statuses.forEach((status) => {
           const firebaseData: FirebaseGame = {
-            legacyId: 25,
             title: `${status} Game`,
             genre: 'Test',
             numberOfPlayers: '2',
@@ -452,7 +434,6 @@ describe('Game Model', () => {
     it('should convert Game to Firebase format with all fields', () => {
       const game = new Game(
         baseGameData.id,
-        baseGameData.legacyId,
         baseGameData.title,
         baseGameData.genre,
         baseGameData.numberOfPlayers,
@@ -477,7 +458,6 @@ describe('Game Model', () => {
 
       const firebaseData = game.toFirebase();
 
-      expect(firebaseData.legacyId).toBe(42);
       expect(firebaseData.title).toBe('Test Strategy Game');
       expect(firebaseData.genre).toBe('Strategy');
       expect(firebaseData.numberOfPlayers).toBe('2-4');
@@ -504,7 +484,6 @@ describe('Game Model', () => {
     it('should exclude undefined optional fields from Firebase data', () => {
       const minimalGame = new Game(
         'minimal789',
-        5,
         'Minimal Game',
         'Simple',
         '1',
@@ -516,7 +495,6 @@ describe('Game Model', () => {
 
       const firebaseData = minimalGame.toFirebase();
 
-      expect(firebaseData.legacyId).toBe(5);
       expect(firebaseData.title).toBe('Minimal Game');
       expect(firebaseData.approved).toBe(true);
       expect(firebaseData.status).toBe('active');
@@ -535,7 +513,6 @@ describe('Game Model', () => {
     it('should include optional fields when they have values', () => {
       const gameWithOptionals = new Game(
         'optionals123',
-        15,
         'Game with Optionals',
         'Cooperative',
         '2-4',
@@ -580,7 +557,6 @@ describe('Game Model', () => {
   describe('Timestamp Conversion', () => {
     it('should handle Date objects in fromFirebase', () => {
       const firebaseData: FirebaseGame = {
-        legacyId: 30,
         title: 'Date Game',
         genre: 'Test',
         numberOfPlayers: '2',
@@ -602,7 +578,6 @@ describe('Game Model', () => {
 
     it('should handle string timestamps in fromFirebase', () => {
       const firebaseData: FirebaseGame = {
-        legacyId: 35,
         title: 'String Date Game',
         genre: 'Test',
         numberOfPlayers: '2',
@@ -624,7 +599,6 @@ describe('Game Model', () => {
 
     it('should handle undefined timestamps', () => {
       const firebaseData: FirebaseGame = {
-        legacyId: 40,
         title: 'No Timestamps Game',
         genre: 'Test',
         numberOfPlayers: '2',
@@ -649,7 +623,6 @@ describe('Game Model', () => {
     it('should handle empty arrays and strings', () => {
       const game = new Game(
         'empty123',
-        0,
         '', // Empty title
         '', // Empty genre
         '', // Empty player count
@@ -668,27 +641,25 @@ describe('Game Model', () => {
       expect(game.description).toBe('');
     });
 
-    it('should handle very large legacy IDs', () => {
+    it('should handle very long IDs', () => {
       const game = new Game(
-        'large123',
-        999999999,
+        'very-long-game-id-123456789',
         'Large ID Game',
         'Test',
         '2',
         '8+',
         '15 min',
         ['Test'],
-        'Game with large legacy ID',
+        'Game with long ID',
       );
 
-      expect(game.legacyId).toBe(999999999);
-      expect(game.url).toBe('/999999999/Large ID Game');
+      expect(game.id).toBe('very-long-game-id-123456789');
+      expect(game.url).toBe('/games/very-long-game-id-123456789/Large ID Game');
     });
 
     it('should handle special characters in all text fields', () => {
       const specialGame = new Game(
         'special123',
-        1,
         'Game with Émojis 🎲 & Ñiño',
         'Spëcial Génre',
         '2-4 👥',

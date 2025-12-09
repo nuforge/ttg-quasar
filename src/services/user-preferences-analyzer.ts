@@ -51,9 +51,9 @@ export class UserPreferencesAnalyzer {
       popularity.set(game.id, 0);
     });
 
-    // Count events for each game (using legacyId for the relationship)
+    // Count events for each game
     events.forEach((event) => {
-      const game = games.find((g) => g.legacyId === event.gameId);
+      const game = games.find((g) => g.id === event.gameId);
       if (game) {
         const currentScore = popularity.get(game.id) || 0;
         // Weight by number of RSVPs (more RSVPs = more popular)

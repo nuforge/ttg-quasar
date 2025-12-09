@@ -27,7 +27,7 @@ const viewMode = ref<'cards' | 'list'>('cards');
 const showFilters = ref(false);
 
 // Game interaction states (using Map for per-game state)
-const gameStates = ref<Map<number, {
+const gameStates = ref<Map<string, {
   reserved: boolean;
   favorite: boolean;
   bookmark: boolean;
@@ -35,7 +35,12 @@ const gameStates = ref<Map<number, {
 }>>(new Map());
 
 // Initialize or get game state
-const getGameState = (gameId: number) => {
+const getGameState = (gameId: string): {
+  reserved: boolean;
+  favorite: boolean;
+  bookmark: boolean;
+  showQRCode: boolean;
+} => {
   if (!gameStates.value.has(gameId)) {
     gameStates.value.set(gameId, {
       reserved: false,
@@ -203,22 +208,22 @@ const activeFilterCount = computed(() => {
 });
 
 // Game interaction handlers
-const toggleReserved = (gameId: number) => {
+const toggleReserved = (gameId: string): void => {
   const state = getGameState(gameId);
   state.reserved = !state.reserved;
 };
 
-const toggleFavorite = (gameId: number) => {
+const toggleFavorite = (gameId: string): void => {
   const state = getGameState(gameId);
   state.favorite = !state.favorite;
 };
 
-const toggleBookmark = (gameId: number) => {
+const toggleBookmark = (gameId: string): void => {
   const state = getGameState(gameId);
   state.bookmark = !state.bookmark;
 };
 
-const toggleQRCode = (gameId: number) => {
+const toggleQRCode = (gameId: string): void => {
   const state = getGameState(gameId);
   state.showQRCode = !state.showQRCode;
 };
@@ -229,13 +234,13 @@ const navigateToGame = (game: Game) => {
   });
 };
 
-const shareGame = async (game: Game) => {
+const shareGame = async (game: Game): Promise<void> => {
   if (isWebShareSupported.value) {
     try {
       await navigator.share({
         title: game.title,
         text: t('checkOutThisGame', { description: game.description }),
-        url: `${window.location.origin}/games/${game.legacyId}`
+        url: `${window.location.origin}${createGameUrl(game.id, game.title)}`
       });
     } catch {
       // Share was canceled by user - no action needed
@@ -461,35 +466,34 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
                 <div class="list-actions">
                   <!-- Top row actions -->
                   <div class="action-row">
-                    <q-btn :icon="`mdi-calendar-clock${getGameState(game.legacyId).reserved ? '' : '-outline'}`"
-                      @click="toggleReserved(game.legacyId)"
-                      :color="getGameState(game.legacyId).reserved ? 'primary' : 'grey-6'" flat dense round size="sm">
+                    <q-btn :icon="`mdi-calendar-clock${getGameState(game.id).reserved ? '' : '-outline'}`"
+                      @click="toggleReserved(game.id)" :color="getGameState(game.id).reserved ? 'primary' : 'grey-6'"
+                      flat dense round size="sm">
                       <q-tooltip class="bg-primary">
-                        {{ getGameState(game.legacyId).reserved ? t('removeReservation') : t('reserveGame') }}
+                        {{ getGameState(game.id).reserved ? t('removeReservation') : t('reserveGame') }}
                       </q-tooltip>
                     </q-btn>
 
-                    <q-btn :icon="`mdi-bookmark${getGameState(game.legacyId).bookmark ? '' : '-outline'}`"
-                      @click="toggleBookmark(game.legacyId)"
-                      :color="getGameState(game.legacyId).bookmark ? 'accent' : 'grey-6'" flat dense round size="sm">
+                    <q-btn :icon="`mdi-bookmark${getGameState(game.id).bookmark ? '' : '-outline'}`"
+                      @click="toggleBookmark(game.id)" :color="getGameState(game.id).bookmark ? 'accent' : 'grey-6'"
+                      flat dense round size="sm">
                       <q-tooltip class="bg-accent">
-                        {{ getGameState(game.legacyId).bookmark ? t('removeFromBookmarks') : t('addToBookmarks') }}
+                        {{ getGameState(game.id).bookmark ? t('removeFromBookmarks') : t('addToBookmarks') }}
                       </q-tooltip>
                     </q-btn>
 
-                    <q-btn :icon="`mdi-star${getGameState(game.legacyId).favorite ? '' : '-outline'}`"
-                      @click="toggleFavorite(game.legacyId)"
-                      :color="getGameState(game.legacyId).favorite ? 'secondary' : 'grey-6'" flat dense round size="sm">
+                    <q-btn :icon="`mdi-star${getGameState(game.id).favorite ? '' : '-outline'}`"
+                      @click="toggleFavorite(game.id)" :color="getGameState(game.id).favorite ? 'secondary' : 'grey-6'"
+                      flat dense round size="sm">
                       <q-tooltip class="bg-secondary">
-                        {{ getGameState(game.legacyId).favorite ? t('removeFromFavorites') : t('addToFavorites') }}
+                        {{ getGameState(game.id).favorite ? t('removeFromFavorites') : t('addToFavorites') }}
                       </q-tooltip>
                     </q-btn>
                   </div>
 
                   <!-- Bottom row actions -->
                   <div class="action-row q-mt-xs">
-                    <q-btn icon="mdi-qrcode" @click="toggleQRCode(game.legacyId)" flat dense round size="sm"
-                      color="grey-6">
+                    <q-btn icon="mdi-qrcode" @click="toggleQRCode(game.id)" flat dense round size="sm" color="grey-6">
                       <q-tooltip>{{ t('showQrCode') }}</q-tooltip>
                     </q-btn>
 
@@ -506,7 +510,7 @@ watch([viewMode, sortBy, sortDirection], savePreferences);
               </q-item-section>
 
               <!-- QR Code modal for each game -->
-              <QRCode :game="game" v-model:showQR="getGameState(game.legacyId).showQRCode" />
+              <QRCode :game="game" v-model:showQR="getGameState(game.id).showQRCode" />
             </q-item>
           </q-list>
         </div>

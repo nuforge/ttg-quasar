@@ -49,7 +49,6 @@ describe('Games Firebase Store', () => {
     components: ['board', 'cards', 'tokens'],
     approved: true,
     status: 'active',
-    legacyId: 1,
     createdAt: {
       seconds: 1234567890,
       nanoseconds: 0,
@@ -214,37 +213,37 @@ describe('Games Firebase Store', () => {
     });
   });
 
-  describe('Computed Properties - getGameByLegacyId', () => {
+  describe('Computed Properties - getGameById', () => {
     beforeEach(() => {
       store.games = [
-        Game.fromFirebase('game1', { ...mockFirebaseGame, legacyId: 1 }),
-        Game.fromFirebase('game2', { ...mockFirebaseGame, legacyId: 2, title: 'Legacy Game 2' }),
+        Game.fromFirebase('game1', { ...mockFirebaseGame }),
+        Game.fromFirebase('game2', { ...mockFirebaseGame, title: 'Game 2' }),
       ];
     });
 
-    it('should find game by legacy ID', () => {
-      const foundGame = store.getGameByLegacyId(1);
+    it('should find game by ID', () => {
+      const foundGame = store.getGameById('game1');
       expect(foundGame).toBeDefined();
-      expect(foundGame?.legacyId).toBe(1);
+      expect(foundGame?.id).toBe('game1');
       expect(foundGame?.title).toBe('Test Game');
     });
 
-    it('should return undefined for non-existent legacy ID', () => {
-      const notFound = store.getGameByLegacyId(999);
+    it('should return undefined for non-existent ID', () => {
+      const notFound = store.getGameById('nonexistent');
       expect(notFound).toBeUndefined();
     });
 
-    it('should handle games without legacy ID', () => {
+    it('should handle games with different IDs', () => {
       store.games.push(
         Game.fromFirebase('game3', {
           ...mockFirebaseGame,
-          legacyId: 0, // Use 0 instead of undefined for testing
-          title: 'No Legacy ID',
+          title: 'Game 3',
         }),
       );
 
-      const foundGame = store.getGameByLegacyId(3);
-      expect(foundGame).toBeUndefined();
+      const foundGame = store.getGameById('game3');
+      expect(foundGame).toBeDefined();
+      expect(foundGame?.id).toBe('game3');
     });
   });
 
@@ -555,7 +554,7 @@ describe('Games Firebase Store', () => {
       expect(store.approvedGames).toEqual([]);
       expect(store.gamesByGenre('Strategy')).toEqual([]);
       expect(store.getGameById('any')).toBeUndefined();
-      expect(store.getGameByLegacyId(1)).toBeUndefined();
+      expect(store.getGameById('nonexistent')).toBeUndefined();
       expect(store.searchGames('anything')).toEqual([]);
     });
 
@@ -657,7 +656,6 @@ describe('Games Firebase Store', () => {
         components: [],
         approved: true,
         status: 'active',
-        legacyId: 999,
         createdAt: {
           seconds: 1234567890,
           nanoseconds: 0,

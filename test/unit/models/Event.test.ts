@@ -20,8 +20,7 @@ describe('Event Model', () => {
   const baseEventData = {
     id: 1,
     firebaseDocId: 'firebase123',
-    legacyId: 100,
-    gameId: 10,
+    gameId: 'game10',
     title: 'Test Board Game Night',
     date: '2025-12-25',
     time: '19:00',
@@ -46,8 +45,7 @@ describe('Event Model', () => {
 
       expect(event.id).toBe(1);
       expect(event.firebaseDocId).toBe('firebase123');
-      expect(event.legacyId).toBe(100);
-      expect(event.gameId).toBe(10);
+      expect(event.gameId).toBe('game10');
       expect(event.title).toBe('Test Board Game Night');
       expect(event.date).toBe('2025-12-25');
       expect(event.time).toBe('19:00');
@@ -69,7 +67,7 @@ describe('Event Model', () => {
     it('should create Event with minimal data and defaults', () => {
       const minimalData = {
         id: 2,
-        gameId: 20,
+        gameId: 'game20',
         title: 'Minimal Event',
       };
 
@@ -77,8 +75,7 @@ describe('Event Model', () => {
 
       expect(event.id).toBe(2);
       expect(event.firebaseDocId).toBeUndefined();
-      expect(event.legacyId).toBeUndefined();
-      expect(event.gameId).toBe(20);
+      expect(event.gameId).toBe('game20');
       expect(event.title).toBe('Minimal Event');
       expect(event.date).toBe('');
       expect(event.time).toBe('');
@@ -437,13 +434,13 @@ describe('Event Model', () => {
           {
             id: 1,
             title: 'Event 1',
-            gameId: 10,
+            gameId: 'game10',
             date: '2025-01-01',
           },
           {
             id: 2,
             title: 'Event 2',
-            gameId: 20,
+            gameId: 'game20',
             date: '2025-01-02',
           },
         ];
@@ -465,16 +462,16 @@ describe('Event Model', () => {
       it('should handle array with partial data', () => {
         const eventsData = [
           { id: 1, title: 'Minimal Event' },
-          { gameId: 5, title: 'Another Event' },
+          { gameId: 'game5', title: 'Another Event' },
         ];
 
         const events = Event.fromJSON(eventsData);
 
         expect(events).toHaveLength(2);
         expect(events[0]?.id).toBe(1);
-        expect(events[0]?.gameId).toBe(0); // Default value
+        expect(events[0]?.gameId).toBe(''); // Default value
         expect(events[1]?.id).toBe(0); // Default value
-        expect(events[1]?.gameId).toBe(5);
+        expect(events[1]?.gameId).toBe('game5');
       });
     });
   });

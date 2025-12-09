@@ -106,15 +106,15 @@ export class FeaturedGamesService {
       score += 8;
     }
 
-    // Boost for games in user's upcoming events (match by legacyId)
-    const hasUpcomingEvent = upcomingEventsForUser.some((event) => event.gameId === game.legacyId);
+    // Boost for games in user's upcoming events
+    const hasUpcomingEvent = upcomingEventsForUser.some((event) => event.gameId === game.id);
     if (hasUpcomingEvent) {
       score += 15;
     }
 
-    // Boost for games with any upcoming events (popular games, match by legacyId)
+    // Boost for games with any upcoming events (popular games)
     const popularityBoost =
-      allUpcomingEvents?.filter((event) => event.gameId === game.legacyId).length || 0;
+      allUpcomingEvents?.filter((event) => event.gameId === game.id).length || 0;
     score += popularityBoost * 2;
 
     // Boost for user's preferred genres
@@ -158,13 +158,13 @@ export class FeaturedGamesService {
       reasons.push('You bookmarked this game');
     }
 
-    const hasUpcomingEvent = upcomingEventsForUser.some((event) => event.gameId === game.legacyId);
+    const hasUpcomingEvent = upcomingEventsForUser.some((event) => event.gameId === game.id);
     if (hasUpcomingEvent) {
       reasons.push('You have an upcoming event for this game');
     }
 
     const eventCount =
-      allUpcomingEvents?.filter((event) => event.gameId === game.legacyId).length || 0;
+      allUpcomingEvents?.filter((event) => event.gameId === game.id).length || 0;
     if (eventCount > 0) {
       reasons.push(`${eventCount} upcoming events`);
     }

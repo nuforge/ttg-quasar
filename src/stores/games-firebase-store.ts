@@ -45,10 +45,6 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     return (id: string) => games.value.find((game) => game.id === id);
   });
 
-  const getGameByLegacyId = computed(() => {
-    return (legacyId: number) => games.value.find((game) => game.legacyId === legacyId);
-  });
-
   /**
    * Get featured games using personalization algorithm
    * Currently uses random selection but structured for future enhancement
@@ -121,7 +117,6 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
       }
 
       const newGameData: FirebaseGame = {
-        legacyId: Date.now(), // Generate a legacy ID
         ...gameData,
         createdAt: serverTimestamp() as unknown as Timestamp,
         updatedAt: serverTimestamp() as unknown as Timestamp,
@@ -329,7 +324,6 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     featuredGames,
     gamesByGenre,
     getGameById,
-    getGameByLegacyId,
     searchGames,
 
     // Actions

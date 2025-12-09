@@ -35,7 +35,7 @@ const gamesStore = useGamesFirebaseStore();
 // Get the game associated with this event
 const game = computed<Game | null>(() => {
   if (!props.event.gameId) return null;
-  return gamesStore.games.find(g => g.legacyId === props.event.gameId) || null;
+  return gamesStore.games.find((g: Game) => g.id === props.event.gameId) || null;
 });
 
 // Get the app base URL for event links

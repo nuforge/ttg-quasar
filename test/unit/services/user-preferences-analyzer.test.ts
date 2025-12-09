@@ -12,7 +12,6 @@ describe('UserPreferencesAnalyzer', () => {
   ): Game => {
     return new Game(
       id,
-      1,
       'Test Game',
       genre,
       playerCount,
@@ -33,7 +32,7 @@ describe('UserPreferencesAnalyzer', () => {
     );
   };
 
-  const createTestEvent = (id: number, gameId: number, rsvpCount: number): Event => {
+  const createTestEvent = (id: number, gameId: string, rsvpCount: number): Event => {
     return new Event({
       id,
       firebaseDocId: `event${id}`,
@@ -84,10 +83,9 @@ describe('UserPreferencesAnalyzer', () => {
     });
 
     it('should calculate popularity from events and RSVPs', () => {
-      // Create games with specific legacyIds that match event gameIds
+      // Create games with specific ids that match event gameIds
       const game1 = new Game(
         'g1',
-        10,
         'Strategy Game',
         'Strategy',
         '2-4',
@@ -108,7 +106,6 @@ describe('UserPreferencesAnalyzer', () => {
       );
       const game2 = new Game(
         'g2',
-        20,
         'Party Game',
         'Party',
         '4-8',
@@ -128,8 +125,8 @@ describe('UserPreferencesAnalyzer', () => {
         'active',
       );
 
-      const event1 = createTestEvent(1, 10, 2); // gameId 10 matches game1.legacyId, 2 RSVPs
-      const event2 = createTestEvent(2, 20, 3); // gameId 20 matches game2.legacyId, 3 RSVPs
+      const event1 = createTestEvent(1, 'g1', 2); // gameId 'g1' matches game1.id, 2 RSVPs
+      const event2 = createTestEvent(2, 'g2', 3); // gameId 'g2' matches game2.id, 3 RSVPs
 
       const result = UserPreferencesAnalyzer.calculateGamePopularity(
         [game1, game2],

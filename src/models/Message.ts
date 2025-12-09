@@ -7,7 +7,7 @@ export interface MessageData {
   recipients: number[]; // For direct/group messages - make required
   groupName?: string; // For group messages
   eventId?: number | string; // For event comments - support string IDs for Firebase
-  gameId?: number; // For game comments
+  gameId?: string; // For game comments (Firebase document ID)
   conversationId?: string; // For conversation threading
   content: string;
   timestamp: string | Date; // Support both string and Date objects
@@ -23,7 +23,7 @@ export class Message {
   recipients: number[];
   groupName?: string | undefined;
   eventId?: number | string | undefined; // Support string IDs
-  gameId?: number | undefined;
+  gameId?: string | undefined;
   conversationId?: string | undefined;
   content: string;
   timestamp: Date; // Always use Date objects internally

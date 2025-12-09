@@ -159,7 +159,7 @@ export class CalendarFeedService {
     const footer = 'END:VCALENDAR';
 
     const eventEntries = filteredEvents.map((event) => {
-      const game = games.find((g) => g.legacyId === event.gameId) || null;
+      const game = games.find((g) => g.id === event.gameId) || null;
       return this.prepareEventForFeed(event, game, appBaseUrl);
     });
 

@@ -135,7 +135,7 @@ export class TTGEventSyncService {
       try {
         // Only sync upcoming events to avoid cluttering the calendar
         if (event.status === 'upcoming') {
-          const game = games.find((g) => g.legacyId === event.gameId);
+          const game = games.find((g) => g.id === event.gameId);
           await this.syncEventToCalendar(event, game);
           success++;
         } else {

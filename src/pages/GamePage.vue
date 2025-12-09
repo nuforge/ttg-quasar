@@ -58,8 +58,7 @@ const loadGame = () => {
 
 const gameComments = computed(() => {
   if (!game.value) return [];
-  // Use the legacyId from migrated Firebase games
-  return messagesStore.gameComments(game.value.legacyId);
+  return messagesStore.gameComments(game.value.id);
 });
 
 const sendGameComment = async (message: string) => {
@@ -68,7 +67,7 @@ const sendGameComment = async (message: string) => {
   try {
     await messagesStore.sendMessage({
       type: 'game',
-      gameId: game.value.legacyId,
+      gameId: game.value.id,
       content: message,
       recipients: [], // Game comments are public
     });
@@ -96,7 +95,7 @@ watch(
 
       // Subscribe to new game messages if we have a game
       if (game.value) {
-        unsubscribe = messagesStore.subscribeToGameMessages(game.value.legacyId);
+        unsubscribe = messagesStore.subscribeToGameMessages(game.value.id);
       }
     }
   }
@@ -115,7 +114,7 @@ onMounted(async () => {
 
   // Subscribe to game messages if we have a game
   if (game.value) {
-    unsubscribe = messagesStore.subscribeToGameMessages(game.value.legacyId);
+    unsubscribe = messagesStore.subscribeToGameMessages(game.value.id);
   }
 });
 

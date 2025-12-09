@@ -115,6 +115,7 @@ import { useGameNotificationsStore } from 'src/stores/game-notifications-store';
 import { useUserPreferencesStore } from 'src/stores/user-preferences-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import type { GameEventNotification } from 'src/services/game-event-notification-service';
+import type { Game } from 'src/models/Game';
 import { createGameUrl } from 'src/utils/slug';
 
 const router = useRouter();
@@ -206,7 +207,7 @@ const handleNotificationClick = async (notification: GameEventNotification) => {
     }
 
     // Find the game to get proper SEO URL
-    const game = gamesStore.games.find(g => g.legacyId === parseInt(notification.gameId));
+    const game = gamesStore.games.find((g: Game) => g.id === notification.gameId);
     if (game) {
         void router.push(createGameUrl(game.id, game.title));
     } else {

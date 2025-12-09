@@ -95,13 +95,6 @@ class GamesApiService {
     return this.firebaseStore.games.find((game) => game.id === id) || null;
   }
 
-  /**
-   * Get a game by legacy numeric ID (for backward compatibility)
-   */
-  async getGameByLegacyId(legacyId: number): Promise<Game | null> {
-    await this.firebaseStore.loadGames();
-    return this.firebaseStore.games.find((game) => game.legacyId === legacyId) || null;
-  }
 
   /**
    * Create a new game

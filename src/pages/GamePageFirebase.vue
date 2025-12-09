@@ -62,20 +62,16 @@ const findGame = async () => {
 
 const gameComments = computed(() => {
     if (!game.value) return [];
-    // For Firebase games, use the document ID; for legacy games, use legacy ID
-    const commentGameId = game.value.legacyId || parseInt(game.value.id) || 0;
-    return messagesStore.gameComments(commentGameId);
+    return messagesStore.gameComments(game.value.id);
 });
 
 const sendGameComment = async (message: string) => {
     if (!game.value || !authService.isAuthenticated.value) return;
 
     try {
-        // Use legacy ID for comment game ID to maintain compatibility
-        const commentGameId = game.value.legacyId || parseInt(game.value.id) || 0;
         await messagesStore.sendMessage({
             type: 'game',
-            gameId: commentGameId,
+            gameId: game.value.id,
             content: message,
             recipients: [], // Game comments are public
         });
@@ -99,8 +95,7 @@ onMounted(async () => {
 
     // Subscribe to game messages if we have a game
     if (game.value) {
-        const commentGameId = game.value.legacyId || parseInt(game.value.id) || 0;
-        unsubscribe = messagesStore.subscribeToGameMessages(commentGameId);
+        unsubscribe = messagesStore.subscribeToGameMessages(game.value.id);
     }
 });
 

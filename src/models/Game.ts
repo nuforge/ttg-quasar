@@ -2,7 +2,6 @@ import type { Timestamp } from 'firebase/firestore';
 
 export interface FirebaseGame {
   id?: string; // Firestore document ID
-  legacyId: number; // Original numeric ID for backward compatibility
   title: string;
   genre: string;
   numberOfPlayers: string;
@@ -27,8 +26,7 @@ export interface FirebaseGame {
 }
 
 export class Game {
-  id: string; // Now using Firebase document ID
-  legacyId: number; // Keep original numeric ID for compatibility
+  id: string; // Firebase document ID
   title: string;
   genre: string;
   numberOfPlayers: string;
@@ -53,7 +51,6 @@ export class Game {
 
   constructor(
     id: string,
-    legacyId: number,
     title: string,
     genre: string,
     numberOfPlayers: string,
@@ -76,7 +73,6 @@ export class Game {
     publisher?: string,
   ) {
     this.id = id;
-    this.legacyId = legacyId;
     this.title = title;
     this.genre = genre;
     this.numberOfPlayers = numberOfPlayers;
@@ -101,7 +97,7 @@ export class Game {
 
   get url(): string {
     const urlFriendlyTitle = this.title;
-    return `/${this.legacyId}/${urlFriendlyTitle}`;
+    return `/games/${this.id}/${urlFriendlyTitle}`;
   }
 
   // Legacy support - create from old JSON structure
@@ -120,7 +116,6 @@ export class Game {
   }): Game {
     return new Game(
       json.id?.toString() || Date.now().toString(), // Convert to string ID
-      json.id || 0, // Keep legacy ID
       json.title,
       json.genre,
       json.numberOfPlayers,
@@ -155,7 +150,6 @@ export class Game {
   static fromFirebase(id: string, data: FirebaseGame): Game {
     return new Game(
       id,
-      data.legacyId,
       data.title,
       data.genre,
       data.numberOfPlayers,
@@ -182,7 +176,6 @@ export class Game {
   // Convert to Firebase format
   toFirebase(): FirebaseGame {
     return {
-      legacyId: this.legacyId,
       title: this.title,
       genre: this.genre,
       numberOfPlayers: this.numberOfPlayers,

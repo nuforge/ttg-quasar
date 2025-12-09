@@ -51,7 +51,7 @@ export const useMessagesFirebaseStore = defineStore('messagesFirebase', () => {
   });
 
   const gameComments = computed(() => {
-    return (gameId: number) => {
+    return (gameId: string) => {
       return messages.value
         .filter((msg) => msg.type === 'game' && msg.gameId === gameId)
         .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
@@ -259,7 +259,7 @@ export const useMessagesFirebaseStore = defineStore('messagesFirebase', () => {
     }
   };
 
-  const subscribeToGameMessages = (gameId: number) => {
+  const subscribeToGameMessages = (gameId: string) => {
     const q = query(
       collection(db, 'messages'),
       where('type', '==', 'game'),

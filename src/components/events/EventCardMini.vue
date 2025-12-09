@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
 import type { Event } from 'src/models/Event';
+import type { Game } from 'src/models/Game';
 import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import EventQRCode from 'src/components/qrcode/EventQRCode.vue';
@@ -63,7 +64,7 @@ const playerStatus = computed(() => {
 
 // Replace gameTitle with full game object
 const game = computed(() => {
-  return gamesStore.games.find(g => g.legacyId === props.event.gameId) || null;
+  return gamesStore.games.find((g: Game) => g.id === props.event.gameId) || null;
 });
 
 // Simple time formatter that converts 24h to 12h format
