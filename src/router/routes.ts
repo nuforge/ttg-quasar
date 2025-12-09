@@ -118,6 +118,18 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/admin/events',
+    component: () => import('layouts/MainLayout.vue'),
+    beforeEnter: requireAuth,
+    children: [
+      {
+        path: '',
+        component: () => import('pages/AdminEvents.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true },
+      },
+    ],
+  },
 
   // Other routes
   {
