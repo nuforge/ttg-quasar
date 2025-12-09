@@ -1,3 +1,167 @@
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useQuasar } from 'quasar';
+import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
+import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
+import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
+import GoogleCalendarSettings from 'src/components/admin/GoogleCalendarSettings.vue';
+
+const $q = useQuasar();
+const playersStore = usePlayersFirebaseStore();
+const gamesStore = useGamesFirebaseStore();
+const eventsStore = useEventsFirebaseStore();
+
+const backupLoading = ref(false);
+const refreshLoading = ref(false);
+
+// Development mode check
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+// Stats
+const totalUsers = computed(() => playersStore.players.length);
+const totalGames = computed(() => gamesStore.games.length);
+const totalEvents = computed(() => eventsStore.events.length);
+const totalMessages = computed(() => 0); // Placeholder
+
+// Development mode warning
+const showDevModeWarning = computed(() => {
+  return isDevelopment && playersStore.userRoles.size === 0;
+});
+
+// System status
+const firebaseStatus = computed(() => ({
+  color: 'positive',
+  message: 'Connected and operational'
+}));
+
+const authStatus = computed(() => ({
+  color: 'positive',
+  message: 'Authentication services active'
+}));
+
+const dataStatus = computed(() => ({
+  color: 'positive',
+  message: 'All data sources synchronized'
+}));
+
+// Recent activity (mock data for now)
+const recentActivity = ref([
+  {
+    id: 1,
+    title: 'New user registered',
+    timestamp: '2 minutes ago',
+    color: 'primary',
+    icon: 'person_add'
+  },
+  {
+    id: 2,
+    title: 'Game submission approved',
+    timestamp: '15 minutes ago',
+    color: 'positive',
+    icon: 'check_circle'
+  },
+  {
+    id: 3,
+    title: 'Event created',
+    timestamp: '1 hour ago',
+    color: 'secondary',
+    icon: 'event'
+  },
+  {
+    id: 4,
+    title: 'User role updated',
+    timestamp: '2 hours ago',
+    color: 'warning',
+    icon: 'security'
+  }
+]);
+
+// Actions
+const backupData = async () => {
+  backupLoading.value = true;
+  try {
+    // Simulate backup process
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    $q.notify({
+      type: 'positive',
+      message: 'Data backup completed successfully'
+    });
+  } catch (error) {
+    console.error('Backup failed:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Backup failed'
+    });
+  } finally {
+    backupLoading.value = false;
+  }
+};
+
+const refreshCache = async () => {
+  refreshLoading.value = true;
+  try {
+    await Promise.all([
+      playersStore.fetchAllPlayers(),
+      // gamesStore.loadGames(), // Uncomment when needed
+      // eventsStore.fetchAllEvents() // Uncomment when available
+    ]);
+    $q.notify({
+      type: 'positive',
+      message: 'Cache refreshed successfully'
+    });
+  } catch (error) {
+    console.error('Failed to refresh cache:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Failed to refresh cache'
+    });
+  } finally {
+    refreshLoading.value = false;
+  }
+};
+
+// Debug permissions function
+const debugPermissions = async () => {
+  try {
+    // Refresh permissions data
+    await playersStore.initializeAdminData();
+
+    $q.notify({
+      type: 'info',
+      message: 'Debug info logged to console. Check browser dev tools.',
+      position: 'top'
+    });
+  } catch (error) {
+    console.error('Debug permissions error:', error);
+    $q.notify({
+      type: 'negative',
+      message: 'Debug failed. Check console for details.',
+      position: 'top'
+    });
+  }
+};
+
+const scrollToCalendarSettings = () => {
+  // Scroll to the Google Calendar settings section
+  const element = document.querySelector('.google-calendar-section');
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+// Initialize data
+onMounted(async () => {
+  try {
+    await Promise.all([
+      playersStore.fetchAllPlayers(),
+      playersStore.initializeAdminData()
+    ]);
+  } catch (error) {
+    console.error('Error loading admin dashboard:', error);
+  }
+});
+</script>
+
 <template>
   <q-page class="admin-dashboard">
     <!-- Development Mode Warning -->
@@ -224,170 +388,6 @@
     </div>
   </q-page>
 </template>
-
-<script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useQuasar } from 'quasar';
-import { usePlayersFirebaseStore } from 'src/stores/players-firebase-store';
-import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
-import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
-import GoogleCalendarSettings from 'src/components/admin/GoogleCalendarSettings.vue';
-
-const $q = useQuasar();
-const playersStore = usePlayersFirebaseStore();
-const gamesStore = useGamesFirebaseStore();
-const eventsStore = useEventsFirebaseStore();
-
-const backupLoading = ref(false);
-const refreshLoading = ref(false);
-
-// Development mode check
-const isDevelopment = process.env.NODE_ENV === 'development';
-
-// Stats
-const totalUsers = computed(() => playersStore.players.length);
-const totalGames = computed(() => gamesStore.games.length);
-const totalEvents = computed(() => eventsStore.events.length);
-const totalMessages = computed(() => 0); // Placeholder
-
-// Development mode warning
-const showDevModeWarning = computed(() => {
-  return isDevelopment && playersStore.userRoles.size === 0;
-});
-
-// System status
-const firebaseStatus = computed(() => ({
-  color: 'positive',
-  message: 'Connected and operational'
-}));
-
-const authStatus = computed(() => ({
-  color: 'positive',
-  message: 'Authentication services active'
-}));
-
-const dataStatus = computed(() => ({
-  color: 'positive',
-  message: 'All data sources synchronized'
-}));
-
-// Recent activity (mock data for now)
-const recentActivity = ref([
-  {
-    id: 1,
-    title: 'New user registered',
-    timestamp: '2 minutes ago',
-    color: 'primary',
-    icon: 'person_add'
-  },
-  {
-    id: 2,
-    title: 'Game submission approved',
-    timestamp: '15 minutes ago',
-    color: 'positive',
-    icon: 'check_circle'
-  },
-  {
-    id: 3,
-    title: 'Event created',
-    timestamp: '1 hour ago',
-    color: 'secondary',
-    icon: 'event'
-  },
-  {
-    id: 4,
-    title: 'User role updated',
-    timestamp: '2 hours ago',
-    color: 'warning',
-    icon: 'security'
-  }
-]);
-
-// Actions
-const backupData = async () => {
-  backupLoading.value = true;
-  try {
-    // Simulate backup process
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    $q.notify({
-      type: 'positive',
-      message: 'Data backup completed successfully'
-    });
-  } catch (error) {
-    console.error('Backup failed:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Backup failed'
-    });
-  } finally {
-    backupLoading.value = false;
-  }
-};
-
-const refreshCache = async () => {
-  refreshLoading.value = true;
-  try {
-    await Promise.all([
-      playersStore.fetchAllPlayers(),
-      // gamesStore.loadGames(), // Uncomment when needed
-      // eventsStore.fetchAllEvents() // Uncomment when available
-    ]);
-    $q.notify({
-      type: 'positive',
-      message: 'Cache refreshed successfully'
-    });
-  } catch (error) {
-    console.error('Failed to refresh cache:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Failed to refresh cache'
-    });
-  } finally {
-    refreshLoading.value = false;
-  }
-};
-
-// Debug permissions function
-const debugPermissions = async () => {
-  try {
-    // Refresh permissions data
-    await playersStore.initializeAdminData();
-
-    $q.notify({
-      type: 'info',
-      message: 'Debug info logged to console. Check browser dev tools.',
-      position: 'top'
-    });
-  } catch (error) {
-    console.error('Debug permissions error:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Debug failed. Check console for details.',
-      position: 'top'
-    });
-  }
-};
-
-const scrollToCalendarSettings = () => {
-  // Scroll to the Google Calendar settings section
-  const element = document.querySelector('.google-calendar-section');
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
-  }
-};
-
-// Initialize data
-onMounted(async () => {
-  try {
-    await Promise.all([
-      playersStore.fetchAllPlayers(),
-      playersStore.initializeAdminData()
-    ]);
-  } catch (error) {
-    console.error('Error loading admin dashboard:', error);
-  }
-});
-</script>
 
 <style scoped lang="scss">
 .admin-dashboard {

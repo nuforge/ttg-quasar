@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useCurrentUser } from 'vuefire';
 import QRDialog from 'src/components/qrcode/QRDialog.vue';
 import logoUrl from 'src/assets/ttg-logo.svg';
 
 const leftDrawerOpen = ref(true);
 const qrdialog = ref(false);
-const currentUser = useCurrentUser();
 </script>
 
 <template>
@@ -92,15 +90,6 @@ const currentUser = useCurrentUser();
           </q-item-section>
         </q-item>
 
-        <q-item v-if="currentUser" clickable v-ripple to="/calendar/subscription">
-          <q-item-section avatar>
-            <q-icon name="mdi-calendar-export" />
-          </q-item-section>
-
-          <q-item-section>
-            {{ $t('calendar.subscription.navTitle') }}
-          </q-item-section>
-        </q-item>
         <q-item clickable v-ripple @click="qrdialog = true">
           <q-item-section avatar>
             <q-icon name="mdi-qrcode-scan" />
