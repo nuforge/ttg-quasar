@@ -103,7 +103,7 @@ onMounted(async () => {
                 <q-item-label>{{ $t('gameShelf') }}</q-item-label>
               </q-item-section>
             </q-item>
-
+            
             <!-- Admin section (only show if user is admin) -->
             <template v-if="isAdmin">
               <q-separator />
