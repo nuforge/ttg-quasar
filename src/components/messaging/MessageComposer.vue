@@ -7,8 +7,8 @@ const props = defineProps<{
   recipientId?: number;
   groupName?: string;
   replyTo?: Message;
-  gameId?: number;
-  eventId?: number;
+  gameId?: string;
+  eventId?: number | string;
 }>();
 
 const emit = defineEmits<{

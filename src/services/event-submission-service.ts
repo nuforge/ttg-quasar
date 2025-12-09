@@ -198,7 +198,7 @@ class EventSubmissionService {
       if (submission.gameId) {
         try {
           const gamesStore = useGamesFirebaseStore();
-          const game = gamesStore.getGameById(submission.gameId.toString());
+          const game = gamesStore.getGameById(submission.gameId);
 
           if (game) {
             // Create an Event object for the notification service

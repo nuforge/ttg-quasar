@@ -77,7 +77,7 @@ describe('EventSubmissionService', () => {
 
   const mockSubmissionData: CreateEventSubmissionData = {
     title: 'Test Event',
-    gameId: 1,
+    gameId: 'game1',
     startDate: '2025-09-01',
     startTime: '19:00',
     endDate: '2025-09-01',

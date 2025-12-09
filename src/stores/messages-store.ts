@@ -124,7 +124,7 @@ export const useMessagesStore = defineStore('messages', {
     },
 
     // Get game comments
-    gameComments: (state) => (gameId: number) => {
+    gameComments: (state) => (gameId: string) => {
       return state.messages
         .filter((msg) => msg.type === 'game' && msg.gameId === gameId)
         .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());

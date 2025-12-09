@@ -37,15 +37,7 @@ const findGame = async () => {
         }
 
         // Try to find by Firebase document ID
-        let foundGame = gamesStore.getGameById(gameId.value!);
-
-        // If not found, try to find by legacy ID (numeric)
-        if (!foundGame && gameId.value) {
-            const numericId = parseInt(gameId.value);
-            if (!isNaN(numericId)) {
-                foundGame = gamesStore.getGameByLegacyId(numericId);
-            }
-        }
+        const foundGame = gamesStore.getGameById(gameId.value!);
 
         game.value = foundGame || null;
 

@@ -151,7 +151,6 @@ describe('UserPreferencesAnalyzer', () => {
       // Make different game completely different in all scored characteristics
       const differentGame = new Game(
         'd1',
-        1,
         'Different Game',
         'Party',
         '6-8',
@@ -191,7 +190,7 @@ describe('UserPreferencesAnalyzer', () => {
     it('should analyze user patterns comprehensively', () => {
       const favorites = [createTestGame('f1', 'Strategy', '2-4', '60 minutes')];
       const bookmarks = [createTestGame('b1', 'Party', '4-8', '30 minutes')];
-      const events = [createTestEvent(1, 1, 2)];
+      const events = [createTestEvent(1, 'f1', 2)];
 
       const result = UserPreferencesAnalyzer.analyzeUserPatterns(favorites, bookmarks, events);
 

@@ -24,7 +24,7 @@ const playersStore = usePlayersFirebaseStore();
 
 // Component state
 const loading = ref(false);
-const selectedGames = ref<number[]>([]);
+const selectedGames = ref<string[]>([]);
 const filterOptions = ref({
   rsvpOnly: true,
   interestedOnly: false,

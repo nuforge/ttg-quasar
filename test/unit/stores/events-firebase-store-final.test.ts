@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
 import { Event, type RSVP } from 'src/models/Event';
-import { Player } from 'src/models/Player';
 
 // Mock Firebase Firestore with working pattern from players-firebase-store.test.ts
 vi.mock('firebase/firestore', () => ({
@@ -98,7 +97,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         id: 1,
         title: 'Test Event',
         host: { name: 'Host', email: 'host@test.com', phone: '123' },
-        gameId: 1,
+        gameId: 'game1',
         date: '2025-09-01',
         time: '19:00',
         endTime: '23:00',
@@ -124,7 +123,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 1,
           title: 'Upcoming Event 1',
           host: { name: 'Host', email: 'host@test.com', phone: '123' },
-          gameId: 1,
+          gameId: 'game1',
           date: '2025-09-15',
           time: '19:00',
           endTime: '23:00',
@@ -138,7 +137,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 2,
           title: 'Completed Event',
           host: { name: 'Host', email: 'host@test.com', phone: '123' },
-          gameId: 2,
+          gameId: 'game2',
           date: '2025-08-01',
           time: '19:00',
           endTime: '23:00',
@@ -152,7 +151,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 3,
           title: 'Upcoming Event 2',
           host: { name: 'Host', email: 'host@test.com', phone: '123' },
-          gameId: 1,
+          gameId: 'game1',
           date: '2025-09-10',
           time: '18:00',
           endTime: '22:00',
@@ -179,16 +178,16 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
     });
 
     it('should group events by game ID correctly', () => {
-      const game1Events = store.eventsByGame(1);
-      const game2Events = store.eventsByGame(2);
-      const nonExistentGame = store.eventsByGame(999);
+      const game1Events = store.eventsByGame('game1');
+      const game2Events = store.eventsByGame('game2');
+      const nonExistentGame = store.eventsByGame('game999');
 
       expect(game1Events).toHaveLength(2);
       expect(game2Events).toHaveLength(1);
       expect(nonExistentGame).toHaveLength(0);
 
-      expect(game1Events.every((event) => event.gameId === 1)).toBe(true);
-      expect(game2Events[0]?.gameId).toBe(2);
+      expect(game1Events.every((event) => event.gameId === 'game1')).toBe(true);
+      expect(game2Events[0]?.gameId).toBe('game2');
     });
 
     it('should handle myEvents computation', () => {
@@ -221,7 +220,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         id: 1,
         title: 'RSVP Test Event',
         host: { name: 'Host', email: 'host@test.com', phone: '123' },
-        gameId: 1,
+        gameId: 'game1',
         date: '2025-09-01',
         time: '19:00',
         endTime: '23:00',
@@ -433,7 +432,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 1,
           title: 'D&D Campaign Session 1',
           host: { name: 'DM Alice', email: 'alice@test.com', phone: '123' },
-          gameId: 5,
+          gameId: 'game5',
           date: '2025-09-01',
           time: '19:00',
           endTime: '23:00',
@@ -449,7 +448,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 2,
           title: 'Board Game Night',
           host: { name: 'Host Bob', email: 'bob@test.com', phone: '456' },
-          gameId: 15,
+          gameId: 'game15',
           date: '2025-09-02',
           time: '18:00',
           endTime: '22:00',
@@ -462,7 +461,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 3,
           title: 'Magic Tournament',
           host: { name: 'Judge Charlie', email: 'charlie@test.com', phone: '789' },
-          gameId: 10,
+          gameId: 'game10',
           date: '2025-09-03',
           time: '12:00',
           endTime: '18:00',
@@ -714,7 +713,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
     it('should simulate createEvent validation logic', () => {
       const newEventData = {
         title: 'New Test Event',
-        gameId: 1,
+        gameId: 'game1',
         date: '2025-09-15',
         time: '19:00',
         endTime: '23:00',
@@ -747,7 +746,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         id: 1,
         title: 'Join Test Event',
         host: { name: 'Host', email: 'host@test.com', phone: '123' },
-        gameId: 1,
+        gameId: 'game1',
         date: '2025-09-01',
         time: '19:00',
         endTime: '23:00',
@@ -787,7 +786,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         id: 1,
         title: 'Leave Test Event',
         host: { name: 'Host', email: 'host@test.com', phone: '123' },
-        gameId: 1,
+        gameId: 'game1',
         date: '2025-09-01',
         time: '19:00',
         endTime: '23:00',
@@ -822,7 +821,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         id: 1,
         title: 'Original Title',
         host: { name: 'Host', email: 'host@test.com', phone: '123' },
-        gameId: 1,
+        gameId: 'game1',
         date: '2025-09-01',
         time: '19:00',
         endTime: '23:00',
@@ -863,7 +862,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         id: 1,
         title: 'Full Event',
         host: { name: 'Host', email: 'host@test.com', phone: '123' },
-        gameId: 1,
+        gameId: 'game1',
         date: '2025-09-01',
         time: '19:00',
         endTime: '23:00',
@@ -971,7 +970,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         gameId: null,
         date: '',
         time: null,
-        host: {} as any,
+        host: {} as { name?: string; email?: string; phone?: string },
         rsvps: null,
       };
 
@@ -985,7 +984,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
             email: malformedData.host?.email || 'unknown@example.com',
             phone: malformedData.host?.phone || '000-000-0000',
           },
-          gameId: malformedData.gameId || 0,
+          gameId: malformedData.gameId || '',
           date: malformedData.date || '1970-01-01',
           time: malformedData.time || '00:00',
           endTime: '01:00',
@@ -1032,7 +1031,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         id: 1,
         title: 'Complex D&D Session',
         host: { name: 'DM John', email: 'dm@test.com', phone: '555-0123' },
-        gameId: 5,
+        gameId: 'game5',
         date: '2025-09-15',
         time: '19:00',
         endTime: '23:30',
@@ -1083,7 +1082,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 1,
           title: 'Evening Event',
           host: { name: 'Host', email: 'host@test.com', phone: '123' },
-          gameId: 1,
+          gameId: 'game1',
           date: '2025-09-01',
           time: '20:00',
           endTime: '23:00',
@@ -1097,7 +1096,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 2,
           title: 'Morning Event',
           host: { name: 'Host', email: 'host@test.com', phone: '123' },
-          gameId: 1,
+          gameId: 'game1',
           date: '2025-09-01',
           time: '10:00',
           endTime: '14:00',
@@ -1111,7 +1110,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
           id: 3,
           title: 'Completed Event',
           host: { name: 'Host', email: 'host@test.com', phone: '123' },
-          gameId: 1,
+          gameId: 'game1',
           date: '2025-08-15',
           time: '19:00',
           endTime: '23:00',
@@ -1144,7 +1143,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         id: 1,
         title: 'Solo Planning Session',
         host: { name: 'Planner', email: 'planner@test.com', phone: '123' },
-        gameId: 99,
+        gameId: 'game99',
         date: '2025-09-01',
         time: '19:00',
         endTime: '20:00',
@@ -1162,7 +1161,7 @@ describe('Events Firebase Store - Business Logic Comprehensive Testing', () => {
         id: 2,
         title: 'Convention Tournament',
         host: { name: 'Organizer', email: 'org@test.com', phone: '456' },
-        gameId: 20,
+        gameId: 'game20',
         date: '2025-09-01',
         time: '09:00',
         endTime: '18:00',

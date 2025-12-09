@@ -2,7 +2,7 @@ import type { Event } from 'src/models/Event';
 import type { Game } from 'src/models/Game';
 
 export interface CalendarFeedFilters {
-  gameIds?: number[];
+  gameIds?: string[];
   rsvpOnly?: boolean;
   interestedOnly?: boolean;
   upcomingOnly?: boolean;

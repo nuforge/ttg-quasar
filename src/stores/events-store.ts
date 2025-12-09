@@ -31,6 +31,7 @@ export const useEventsStore = defineStore('events', {
         const processedEventsData = eventsData.map((event) => ({
           ...event,
           id: typeof event.id === 'string' ? parseInt(event.id, 10) : event.id,
+          gameId: typeof event.gameId === 'number' ? event.gameId.toString() : (event.gameId || ''),
           status: event.status as EventStatus,
           rsvps: event.rsvps?.map((rsvp) => ({
             ...rsvp,

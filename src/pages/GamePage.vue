@@ -33,15 +33,7 @@ const loadGame = () => {
 
   try {
     // Get game from Firebase store
-    let foundGame = gamesStore.getGameById(gameId.value);
-
-    // If not found by document ID, try by legacy ID (for migrated games)
-    if (!foundGame) {
-      const numericId = parseInt(gameId.value);
-      if (!isNaN(numericId)) {
-        foundGame = gamesStore.getGameByLegacyId(numericId);
-      }
-    }
+    const foundGame = gamesStore.getGameById(gameId.value);
 
     game.value = foundGame || null;
 

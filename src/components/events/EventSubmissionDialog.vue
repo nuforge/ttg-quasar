@@ -284,7 +284,7 @@ const submitEvent = async () => {
       ...(minPlayersValue.value && { minPlayers: parseInt(minPlayersValue.value) }),
       ...(maxPlayersValue.value && { maxPlayers: parseInt(maxPlayersValue.value) }),
       ...(estimatedAttendanceValue.value && { estimatedAttendance: parseInt(estimatedAttendanceValue.value) }),
-      ...(gameIdValue.value && { gameId: parseInt(gameIdValue.value) }),
+      ...(gameIdValue.value && { gameId: gameIdValue.value }),
       ...(contactPhoneValue.value && { contactPhone: contactPhoneValue.value }),
       ...(isRecurringValue.value && { isRecurring: true }),
       ...(isRecurringValue.value && recurringPatternValue.value && { recurringPattern: recurringPatternValue.value })

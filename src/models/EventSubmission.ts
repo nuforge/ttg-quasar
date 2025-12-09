@@ -27,7 +27,7 @@ export interface EventSubmission {
   estimatedAttendance?: number;
 
   // Game Info (if applicable)
-  gameId?: number;
+  gameId?: string;
   gameName?: string;
 
   // Submission Info
@@ -88,7 +88,7 @@ export interface CreateEventSubmissionData {
   minPlayers?: number;
   maxPlayers?: number;
   estimatedAttendance?: number;
-  gameId?: number;
+  gameId?: string;
   gameName?: string;
   tags?: string[];
   isRecurring?: boolean;

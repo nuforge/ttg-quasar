@@ -40,7 +40,7 @@ describe('CalendarFeedService', () => {
       new Event({
         id: 1,
         firebaseDocId: 'event1',
-        gameId: 1,
+        gameId: 'game1',
         title: 'Board Game Night',
         date: '2025-09-15',
         time: '19:00',
@@ -60,7 +60,7 @@ describe('CalendarFeedService', () => {
       new Event({
         id: 2,
         firebaseDocId: 'event2',
-        gameId: 2,
+        gameId: 'game2',
         title: 'Strategy Game Tournament',
         date: '2025-09-20',
         time: '14:00',
@@ -79,7 +79,6 @@ describe('CalendarFeedService', () => {
     mockGames = [
       new Game(
         'game1',
-        1,
         'Settlers of Catan',
         'Strategy',
         '3-4',
@@ -100,7 +99,6 @@ describe('CalendarFeedService', () => {
       ),
       new Game(
         'game2',
-        2,
         'Ticket to Ride',
         'Family',
         '2-5',
@@ -212,7 +210,7 @@ describe('CalendarFeedService', () => {
       const options = {
         userId: 123,
         filters: {
-          gameIds: [1],
+          gameIds: ['game1'],
         } as CalendarFeedFilters,
       };
 
@@ -228,7 +226,7 @@ describe('CalendarFeedService', () => {
       const pastEvent = new Event({
         id: 3,
         firebaseDocId: 'event3',
-        gameId: 1,
+        gameId: 'game1',
         title: 'Past Event',
         date: '2025-08-01',
         time: '19:00',
@@ -332,7 +330,7 @@ describe('CalendarFeedService', () => {
     it('should handle invalid date format', () => {
       const invalidEvent = new Event({
         id: 99,
-        gameId: 1,
+        gameId: 'game1',
         title: 'Invalid Event',
         date: 'invalid-date',
         time: '19:00',
@@ -359,7 +357,7 @@ describe('CalendarFeedService', () => {
     it('should handle invalid time format', () => {
       const invalidEvent = new Event({
         id: 99,
-        gameId: 1,
+        gameId: 'game1',
         title: 'Invalid Event',
         date: '2025-09-15',
         time: 'invalid-time',
