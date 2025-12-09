@@ -93,8 +93,9 @@ service cloud.firestore {
     }
         // Helper function to check admin permissions
     function isAdmin(userId) {
-      let userRole = get(/databases/(default)/documents/userRoles/$(userId));
-      return userRole.data != null && 
+      let userRole = get(/databases/$(database)/documents/userRoles/$(userId));
+      return userRole != null && 
+             userRole.data != null && 
              userRole.data.permissions != null && 
              userRole.data.permissions is list &&
              userRole.data.permissions.hasAny(['admin']);
