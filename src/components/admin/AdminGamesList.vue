@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { Game } from 'src/models/Game';
 import { getGameImageUrl } from 'src/composables/useGameImage';
+
+const { t } = useI18n();
 
 interface Props {
   games: Game[];
@@ -34,7 +37,7 @@ const pagination = ref({
 });
 
 // Table columns definition
-const columns = [
+const columns = computed(() => [
   {
     name: 'select',
     label: '',
@@ -51,45 +54,45 @@ const columns = [
   },
   {
     name: 'title',
-    label: 'Title',
+    label: t('title'),
     field: 'title',
     align: 'left' as const,
     sortable: true,
   },
   {
     name: 'genre',
-    label: 'Genre',
+    label: t('genre'),
     field: 'genre',
     align: 'left' as const,
     sortable: true,
   },
   {
     name: 'players',
-    label: 'Players',
+    label: t('players'),
     field: 'numberOfPlayers',
     align: 'center' as const,
   },
   {
     name: 'status',
-    label: 'Status',
+    label: t('status'),
     field: 'status',
     align: 'center' as const,
     sortable: true,
   },
   {
     name: 'createdAt',
-    label: 'Added',
+    label: t('dateAdded'),
     field: 'createdAt',
     align: 'left' as const,
     sortable: true,
   },
   {
     name: 'actions',
-    label: 'Actions',
+    label: t('actions'),
     field: 'id',
     align: 'right' as const,
   },
-];
+]);
 
 // Computed
 const allSelected = computed(() => {
@@ -111,9 +114,9 @@ const getStatusColor = (game: Game): string => {
 };
 
 const getStatusLabel = (game: Game): string => {
-  if (game.approved && game.status === 'active') return 'Approved';
-  if (game.status === 'pending') return 'Pending';
-  if (game.status === 'inactive') return 'Rejected';
+  if (game.approved && game.status === 'active') return t('approved');
+  if (game.status === 'pending') return t('pending');
+  if (game.status === 'inactive') return t('rejected');
   return game.status;
 };
 
@@ -146,9 +149,9 @@ const toggleSelectAll = () => {
     <!-- Empty state -->
     <q-card-section v-if="!loading && games.length === 0" class="text-center q-pa-xl">
       <q-icon name="mdi-gamepad-variant-outline" size="64px" color="grey-5" />
-      <h6 class="text-h6 q-mt-md q-mb-sm">No games found</h6>
+      <h6 class="text-h6 q-mt-md q-mb-sm">{{ t('noGamesFound') }}</h6>
       <p class="text-body2 text-grey-6">
-        Try adjusting your filters or add a new game.
+        {{ t('tryAdjustingFiltersOrAdd') }}
       </p>
     </q-card-section>
 
@@ -168,13 +171,13 @@ const toggleSelectAll = () => {
       <!-- Header checkbox -->
       <template #header-cell-select>
         <q-th class="text-center">
-          <q-checkbox
-            :model-value="allSelected"
-            :indeterminate="someSelected"
-            @update:model-value="toggleSelectAll"
-            :disable="loading || processing"
-            aria-label="Select all games"
-          />
+            <q-checkbox
+              :model-value="allSelected"
+              :indeterminate="someSelected"
+              @update:model-value="toggleSelectAll"
+              :disable="loading || processing"
+              :aria-label="t('selectAllGames')"
+            />
         </q-th>
       </template>
 
@@ -242,7 +245,7 @@ const toggleSelectAll = () => {
           <q-td key="createdAt" :props="tableProps">
             <div>{{ formatDate(tableProps.row.createdAt) }}</div>
             <div v-if="tableProps.row.createdBy" class="text-caption text-grey-6">
-              by {{ tableProps.row.createdBy }}
+              {{ t('by') }} {{ tableProps.row.createdBy }}
             </div>
           </q-td>
 
@@ -258,9 +261,9 @@ const toggleSelectAll = () => {
                 color="info"
                 @click="emit('edit', tableProps.row)"
                 :disable="processing"
-                aria-label="Edit game"
+                :aria-label="t('editGame')"
               >
-                <q-tooltip>Edit</q-tooltip>
+                <q-tooltip>{{ t('edit') }}</q-tooltip>
               </q-btn>
 
               <!-- Approve (only for non-approved) -->
@@ -273,9 +276,9 @@ const toggleSelectAll = () => {
                 color="positive"
                 @click="emit('approve', tableProps.row)"
                 :disable="processing"
-                aria-label="Approve game"
+                :aria-label="t('approveGame')"
               >
-                <q-tooltip>Approve</q-tooltip>
+                <q-tooltip>{{ t('approve') }}</q-tooltip>
               </q-btn>
 
               <!-- Reject (only for pending) -->
@@ -288,9 +291,9 @@ const toggleSelectAll = () => {
                 color="warning"
                 @click="emit('reject', tableProps.row)"
                 :disable="processing"
-                aria-label="Reject game"
+                :aria-label="t('rejectGame')"
               >
-                <q-tooltip>Reject</q-tooltip>
+                <q-tooltip>{{ t('reject') }}</q-tooltip>
               </q-btn>
 
               <!-- Delete -->
@@ -302,9 +305,9 @@ const toggleSelectAll = () => {
                 color="negative"
                 @click="emit('delete', tableProps.row)"
                 :disable="processing"
-                aria-label="Delete game"
+                :aria-label="t('deleteGame')"
               >
-                <q-tooltip>Delete</q-tooltip>
+                <q-tooltip>{{ t('delete') }}</q-tooltip>
               </q-btn>
             </q-btn-group>
           </q-td>
@@ -315,7 +318,7 @@ const toggleSelectAll = () => {
       <template #bottom="scope">
         <div class="row items-center justify-between full-width q-pa-sm">
           <div class="text-caption text-grey-6">
-            {{ selectedIds.size > 0 ? `${selectedIds.size} selected` : '' }}
+            {{ selectedIds.size > 0 ? `${selectedIds.size} ${t('selected')}` : '' }}
           </div>
           <q-pagination
             v-model="scope.pagination.page"
@@ -331,7 +334,7 @@ const toggleSelectAll = () => {
           <q-select
             v-model="scope.pagination.rowsPerPage"
             :options="[5, 10, 20, 50]"
-            label="Per page"
+            :label="t('perPage')"
             dense
             borderless
             style="min-width: 80px"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
 import { useGameAdmin } from 'src/composables/useGameAdmin';
 import { authService } from 'src/services/auth-service';
@@ -9,6 +10,8 @@ import AdminGameFilters from 'src/components/admin/AdminGameFilters.vue';
 import AdminGamesList from 'src/components/admin/AdminGamesList.vue';
 import AdminBulkActions from 'src/components/admin/AdminBulkActions.vue';
 import GameFormDialog from 'src/components/games/GameFormDialog.vue';
+
+const { t } = useI18n();
 
 const $q = useQuasar();
 const gamesStore = useGamesFirebaseStore();
@@ -71,8 +74,8 @@ const handleDelete = async (game: Game) => {
 // Bulk actions with confirmation
 const handleBulkApprove = () => {
   $q.dialog({
-    title: 'Bulk Approve',
-    message: `Are you sure you want to approve ${gameAdmin.selectedCount.value} game(s)?`,
+    title: t('approveAll'),
+    message: t('areYouSureApprove', { count: gameAdmin.selectedCount.value }),
     cancel: true,
     persistent: true,
   }).onOk(() => {
@@ -82,12 +85,12 @@ const handleBulkApprove = () => {
 
 const handleBulkReject = () => {
   $q.dialog({
-    title: 'Bulk Reject',
-    message: `Please provide a reason for rejecting ${gameAdmin.selectedCount.value} game(s):`,
+    title: t('rejectAll'),
+    message: t('pleaseProvideRejectionReason', { count: gameAdmin.selectedCount.value }),
     prompt: {
       model: '',
       type: 'text',
-      label: 'Rejection reason (optional)',
+      label: t('rejectionReasonOptional'),
     },
     cancel: true,
     persistent: true,
@@ -98,8 +101,8 @@ const handleBulkReject = () => {
 
 const handleBulkDelete = () => {
   $q.dialog({
-    title: 'Bulk Delete',
-    message: `Are you sure you want to permanently delete ${gameAdmin.selectedCount.value} game(s)? This cannot be undone.`,
+    title: t('deleteAll'),
+    message: t('areYouSureDelete', { count: gameAdmin.selectedCount.value }),
     cancel: true,
     persistent: true,
     color: 'negative',
@@ -134,18 +137,18 @@ onUnmounted(() => {
     <div class="page-header q-mb-lg">
       <div class="row items-center justify-between">
         <div>
-          <h1 class="text-h4 q-mb-xs">Game Administration</h1>
+          <h1 class="text-h4 q-mb-xs">{{ t('gameAdministration') }}</h1>
           <p class="text-body1 text-grey-6 q-mb-none">
-            Manage game submissions, approvals, and catalog
+            {{ t('manageGameSubmissions') }}
           </p>
         </div>
         <q-btn
           color="primary"
           icon="mdi-plus"
-          label="Add Game"
+          :label="t('addGame')"
           @click="openAddDialog"
           unelevated
-          aria-label="Add new game"
+          :aria-label="t('addGame')"
         />
       </div>
     </div>
@@ -157,7 +160,7 @@ onUnmounted(() => {
           <q-card-section class="text-center">
             <q-icon name="mdi-gamepad-variant" size="md" color="primary" />
             <div class="text-h4 q-mt-sm">{{ gamesStore.games.length }}</div>
-            <div class="text-caption text-grey-6">Total Games</div>
+            <div class="text-caption text-grey-6">{{ t('totalGames') }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -166,7 +169,7 @@ onUnmounted(() => {
           <q-card-section class="text-center">
             <q-icon name="mdi-clock-outline" size="md" color="warning" />
             <div class="text-h4 q-mt-sm">{{ gamesStore.pendingGames.length }}</div>
-            <div class="text-caption text-grey-6">Pending Review</div>
+            <div class="text-caption text-grey-6">{{ t('pendingReview') }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -175,7 +178,7 @@ onUnmounted(() => {
           <q-card-section class="text-center">
             <q-icon name="mdi-check-circle" size="md" color="positive" />
             <div class="text-h4 q-mt-sm">{{ gamesStore.approvedGames.length }}</div>
-            <div class="text-caption text-grey-6">Approved</div>
+            <div class="text-caption text-grey-6">{{ t('approved') }}</div>
           </q-card-section>
         </q-card>
       </div>
@@ -184,7 +187,7 @@ onUnmounted(() => {
           <q-card-section class="text-center">
             <q-icon name="mdi-tag-multiple" size="md" color="accent" />
             <div class="text-h4 q-mt-sm">{{ gameAdmin.availableGenres.value.length }}</div>
-            <div class="text-caption text-grey-6">Genres</div>
+            <div class="text-caption text-grey-6">{{ t('genres') }}</div>
           </q-card-section>
         </q-card>
       </div>

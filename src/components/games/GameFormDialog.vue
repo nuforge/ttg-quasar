@@ -37,7 +37,7 @@ const dialogVisible = computed({
 });
 
 const isEditMode = computed(() => !!props.game);
-const dialogTitle = computed(() => (isEditMode.value ? 'Edit Game' : 'Submit a New Game'));
+const dialogTitle = computed(() => (isEditMode.value ? t('editGame') : t('submitNewGame')));
 const submitLabel = computed(() => (isEditMode.value ? t('saveChanges') : t('submitGame')));
 
 // Form data

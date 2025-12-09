@@ -62,6 +62,7 @@ export default {
   edit: 'Edit',
   delete: 'Delete',
   save: 'Save',
+  saveChanges: 'Save Changes',
   cancel: 'Cancel',
   submit: 'Submit',
   close: 'Close',
@@ -80,6 +81,8 @@ export default {
   deactivate: 'Deactivate',
   block: 'Block',
   unblock: 'Unblock',
+  approve: 'Approve',
+  reject: 'Reject',
 
   // RSVP & Events
   rsvp: 'RSVP',
@@ -242,6 +245,35 @@ export default {
   debugPermissions: 'Debug Permissions',
   refreshPermissions: 'Refresh Permissions',
   eventMigration: 'Event Migration',
+
+  // Admin Games
+  gameAdministration: 'Game Administration',
+  manageGameSubmissions: 'Manage game submissions, approvals, and catalog',
+  totalGames: 'Total Games',
+  genres: 'Genres',
+  allGames: 'All Games',
+  rejected: 'Rejected',
+  dateAdded: 'Date Added',
+  perPage: 'Per page',
+  selected: 'selected',
+  selectAllGames: 'Select all games',
+  approveAll: 'Approve All',
+  rejectAll: 'Reject All',
+  deleteAll: 'Delete All',
+  clearSelection: 'Clear selection',
+  filtersActive: 'Filters active',
+  editGame: 'Edit Game',
+  submitNewGame: 'Submit a New Game',
+  approveGame: 'Approve game',
+  rejectGame: 'Reject game',
+  deleteGame: 'Delete game',
+  tryAdjustingFiltersOrAdd: 'Try adjusting your filters or add a new game.',
+  areYouSureApprove: 'Are you sure you want to approve {count} game(s)?',
+  areYouSureDelete:
+    'Are you sure you want to permanently delete {count} game(s)? This cannot be undone.',
+  pleaseProvideRejectionReason: 'Please provide a reason for rejecting {count} game(s):',
+  rejectionReasonOptional: 'Rejection reason (optional)',
+  by: 'by',
 
   // Status & States
   status: 'Status',

@@ -63,6 +63,7 @@ export default {
   edit: 'Editar',
   delete: 'Eliminar',
   save: 'Guardar',
+  saveChanges: 'Guardar Cambios',
   cancel: 'Cancelar',
   submit: 'Enviar',
   close: 'Cerrar',
@@ -81,6 +82,8 @@ export default {
   deactivate: 'Desactivar',
   block: 'Bloquear',
   unblock: 'Desbloquear',
+  approve: 'Aprobar',
+  reject: 'Rechazar',
 
   // RSVP & Events
   rsvp: 'Confirmar Asistencia',
@@ -245,6 +248,35 @@ export default {
   debugPermissions: 'Depurar Permisos',
   refreshPermissions: 'Actualizar Permisos',
   eventMigration: 'Migración de Eventos',
+
+  // Admin Games
+  gameAdministration: 'Administración de Juegos',
+  manageGameSubmissions: 'Gestiona envíos de juegos, aprobaciones y catálogo',
+  totalGames: 'Total de Juegos',
+  genres: 'Géneros',
+  allGames: 'Todos los Juegos',
+  rejected: 'Rechazado',
+  dateAdded: 'Fecha Agregada',
+  perPage: 'Por página',
+  selected: 'seleccionado',
+  selectAllGames: 'Seleccionar todos los juegos',
+  approveAll: 'Aprobar Todo',
+  rejectAll: 'Rechazar Todo',
+  deleteAll: 'Eliminar Todo',
+  clearSelection: 'Limpiar selección',
+  filtersActive: 'Filtros activos',
+  editGame: 'Editar Juego',
+  submitNewGame: 'Enviar un Nuevo Juego',
+  approveGame: 'Aprobar juego',
+  rejectGame: 'Rechazar juego',
+  deleteGame: 'Eliminar juego',
+  tryAdjustingFiltersOrAdd: 'Intenta ajustar tus filtros o agrega un nuevo juego.',
+  areYouSureApprove: '¿Estás seguro de que deseas aprobar {count} juego(s)?',
+  areYouSureDelete:
+    '¿Estás seguro de que deseas eliminar permanentemente {count} juego(s)? Esta acción no se puede deshacer.',
+  pleaseProvideRejectionReason: 'Por favor proporciona una razón para rechazar {count} juego(s):',
+  rejectionReasonOptional: 'Razón de rechazo (opcional)',
+  by: 'por',
 
   // Status & States
   status: 'Estado',

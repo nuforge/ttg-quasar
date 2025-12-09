@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { GameStatusFilter, GameSortField, GameSortOrder } from 'src/composables/useGameAdmin';
+
+const { t } = useI18n();
 
 interface Props {
   search: string;
@@ -26,25 +29,25 @@ const emit = defineEmits<{
 }>();
 
 // Status options
-const statusOptions: { label: string; value: GameStatusFilter; icon: string; color: string }[] = [
-  { label: 'All Games', value: 'all', icon: 'mdi-gamepad-variant', color: 'grey-7' },
-  { label: 'Pending', value: 'pending', icon: 'mdi-clock-outline', color: 'warning' },
-  { label: 'Approved', value: 'approved', icon: 'mdi-check-circle', color: 'positive' },
-  { label: 'Rejected', value: 'rejected', icon: 'mdi-close-circle', color: 'negative' },
-];
+const statusOptions = computed(() => [
+  { label: t('allGames'), value: 'all' as GameStatusFilter, icon: 'mdi-gamepad-variant', color: 'grey-7' },
+  { label: t('pending'), value: 'pending' as GameStatusFilter, icon: 'mdi-clock-outline', color: 'warning' },
+  { label: t('approved'), value: 'approved' as GameStatusFilter, icon: 'mdi-check-circle', color: 'positive' },
+  { label: t('rejected'), value: 'rejected' as GameStatusFilter, icon: 'mdi-close-circle', color: 'negative' },
+]);
 
 // Sort options
-const sortOptions: { label: string; value: GameSortField }[] = [
-  { label: 'Title', value: 'title' },
-  { label: 'Date Added', value: 'createdAt' },
-  { label: 'Genre', value: 'genre' },
-  { label: 'Status', value: 'status' },
-];
+const sortOptions = computed(() => [
+  { label: t('title'), value: 'title' as GameSortField },
+  { label: t('dateAdded'), value: 'createdAt' as GameSortField },
+  { label: t('genre'), value: 'genre' as GameSortField },
+  { label: t('status'), value: 'status' as GameSortField },
+]);
 
 // Genre options with "All" option
 const genreSelectOptions = computed(() => {
   return [
-    { label: 'All Genres', value: null },
+    { label: t('allGenres'), value: null },
     ...props.availableGenres.map((g) => ({ label: g, value: g })),
   ];
 });
@@ -61,7 +64,7 @@ const toggleSortOrder = () => {
       <div class="row items-center justify-between q-mb-sm">
         <div class="text-subtitle1 text-weight-medium">
           <q-icon name="mdi-filter-variant" class="q-mr-sm" />
-          Filters
+          {{ t('filters') }}
         </div>
         <q-chip
           v-if="filteredCount !== totalCount"
@@ -81,12 +84,12 @@ const toggleSortOrder = () => {
           <q-input
             :model-value="search"
             @update:model-value="(val) => emit('update:search', val as string)"
-            label="Search games"
+            :label="t('searchGames')"
             outlined
             dense
             clearable
             debounce="300"
-            aria-label="Search games by title, description, or genre"
+            :aria-label="t('searchGames')"
           >
             <template #prepend>
               <q-icon name="mdi-magnify" />
@@ -100,12 +103,12 @@ const toggleSortOrder = () => {
             :model-value="status"
             @update:model-value="(val) => emit('update:status', val as GameStatusFilter)"
             :options="statusOptions"
-            label="Status"
+            :label="t('status')"
             outlined
             dense
             emit-value
             map-options
-            aria-label="Filter by approval status"
+            :aria-label="t('filterByStatus')"
           >
             <template #option="{ opt, itemProps }">
               <q-item v-bind="itemProps">
@@ -128,12 +131,12 @@ const toggleSortOrder = () => {
             :model-value="genre"
             @update:model-value="(val) => emit('update:genre', val as string | null)"
             :options="genreSelectOptions"
-            label="Genre"
+            :label="t('genre')"
             outlined
             dense
             emit-value
             map-options
-            aria-label="Filter by game genre"
+            :aria-label="t('filterByGame')"
           />
         </div>
 
@@ -144,13 +147,13 @@ const toggleSortOrder = () => {
               :model-value="sortBy"
               @update:model-value="(val) => emit('update:sortBy', val as GameSortField)"
               :options="sortOptions"
-              label="Sort by"
+              :label="t('sortBy')"
               outlined
               dense
               emit-value
               map-options
               class="col"
-              aria-label="Sort games by field"
+              :aria-label="t('sortBy')"
             />
             <q-btn
               flat
@@ -172,7 +175,7 @@ const toggleSortOrder = () => {
           color="primary"
           text-color="white"
           icon="mdi-filter"
-          label="Filters active"
+          :label="t('filtersActive')"
           size="sm"
           dense
         />
@@ -180,11 +183,11 @@ const toggleSortOrder = () => {
           flat
           dense
           color="primary"
-          label="Clear all"
+          :label="t('clearAll')"
           icon="mdi-filter-remove"
           class="q-ml-sm"
           @click="emit('reset')"
-          aria-label="Clear all filters"
+          :aria-label="t('clearFilters')"
         />
       </div>
     </q-card-section>
