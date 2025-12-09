@@ -23,6 +23,7 @@ export interface FirebaseGame {
   tags?: string[]; // Additional search tags
   difficulty?: string; // Game difficulty level
   publisher?: string; // Game publisher
+  rejectionReason?: string; // Reason for rejection if rejected
 }
 
 export class Game {
@@ -48,6 +49,7 @@ export class Game {
   tags?: string[];
   difficulty?: string;
   publisher?: string;
+  rejectionReason?: string;
 
   constructor(
     id: string,
@@ -71,6 +73,7 @@ export class Game {
     tags?: string[],
     difficulty?: string,
     publisher?: string,
+    rejectionReason?: string,
   ) {
     this.id = id;
     this.title = title;
@@ -93,6 +96,7 @@ export class Game {
     if (tags !== undefined) this.tags = tags;
     if (difficulty !== undefined) this.difficulty = difficulty;
     if (publisher !== undefined) this.publisher = publisher;
+    if (rejectionReason !== undefined) this.rejectionReason = rejectionReason;
   }
 
   get url(): string {
@@ -170,6 +174,7 @@ export class Game {
       data.tags,
       data.difficulty,
       data.publisher,
+      data.rejectionReason,
     );
   }
 
@@ -192,6 +197,7 @@ export class Game {
       ...(this.tags !== undefined && { tags: this.tags }),
       ...(this.difficulty !== undefined && { difficulty: this.difficulty }),
       ...(this.publisher !== undefined && { publisher: this.publisher }),
+      ...(this.rejectionReason !== undefined && { rejectionReason: this.rejectionReason }),
       // Timestamps will be handled by Firebase
     };
   }

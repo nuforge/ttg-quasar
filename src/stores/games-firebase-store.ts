@@ -220,7 +220,7 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     });
   };
 
-  const rejectGame = async (gameId: string) => {
+  const rejectGame = async (gameId: string, reason?: string) => {
     if (!authService.isAuthenticated.value) {
       throw new Error('Must be authenticated admin to reject games');
     }
@@ -228,6 +228,7 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
     await updateGame(gameId, {
       approved: false,
       status: 'inactive',
+      ...(reason && { rejectionReason: reason }),
     });
   };
 

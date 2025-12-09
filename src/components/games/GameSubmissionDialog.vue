@@ -153,89 +153,14 @@ const gameData = ref<Partial<GameSubmissionData>>({
 // Form state
 const loading = ref(false);
 
-// Options for selects
-const genreOptions = [
-  'Strategy',
-  'Party',
-  'Family',
-  'Card Game',
-  'Board Game',
-  'Cooperative',
-  'Competitive',
-  'Role-Playing',
-  'Abstract',
-  'Puzzle',
-  'Trivia',
-  'Bluffing',
-  'Adventure',
-  'Fantasy',
-  'Sci-Fi',
-  'Historical',
-  'Economic',
-  'War',
-  'Racing',
-  'Sports',
-  'Educational',
-  'Children\'s',
-];
+// Import shared options
+import { GAME_GENRES, GAME_DIFFICULTIES, GAME_COMPONENTS, GAME_TAGS } from './gameFormOptions';
 
-const difficultyOptions = [
-  'Beginner',
-  'Intermediate',
-  'Advanced',
-  'Expert',
-];
-
-const componentOptions = [
-  'Board',
-  'Cards',
-  'Dice',
-  'Pieces',
-  'Tokens',
-  'Tiles',
-  'Miniatures',
-  'Meeples',
-  'Cubes',
-  'Counters',
-  'Timer',
-  'Spinner',
-  'Rulebook',
-  'Player Boards',
-  'Score Pad',
-  'Money',
-  'Resource Tokens',
-  'Markers',
-  'Standees',
-  'App Required',
-];
-
-const tagOptions = [
-  'family-friendly',
-  'party-game',
-  'strategy',
-  'cooperative',
-  'competitive',
-  'quick-play',
-  'long-game',
-  'two-player',
-  'multiplayer',
-  'solo-play',
-  'deck-building',
-  'worker-placement',
-  'area-control',
-  'tile-laying',
-  'roll-and-move',
-  'hidden-role',
-  'social-deduction',
-  'engine-building',
-  'resource-management',
-  'negotiation',
-  'auction',
-  'memory',
-  'dexterity',
-  'real-time',
-  'legacy',
-];
+// Use shared options
+const genreOptions = [...GAME_GENRES];
+const difficultyOptions = [...GAME_DIFFICULTIES];
+const componentOptions = [...GAME_COMPONENTS];
+const tagOptions = [...GAME_TAGS];
 
 // Form validation
 const isFormValid = computed(() => {

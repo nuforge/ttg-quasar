@@ -1,298 +1,266 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { useGamesFirebaseStore } from 'src/stores/games-firebase-store';
+import { useGameAdmin } from 'src/composables/useGameAdmin';
 import { authService } from 'src/services/auth-service';
+import type { Game } from 'src/models/Game';
+import AdminGameFilters from 'src/components/admin/AdminGameFilters.vue';
+import AdminGamesList from 'src/components/admin/AdminGamesList.vue';
+import AdminBulkActions from 'src/components/admin/AdminBulkActions.vue';
+import GameFormDialog from 'src/components/games/GameFormDialog.vue';
 
 const $q = useQuasar();
 const gamesStore = useGamesFirebaseStore();
 
+// Game admin composable for selection, bulk actions, and filtering
+const gameAdmin = useGameAdmin({
+  onApproved: () => {
+    // Refresh games list after bulk approve
+  },
+  onRejected: () => {
+    // Refresh games list after bulk reject
+  },
+  onError: (error) => {
+    console.error('Game admin error:', error);
+  },
+});
+
+// Dialog state
+const showGameDialog = ref(false);
+const editingGame = ref<Game | null>(null);
+
 // Methods
-const loadSubmissions = async () => {
-  try {
-    await gamesStore.loadGames(); // Load all games including pending ones
-  } catch (error) {
-    console.error('Failed to load games:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Failed to load games',
-    });
-  }
+const openAddDialog = () => {
+  editingGame.value = null;
+  showGameDialog.value = true;
 };
 
-const approveSubmission = async (gameId: string) => {
-  try {
-    await gamesStore.approveGame(gameId);
-    $q.notify({
-      type: 'positive',
-      message: 'Game approved and added to collection!',
-    });
-  } catch (error) {
-    console.error('Failed to approve submission:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Failed to approve submission',
-    });
-  }
+const openEditDialog = (game: Game) => {
+  editingGame.value = game;
+  showGameDialog.value = true;
 };
 
-const rejectSubmission = (gameId: string) => {
-  $q.dialog({
-    title: 'Reject Submission',
-    message: 'Why is this submission being rejected?',
-    prompt: {
-      model: '',
-      type: 'text'
-    },
-    cancel: true,
-  }).onOk(() => {
-    void (async () => {
-      try {
-        await gamesStore.rejectGame(gameId);
-        $q.notify({
-          type: 'info',
-          message: 'Submission rejected',
-        });
-      } catch (error) {
-        console.error('Failed to reject submission:', error);
-        $q.notify({
-          type: 'negative',
-          message: 'Failed to reject submission',
-        });
-      }
-    })();
+const handleGameSubmitted = () => {
+  // Game was submitted, dialog closes automatically
+  $q.notify({
+    type: 'positive',
+    message: 'Game submitted successfully!',
+    icon: 'mdi-check-circle',
   });
 };
 
-// Game approval/rejection methods for main games list
-const approveGameInList = async (gameId: string) => {
-  try {
-    await gamesStore.approveGame(gameId);
-    $q.notify({
-      type: 'positive',
-      message: 'Game approved!',
-    });
-  } catch (error) {
-    console.error('Failed to approve game:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Failed to approve game',
-    });
-  }
+const handleGameUpdated = (gameId: string) => {
+  // Game was updated, dialog closes automatically
+  console.log('Game updated:', gameId);
 };
 
-const rejectGameInList = (gameId: string) => {
+// Single game actions
+const handleApprove = async (game: Game) => {
+  await gameAdmin.approveWithConfirm(game);
+};
+
+const handleReject = async (game: Game) => {
+  await gameAdmin.rejectWithReason(game);
+};
+
+const handleDelete = async (game: Game) => {
+  await gameAdmin.deleteWithConfirm(game);
+};
+
+// Bulk actions with confirmation
+const handleBulkApprove = () => {
   $q.dialog({
-    title: 'Reject Game',
-    message: 'Why is this game being rejected?',
+    title: 'Bulk Approve',
+    message: `Are you sure you want to approve ${gameAdmin.selectedCount.value} game(s)?`,
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
+    void gameAdmin.bulkApprove();
+  });
+};
+
+const handleBulkReject = () => {
+  $q.dialog({
+    title: 'Bulk Reject',
+    message: `Please provide a reason for rejecting ${gameAdmin.selectedCount.value} game(s):`,
     prompt: {
       model: '',
-      type: 'text'
+      type: 'text',
+      label: 'Rejection reason (optional)',
     },
     cancel: true,
+    persistent: true,
+  }).onOk((reason: string) => {
+    void gameAdmin.bulkReject(reason || undefined);
+  });
+};
+
+const handleBulkDelete = () => {
+  $q.dialog({
+    title: 'Bulk Delete',
+    message: `Are you sure you want to permanently delete ${gameAdmin.selectedCount.value} game(s)? This cannot be undone.`,
+    cancel: true,
+    persistent: true,
+    color: 'negative',
   }).onOk(() => {
-    void (async () => {
-      try {
-        // TODO: Store rejection reason in game metadata
-        await gamesStore.rejectGame(gameId);
-        $q.notify({
-          type: 'info',
-          message: 'Game rejected',
-        });
-      } catch (error) {
-        console.error('Failed to reject game:', error);
-        $q.notify({
-          type: 'negative',
-          message: 'Failed to reject game',
-        });
-      }
-    })();
+    void gameAdmin.bulkDelete();
   });
 };
 
 // Initialize
-onMounted(async () => {
+onMounted(() => {
   if (!authService.isAuthenticated.value) {
     $q.notify({
       type: 'negative',
       message: 'You must be logged in to access admin features',
+      icon: 'mdi-alert-circle',
     });
     return;
   }
 
-  // Load initial data
-  await gamesStore.loadGames(); // Load all games including pending ones
+  // Subscribe to real-time updates
+  gamesStore.subscribeToGames();
+});
+
+onUnmounted(() => {
+  gamesStore.cleanup();
 });
 </script>
 
 <template>
   <q-page padding class="admin-games">
-    <div class="page-header q-mb-md">
-      <div class="text-h4">Game Administration</div>
-      <div class="text-body1 text-grey-6">Manage game submissions and approvals</div>
+    <!-- Page Header -->
+    <div class="page-header q-mb-lg">
+      <div class="row items-center justify-between">
+        <div>
+          <h1 class="text-h4 q-mb-xs">Game Administration</h1>
+          <p class="text-body1 text-grey-6 q-mb-none">
+            Manage game submissions, approvals, and catalog
+          </p>
+        </div>
+        <q-btn
+          color="primary"
+          icon="mdi-plus"
+          label="Add Game"
+          @click="openAddDialog"
+          unelevated
+          aria-label="Add new game"
+        />
+      </div>
     </div>
 
-    <div class="row q-col-gutter-lg">
-      <!-- Game Submissions Panel -->
-      <div class="col-12">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">
-              <q-icon name="mdi-inbox" class="q-mr-sm" />
-              Game Submissions
-              <q-chip v-if="gamesStore.pendingGames.length > 0" :label="gamesStore.pendingGames.length" color="orange"
-                size="sm" class="q-ml-sm" />
-            </div>
-            <div class="text-body2 text-grey-6 q-mt-sm">
-              Review and approve submitted games
-            </div>
+    <!-- Quick Stats -->
+    <div class="row q-col-gutter-md q-mb-lg">
+      <div class="col-6 col-sm-3">
+        <q-card bordered class="stat-card">
+          <q-card-section class="text-center">
+            <q-icon name="mdi-gamepad-variant" size="md" color="primary" />
+            <div class="text-h4 q-mt-sm">{{ gamesStore.games.length }}</div>
+            <div class="text-caption text-grey-6">Total Games</div>
           </q-card-section>
-
-          <q-card-section class="q-pt-none">
-            <q-btn color="primary" icon="mdi-refresh" label="Refresh Submissions" @click="loadSubmissions"
-              :loading="gamesStore.loading" />
-
-            <div v-if="gamesStore.pendingGames.length === 0" class="q-mt-md text-center text-grey-6">
-              <q-icon name="mdi-inbox-outline" size="2em" />
-              <div class="q-mt-sm">No pending submissions</div>
-            </div>
+        </q-card>
+      </div>
+      <div class="col-6 col-sm-3">
+        <q-card bordered class="stat-card">
+          <q-card-section class="text-center">
+            <q-icon name="mdi-clock-outline" size="md" color="warning" />
+            <div class="text-h4 q-mt-sm">{{ gamesStore.pendingGames.length }}</div>
+            <div class="text-caption text-grey-6">Pending Review</div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-6 col-sm-3">
+        <q-card bordered class="stat-card">
+          <q-card-section class="text-center">
+            <q-icon name="mdi-check-circle" size="md" color="positive" />
+            <div class="text-h4 q-mt-sm">{{ gamesStore.approvedGames.length }}</div>
+            <div class="text-caption text-grey-6">Approved</div>
+          </q-card-section>
+        </q-card>
+      </div>
+      <div class="col-6 col-sm-3">
+        <q-card bordered class="stat-card">
+          <q-card-section class="text-center">
+            <q-icon name="mdi-tag-multiple" size="md" color="accent" />
+            <div class="text-h4 q-mt-sm">{{ gameAdmin.availableGenres.value.length }}</div>
+            <div class="text-caption text-grey-6">Genres</div>
           </q-card-section>
         </q-card>
       </div>
     </div>
 
-    <!-- Pending Submissions List -->
-    <div v-if="gamesStore.pendingGames.length > 0" class="q-mt-lg">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">Pending Game Submissions</div>
-        </q-card-section>
+    <!-- Bulk Actions Bar -->
+    <AdminBulkActions
+      :selected-count="gameAdmin.selectedCount.value"
+      :processing="gameAdmin.isProcessing.value"
+      @approve="handleBulkApprove"
+      @reject="handleBulkReject"
+      @delete="handleBulkDelete"
+      @deselect-all="gameAdmin.deselectAll"
+    />
 
-        <q-list separator>
-          <q-item v-for="game in gamesStore.pendingGames" :key="game.id">
-            <q-item-section>
-              <q-item-label class="text-weight-bold">{{ game.title }}</q-item-label>
-              <q-item-label caption>
-                <strong>Genre:</strong> {{ game.genre }} |
-                <strong>Players:</strong> {{ game.numberOfPlayers }} |
-                <strong>Age:</strong> {{ game.recommendedAge }}
-              </q-item-label>
-              <q-item-label caption class="q-mt-xs">
-                <strong>Description:</strong> {{ game.description }}
-              </q-item-label>
-              <q-item-label caption class="q-mt-xs text-grey-6">
-                <q-icon name="mdi-account" size="xs" class="q-mr-xs" />
-                <strong>Submitted by:</strong> {{ game.createdBy || 'Unknown' }}
-              </q-item-label>
-              <q-item-label caption class="text-grey-6">
-                <q-icon name="mdi-calendar" size="xs" class="q-mr-xs" />
-                <strong>Submitted on:</strong> {{ game.createdAt?.toLocaleDateString() || 'Unknown date' }}
-              </q-item-label>
-            </q-item-section>
-
-            <q-item-section side>
-              <div class="column q-gutter-xs">
-                <q-chip color="orange" label="Pending Review" size="sm" />
-                <div class="row q-gutter-xs">
-                  <q-btn color="positive" icon="mdi-check" size="sm" round @click="approveSubmission(game.id)"
-                    :loading="gamesStore.loading">
-                    <q-tooltip>Approve Submission</q-tooltip>
-                  </q-btn>
-                  <q-btn color="negative" icon="mdi-close" size="sm" round @click="rejectSubmission(game.id)"
-                    :loading="gamesStore.loading">
-                    <q-tooltip>Reject Submission</q-tooltip>
-                  </q-btn>
-                </div>
-              </div>
-            </q-item-section>
-          </q-item>
-        </q-list>
-      </q-card>
-    </div>
+    <!-- Filters -->
+    <AdminGameFilters
+      :search="gameAdmin.filters.value.search"
+      :status="gameAdmin.filters.value.status"
+      :genre="gameAdmin.filters.value.genre"
+      :sort-by="gameAdmin.filters.value.sortBy"
+      :sort-order="gameAdmin.filters.value.sortOrder"
+      :available-genres="gameAdmin.availableGenres.value"
+      :has-active-filters="gameAdmin.hasActiveFilters.value"
+      :total-count="gamesStore.games.length"
+      :filtered-count="gameAdmin.filteredGames.value.length"
+      @update:search="gameAdmin.filters.value.search = $event"
+      @update:status="gameAdmin.filters.value.status = $event"
+      @update:genre="gameAdmin.filters.value.genre = $event"
+      @update:sort-by="gameAdmin.filters.value.sortBy = $event"
+      @update:sort-order="gameAdmin.filters.value.sortOrder = $event"
+      @reset="gameAdmin.resetFilters"
+      class="q-mb-lg"
+    />
 
     <!-- Games List -->
-    <div class="q-mt-lg">
-      <q-card>
-        <q-card-section>
-          <div class="text-h6">
-            Current Games
-            <q-chip :label="gamesStore.games.length" color="primary" text-color="white" size="sm" class="q-ml-sm" />
-          </div>
-        </q-card-section>
+    <AdminGamesList
+      :games="gameAdmin.filteredGames.value"
+      :selected-ids="gameAdmin.selectedGameIds.value"
+      :loading="gamesStore.loading"
+      :processing="gameAdmin.isProcessing.value"
+      @toggle="gameAdmin.toggleGameSelection"
+      @select-all="gameAdmin.selectAll"
+      @deselect-all="gameAdmin.deselectAll"
+      @approve="handleApprove"
+      @reject="handleReject"
+      @edit="openEditDialog"
+      @delete="handleDelete"
+    />
 
-        <q-card-section v-if="gamesStore.loading" class="text-center">
-          <q-spinner-dots size="40px" color="primary" />
-          <div class="q-mt-sm text-grey-6">Loading games...</div>
-        </q-card-section>
-
-        <q-card-section v-else-if="gamesStore.error" class="text-center">
-          <q-icon name="mdi-alert-circle" size="40px" color="negative" />
-          <div class="q-mt-sm text-negative">{{ gamesStore.error }}</div>
-        </q-card-section>
-
-        <q-list v-else-if="gamesStore.games.length > 0" separator>
-          <q-item v-for="game in gamesStore.games" :key="game.id">
-            <q-item-section>
-              <q-item-label class="text-weight-bold">{{ game.title }}</q-item-label>
-              <q-item-label caption>
-                <strong>Genre:</strong> {{ game.genre }} |
-                <strong>Players:</strong> {{ game.numberOfPlayers }} |
-                <strong>ID:</strong> {{ game.id.substring(0, 8) }}...
-              </q-item-label>
-              <q-item-label caption class="q-mt-xs text-grey-6">
-                <q-icon name="mdi-calendar-plus" size="xs" class="q-mr-xs" />
-                <strong>Added:</strong> {{ game.createdAt?.toLocaleDateString() || 'Unknown' }}
-                <span v-if="game.createdBy" class="q-ml-md">
-                  <q-icon name="mdi-account" size="xs" class="q-mr-xs" />
-                  <strong>By:</strong> {{ game.createdBy }}
-                </span>
-              </q-item-label>
-            </q-item-section>
-            <q-item-section side>
-              <div class="row items-center q-gutter-xs">
-                <q-chip :color="game.approved ? 'positive' : (game.status === 'pending' ? 'orange' : 'warning')"
-                  :label="game.approved ? 'Approved' : game.status" text-color="white" size="sm" />
-
-                <!-- Show approve/reject buttons for unapproved games -->
-                <div v-if="!game.approved" class="q-gutter-xs">
-                  <q-btn color="positive" icon="mdi-check" size="sm" round @click="approveGameInList(game.id)"
-                    :loading="gamesStore.loading">
-                    <q-tooltip>Approve Game</q-tooltip>
-                  </q-btn>
-                  <q-btn color="negative" icon="mdi-close" size="sm" round @click="rejectGameInList(game.id)"
-                    :loading="gamesStore.loading">
-                    <q-tooltip>Reject Game</q-tooltip>
-                  </q-btn>
-                </div>
-              </div>
-            </q-item-section>
-          </q-item>
-
-          <q-item v-if="gamesStore.games.length > 10">
-            <q-item-section class="text-center text-grey-6">
-              ... and {{ gamesStore.games.length - 10 }} more games
-            </q-item-section>
-          </q-item>
-        </q-list>
-
-        <q-card-section v-else class="text-center text-grey-6">
-          <q-icon name="mdi-gamepad-variant-outline" size="2em" />
-          <div class="q-mt-sm">No games found</div>
-        </q-card-section>
-      </q-card>
-    </div>
+    <!-- Game Form Dialog -->
+    <GameFormDialog
+      v-model="showGameDialog"
+      :game="editingGame"
+      :is-admin="true"
+      @submitted="handleGameSubmitted"
+      @updated="handleGameUpdated"
+    />
   </q-page>
 </template>
 
-
 <style scoped>
 .admin-games {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
-.page-header {
-  text-align: center;
-  padding: 2rem 0;
+.page-header h1 {
+  margin: 0;
+}
+
+.stat-card {
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
 }
 </style>
