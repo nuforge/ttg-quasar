@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import QRDialog from 'src/components/qrcode/QRDialog.vue';
-import logoUrl from 'src/assets/ttg-logo.svg';
+import logoUrlSrc from 'src/assets/ttg-logo.svg';
 
+const logoUrl = ref(logoUrlSrc);
 const leftDrawerOpen = ref(true);
 const qrdialog = ref(false);
 </script>
@@ -36,7 +37,7 @@ const qrdialog = ref(false);
 
         <q-item clickable v-ripple to="/games">
           <q-item-section avatar>
-            <q-icon name="mdi-book-multiple" />
+            <q-icon name="mdi-dice-multiple" />
           </q-item-section>
 
           <q-item-section>
