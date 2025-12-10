@@ -1,19 +1,153 @@
-Your adjustments are spot-on. Let me incorporate them into a refined proposal.
+Your critique is spot-on. The proposal was thinking like an architect, not someone who has to debug production issues at 2am. Let me provide corrected models and a prioritized plan.
 
 ---
 
-# Refined Graph Architecture Proposal
+# Corrected Core Implementation
 
-## Core Models
+## Directory Structure (with API abstraction)
 
-### BaseNode.ts
+```
+src/
+├── core/
+│   ├── models/
+│   │   ├── BaseNode.ts
+│   │   ├── Relationship.ts
+│   │   └── types.ts              # Shared types
+│   ├── validation/
+│   │   ├── validators.ts         # Sync validators
+│   │   ├── async-validators.ts   # Async validators
+│   │   └── schemas.ts            # Node-type schemas
+│   └── cache/
+│       └── memory-cache.ts       # Simple in-memory cache
+├── api/                          # ABSTRACTION LAYER
+│   ├── index.ts                  # Export interface
+│   ├── types.ts                  # API contracts
+│   ├── firebase/                 # Firebase implementation
+│   │   ├── node-api.ts
+│   │   ├── relationship-api.ts
+│   │   └── converters.ts
+│   └── mock/                     # For testing
+│       ├── node-api.ts
+│       └── relationship-api.ts
+├── stores/
+│   ├── nodes.ts                  # With realtime subscriptions
+│   └── relationships.ts
+└── contexts/
+    └── activity-resource.ts
+```
+
+---
+
+## API Contract (Abstract Layer)
+
+```typescript
+// api/types.ts
+import { BaseNode } from '@/core/models/BaseNode';
+import { Relationship } from '@/core/models/Relationship';
+
+export interface QueryOptions {
+  pageSize?: number;
+  cursor?: unknown;
+  orderBy?: string;
+  orderDirection?: 'asc' | 'desc';
+}
+
+export interface QueryResult<T> {
+  items: T[];
+  cursor: unknown | null;
+  hasMore: boolean;
+}
+
+export interface BatchResult {
+  success: boolean;
+  successCount: number;
+  failedIds: string[];
+  errors: Array<{ id: string; error: string }>;
+}
+
+export type UnsubscribeFn = () => void;
+
+// Node API contract
+export interface INodeApi {
+  create(data: Partial<BaseNode>): Promise<BaseNode>;
+  get(id: string): Promise<BaseNode | null>;
+  update(id: string, updates: Partial<BaseNode>): Promise<BaseNode>;
+  delete(id: string): Promise<void>;
+
+  query(
+    filters: { context?: string; type?: string; createdBy?: string; visibility?: string },
+    options?: QueryOptions,
+  ): Promise<QueryResult<BaseNode>>;
+
+  getBatch(ids: string[]): Promise<Map<string, BaseNode>>;
+  createBatch(nodes: Partial<BaseNode>[]): Promise<BatchResult>;
+  deleteBatch(ids: string[]): Promise<BatchResult>;
+
+  // Realtime
+  subscribe(id: string, callback: (node: BaseNode | null) => void): UnsubscribeFn;
+  subscribeQuery(
+    filters: { context?: string; type?: string },
+    callback: (nodes: BaseNode[]) => void,
+  ): UnsubscribeFn;
+}
+
+// Relationship API contract
+export interface IRelationshipApi {
+  create(data: Partial<Relationship>): Promise<Relationship>;
+  get(id: string): Promise<Relationship | null>;
+  delete(id: string): Promise<void>;
+
+  getBySource(
+    sourceId: string,
+    types?: string[],
+    options?: QueryOptions,
+  ): Promise<QueryResult<Relationship>>;
+  getByTarget(
+    targetId: string,
+    types?: string[],
+    options?: QueryOptions,
+  ): Promise<QueryResult<Relationship>>;
+  getBySourceBatch(sourceIds: string[], types?: string[]): Promise<Map<string, Relationship[]>>;
+
+  createBatch(relationships: Partial<Relationship>[]): Promise<BatchResult>;
+
+  // Realtime
+  subscribeBySource(
+    sourceId: string,
+    types: string[] | undefined,
+    callback: (relationships: Relationship[]) => void,
+  ): UnsubscribeFn;
+}
+```
+
+```typescript
+// api/index.ts
+import { INodeApi, IRelationshipApi } from './types';
+import { FirebaseNodeApi } from './firebase/node-api';
+import { FirebaseRelationshipApi } from './firebase/relationship-api';
+// import { MockNodeApi } from './mock/node-api'; // For testing
+
+const USE_MOCK = false; // Or check import.meta.env.MODE === 'test'
+
+export const nodeApi: INodeApi = USE_MOCK ? new MockNodeApi() : new FirebaseNodeApi();
+
+export const relationshipApi: IRelationshipApi = USE_MOCK
+  ? new MockRelationshipApi()
+  : new FirebaseRelationshipApi();
+```
+
+---
+
+## Corrected Models
+
+### BaseNode.ts (unchanged, was good)
 
 ```typescript
 // core/models/BaseNode.ts
 export interface BaseNode {
   id: string;
-  type: string;              // 'activity', 'resource', 'person', 'group', 'need'
-  context: string;           // 'gaming:club-123', 'community:neighborhood-456'
+  type: string;
+  context: string;
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
@@ -21,7 +155,6 @@ export interface BaseNode {
   visibility: 'public' | 'private' | 'group' | 'selected';
 }
 
-// Pure functional helpers - no side effects
 export const NodeHelpers = {
   getAttribute<T>(node: BaseNode, key: string, defaultValue?: T): T {
     return (node.attributes[key] ?? defaultValue) as T;
@@ -31,19 +164,11 @@ export const NodeHelpers = {
     return (node.attributes[`_meta:${key}`] ?? defaultValue) as T;
   },
 
-  setAttribute(
-    node: BaseNode,
-    key: string,
-    value: any,
-    validator?: (key: string, value: any) => boolean
-  ): BaseNode {
-    if (validator && !validator(key, value)) {
-      throw new Error(`Invalid value for attribute ${key}`);
-    }
+  setAttribute(node: BaseNode, key: string, value: any): BaseNode {
     return {
       ...node,
       attributes: { ...node.attributes, [key]: value },
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   },
 
@@ -51,31 +176,24 @@ export const NodeHelpers = {
     return {
       ...node,
       attributes: { ...node.attributes, [`_meta:${key}`]: value },
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
   },
 
-  setAttributes(node: BaseNode, updates: Record<string, any>): BaseNode {
-    return {
-      ...node,
-      attributes: { ...node.attributes, ...updates },
-      updatedAt: new Date()
-    };
-  },
-
-  // Get all non-meta attributes
   getPublicAttributes(node: BaseNode): Record<string, any> {
     return Object.fromEntries(
-      Object.entries(node.attributes).filter(([key]) => !key.startsWith('_meta:'))
+      Object.entries(node.attributes).filter(([key]) => !key.startsWith('_meta:')),
     );
   },
 
-  // Pattern matching
-  matches(node: BaseNode, pattern: {
-    type?: string;
-    context?: string;
-    attributes?: Record<string, any>;
-  }): boolean {
+  matches(
+    node: BaseNode,
+    pattern: {
+      type?: string;
+      context?: string;
+      attributes?: Record<string, any>;
+    },
+  ): boolean {
     if (pattern.type && node.type !== pattern.type) return false;
     if (pattern.context && !node.context.startsWith(pattern.context)) return false;
     if (pattern.attributes) {
@@ -85,18 +203,10 @@ export const NodeHelpers = {
     }
     return true;
   },
-
-  isType(node: BaseNode, type: string): boolean {
-    return node.type === type;
-  },
-
-  inContext(node: BaseNode, context: string): boolean {
-    return node.context.startsWith(context);
-  }
 };
 ```
 
-### Relationship.ts
+### Relationship.ts (FIXED)
 
 ```typescript
 // core/models/Relationship.ts
@@ -104,7 +214,7 @@ export interface Relationship {
   id: string;
   sourceId: string;
   targetId: string;
-  type: string;              // 'needs', 'provides', 'attends', 'owns', 'hosts'
+  type: string;
   createdBy: string;
   createdAt: Date;
   attributes: Record<string, any>;
@@ -113,6 +223,22 @@ export interface Relationship {
 }
 
 export const RelationshipHelpers = {
+  // FIXED: Random ID allows multiple relationships of same type
+  generateId(): string {
+    return `rel_${Date.now().toString(36)}_${Math.random().toString(36).substr(2, 9)}`;
+  },
+
+  // Use this when you WANT uniqueness (optional)
+  generateDeterministicId(
+    sourceId: string,
+    targetId: string,
+    type: string,
+    uniqueKey?: string,
+  ): string {
+    const base = `${sourceId}_${targetId}_${type}`;
+    return uniqueKey ? `${base}_${uniqueKey}` : base;
+  },
+
   isValid(rel: Relationship, referenceDate?: Date): boolean {
     const now = referenceDate || new Date();
     if (rel.validFrom && now < rel.validFrom) return false;
@@ -127,62 +253,58 @@ export const RelationshipHelpers = {
   setAttribute(rel: Relationship, key: string, value: any): Relationship {
     return {
       ...rel,
-      attributes: { ...rel.attributes, [key]: value }
+      attributes: { ...rel.attributes, [key]: value },
     };
   },
 
-  // Generate deterministic ID for unique constraints
-  generateId(sourceId: string, targetId: string, type: string): string {
-    return `${sourceId}_${targetId}_${type}`;
-  }
+  // Check if duplicate exists (for enforcing uniqueness when needed)
+  isDuplicate(existing: Relationship[], newRel: Partial<Relationship>): boolean {
+    return existing.some(
+      (r) =>
+        r.sourceId === newRel.sourceId && r.targetId === newRel.targetId && r.type === newRel.type,
+    );
+  },
 };
 ```
 
 ---
 
-## Services with Error Handling & Pagination
-
-### NodeService.ts
+## Firebase API Implementation (with Realtime)
 
 ```typescript
-// core/services/NodeService.ts
-import { 
-  collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
-  query, where, orderBy, limit, startAfter,
-  writeBatch, serverTimestamp,
-  DocumentSnapshot, QueryConstraint
+// api/firebase/node-api.ts
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  writeBatch,
+  onSnapshot,
+  serverTimestamp,
+  DocumentSnapshot,
+  QueryConstraint,
+  Unsubscribe,
 } from 'firebase/firestore';
-import { db } from '@/firebase';
-import { BaseNode, NodeHelpers } from '@/core/models/BaseNode';
+import { db } from '@/boot/firebase';
+import { BaseNode } from '@/core/models/BaseNode';
+import { INodeApi, QueryOptions, QueryResult, BatchResult, UnsubscribeFn } from '../types';
 
-export interface QueryOptions {
-  pageSize?: number;
-  cursor?: DocumentSnapshot;
-  orderByField?: string;
-  orderDirection?: 'asc' | 'desc';
-}
+export class FirebaseNodeApi implements INodeApi {
+  private readonly COLLECTION = 'nodes';
+  private readonly DEFAULT_PAGE_SIZE = 25;
+  private readonly MAX_BATCH_SIZE = 500;
 
-export interface QueryResult<T> {
-  items: T[];
-  cursor: DocumentSnapshot | null;
-  hasMore: boolean;
-}
+  // === CRUD ===
 
-export interface BatchResult {
-  success: boolean;
-  successCount: number;
-  failedIds: string[];
-  errors: Array<{ id: string; error: string }>;
-}
-
-export class NodeService {
-  private static readonly COLLECTION = 'nodes';
-  private static readonly DEFAULT_PAGE_SIZE = 25;
-  private static readonly MAX_BATCH_SIZE = 500; // Firestore limit
-
-  // === CRUD Operations ===
-
-  static async create(data: Partial<BaseNode>): Promise<BaseNode> {
+  async create(data: Partial<BaseNode>): Promise<BaseNode> {
     const nodeId = data.id || this.generateId();
     const node: BaseNode = {
       id: nodeId,
@@ -192,65 +314,42 @@ export class NodeService {
       createdAt: new Date(),
       updatedAt: new Date(),
       attributes: data.attributes || {},
-      visibility: data.visibility || 'public'
+      visibility: data.visibility || 'public',
     };
 
-    try {
-      await setDoc(doc(db, this.COLLECTION, nodeId), this.toFirestore(node));
-      return node;
-    } catch (error) {
-      throw new NodeServiceError('CREATE_FAILED', `Failed to create node: ${error}`, nodeId);
-    }
+    await setDoc(doc(db, this.COLLECTION, nodeId), this.toFirestore(node));
+    return node;
   }
 
-  static async get(id: string): Promise<BaseNode | null> {
-    try {
-      const docSnap = await getDoc(doc(db, this.COLLECTION, id));
-      if (!docSnap.exists()) return null;
-      return this.fromFirestore(docSnap);
-    } catch (error) {
-      throw new NodeServiceError('GET_FAILED', `Failed to get node: ${error}`, id);
-    }
+  async get(id: string): Promise<BaseNode | null> {
+    const docSnap = await getDoc(doc(db, this.COLLECTION, id));
+    if (!docSnap.exists()) return null;
+    return this.fromFirestore(docSnap);
   }
 
-  static async update(id: string, updates: Partial<BaseNode>): Promise<BaseNode> {
-    try {
-      const updateData = {
-        ...updates,
-        updatedAt: serverTimestamp()
-      };
-      delete updateData.id;
-      delete updateData.createdAt;
-      delete updateData.createdBy;
+  async update(id: string, updates: Partial<BaseNode>): Promise<BaseNode> {
+    const updateData: Record<string, any> = { ...updates };
+    delete updateData.id;
+    delete updateData.createdAt;
+    delete updateData.createdBy;
+    updateData.updatedAt = serverTimestamp();
 
-      await updateDoc(doc(db, this.COLLECTION, id), updateData);
-      
-      const updated = await this.get(id);
-      if (!updated) throw new Error('Node not found after update');
-      return updated;
-    } catch (error) {
-      throw new NodeServiceError('UPDATE_FAILED', `Failed to update node: ${error}`, id);
-    }
+    await updateDoc(doc(db, this.COLLECTION, id), updateData);
+
+    const updated = await this.get(id);
+    if (!updated) throw new Error('Node not found after update');
+    return updated;
   }
 
-  static async delete(id: string): Promise<void> {
-    try {
-      await deleteDoc(doc(db, this.COLLECTION, id));
-    } catch (error) {
-      throw new NodeServiceError('DELETE_FAILED', `Failed to delete node: ${error}`, id);
-    }
+  async delete(id: string): Promise<void> {
+    await deleteDoc(doc(db, this.COLLECTION, id));
   }
 
-  // === Query Operations with Pagination ===
+  // === Queries ===
 
-  static async query(
-    filters: {
-      context?: string;
-      type?: string;
-      createdBy?: string;
-      visibility?: string;
-    },
-    options: QueryOptions = {}
+  async query(
+    filters: { context?: string; type?: string; createdBy?: string; visibility?: string },
+    options: QueryOptions = {},
   ): Promise<QueryResult<BaseNode>> {
     const pageSize = options.pageSize || this.DEFAULT_PAGE_SIZE;
     const constraints: QueryConstraint[] = [];
@@ -260,51 +359,60 @@ export class NodeService {
     if (filters.createdBy) constraints.push(where('createdBy', '==', filters.createdBy));
     if (filters.visibility) constraints.push(where('visibility', '==', filters.visibility));
 
-    constraints.push(
-      orderBy(options.orderByField || 'createdAt', options.orderDirection || 'desc')
-    );
-    constraints.push(limit(pageSize + 1)); // +1 to check hasMore
+    constraints.push(orderBy(options.orderBy || 'createdAt', options.orderDirection || 'desc'));
+    constraints.push(limit(pageSize + 1));
 
     if (options.cursor) {
-      constraints.push(startAfter(options.cursor));
+      constraints.push(startAfter(options.cursor as DocumentSnapshot));
     }
 
-    try {
-      const q = query(collection(db, this.COLLECTION), ...constraints);
-      const snapshot = await getDocs(q);
-      
-      const hasMore = snapshot.docs.length > pageSize;
-      const docs = hasMore ? snapshot.docs.slice(0, -1) : snapshot.docs;
-      
-      return {
-        items: docs.map(d => this.fromFirestore(d)),
-        cursor: docs.length > 0 ? docs[docs.length - 1] : null,
-        hasMore
-      };
-    } catch (error) {
-      throw new NodeServiceError('QUERY_FAILED', `Failed to query nodes: ${error}`);
-    }
+    const q = query(collection(db, this.COLLECTION), ...constraints);
+    const snapshot = await getDocs(q);
+
+    const hasMore = snapshot.docs.length > pageSize;
+    const docs = hasMore ? snapshot.docs.slice(0, -1) : snapshot.docs;
+
+    return {
+      items: docs.map((d) => this.fromFirestore(d)),
+      cursor: docs.length > 0 ? docs[docs.length - 1] : null,
+      hasMore,
+    };
   }
 
-  // === Batch Operations with Error Handling ===
+  async getBatch(ids: string[]): Promise<Map<string, BaseNode>> {
+    const results = new Map<string, BaseNode>();
+    const chunks = this.chunkArray(ids, 10);
 
-  static async createBatch(nodes: Partial<BaseNode>[]): Promise<BatchResult> {
+    for (const chunk of chunks) {
+      const q = query(collection(db, this.COLLECTION), where('__name__', 'in', chunk));
+      const snapshot = await getDocs(q);
+
+      for (const docSnap of snapshot.docs) {
+        results.set(docSnap.id, this.fromFirestore(docSnap));
+      }
+    }
+
+    return results;
+  }
+
+  async createBatch(nodes: Partial<BaseNode>[]): Promise<BatchResult> {
     const results: BatchResult = {
       success: true,
       successCount: 0,
       failedIds: [],
-      errors: []
+      errors: [],
     };
 
-    // Chunk into Firestore batch limits
     const chunks = this.chunkArray(nodes, this.MAX_BATCH_SIZE);
 
     for (const chunk of chunks) {
       const batch = writeBatch(db);
-      const chunkNodes: BaseNode[] = [];
+      const chunkIds: string[] = [];
 
       for (const data of chunk) {
         const nodeId = data.id || this.generateId();
+        chunkIds.push(nodeId);
+
         const node: BaseNode = {
           id: nodeId,
           type: data.type || 'unknown',
@@ -313,43 +421,10 @@ export class NodeService {
           createdAt: new Date(),
           updatedAt: new Date(),
           attributes: data.attributes || {},
-          visibility: data.visibility || 'public'
+          visibility: data.visibility || 'public',
         };
-        
+
         batch.set(doc(db, this.COLLECTION, nodeId), this.toFirestore(node));
-        chunkNodes.push(node);
-      }
-
-      try {
-        await batch.commit();
-        results.successCount += chunkNodes.length;
-      } catch (error) {
-        results.success = false;
-        for (const node of chunkNodes) {
-          results.failedIds.push(node.id);
-          results.errors.push({ id: node.id, error: String(error) });
-        }
-      }
-    }
-
-    return results;
-  }
-
-  static async deleteBatch(ids: string[]): Promise<BatchResult> {
-    const results: BatchResult = {
-      success: true,
-      successCount: 0,
-      failedIds: [],
-      errors: []
-    };
-
-    const chunks = this.chunkArray(ids, this.MAX_BATCH_SIZE);
-
-    for (const chunk of chunks) {
-      const batch = writeBatch(db);
-      
-      for (const id of chunk) {
-        batch.delete(doc(db, this.COLLECTION, id));
       }
 
       try {
@@ -357,69 +432,95 @@ export class NodeService {
         results.successCount += chunk.length;
       } catch (error) {
         results.success = false;
-        for (const id of chunk) {
+        chunkIds.forEach((id) => {
           results.failedIds.push(id);
           results.errors.push({ id, error: String(error) });
-        }
+        });
       }
     }
 
     return results;
   }
 
-  // === Batch Fetch (for graph queries) ===
+  async deleteBatch(ids: string[]): Promise<BatchResult> {
+    const results: BatchResult = {
+      success: true,
+      successCount: 0,
+      failedIds: [],
+      errors: [],
+    };
 
-  static async getBatch(ids: string[]): Promise<Map<string, BaseNode>> {
-    const results = new Map<string, BaseNode>();
-    
-    // Firestore 'in' operator limited to 10 items
-    const chunks = this.chunkArray(ids, 10);
+    const chunks = this.chunkArray(ids, this.MAX_BATCH_SIZE);
 
     for (const chunk of chunks) {
+      const batch = writeBatch(db);
+      chunk.forEach((id) => batch.delete(doc(db, this.COLLECTION, id)));
+
       try {
-        const q = query(
-          collection(db, this.COLLECTION),
-          where('__name__', 'in', chunk)
-        );
-        const snapshot = await getDocs(q);
-        
-        for (const docSnap of snapshot.docs) {
-          results.set(docSnap.id, this.fromFirestore(docSnap));
-        }
+        await batch.commit();
+        results.successCount += chunk.length;
       } catch (error) {
-        console.error(`Batch fetch failed for chunk: ${error}`);
-        // Continue with other chunks
+        results.success = false;
+        chunk.forEach((id) => {
+          results.failedIds.push(id);
+          results.errors.push({ id, error: String(error) });
+        });
       }
     }
 
     return results;
   }
 
-  // === Converters ===
+  // === REALTIME SUBSCRIPTIONS ===
 
-  private static toFirestore(node: BaseNode): Record<string, any> {
+  subscribe(id: string, callback: (node: BaseNode | null) => void): UnsubscribeFn {
+    return onSnapshot(doc(db, this.COLLECTION, id), (snap) => {
+      callback(snap.exists() ? this.fromFirestore(snap) : null);
+    });
+  }
+
+  subscribeQuery(
+    filters: { context?: string; type?: string },
+    callback: (nodes: BaseNode[]) => void,
+  ): UnsubscribeFn {
+    const constraints: QueryConstraint[] = [];
+
+    if (filters.context) constraints.push(where('context', '==', filters.context));
+    if (filters.type) constraints.push(where('type', '==', filters.type));
+    constraints.push(orderBy('createdAt', 'desc'));
+
+    const q = query(collection(db, this.COLLECTION), ...constraints);
+
+    return onSnapshot(q, (snapshot) => {
+      callback(snapshot.docs.map((d) => this.fromFirestore(d)));
+    });
+  }
+
+  // === Private ===
+
+  private toFirestore(node: BaseNode): Record<string, any> {
     return {
       ...node,
       createdAt: node.createdAt,
-      updatedAt: node.updatedAt
+      updatedAt: node.updatedAt,
     };
   }
 
-  private static fromFirestore(docSnap: DocumentSnapshot): BaseNode {
+  private fromFirestore(docSnap: DocumentSnapshot): BaseNode {
     const data = docSnap.data()!;
     return {
       ...data,
       id: docSnap.id,
       createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
-      updatedAt: data.updatedAt?.toDate?.() || new Date(data.updatedAt)
+      updatedAt: data.updatedAt?.toDate?.() || new Date(data.updatedAt),
     } as BaseNode;
   }
 
-  private static generateId(): string {
+  private generateId(): string {
     return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
   }
 
-  private static chunkArray<T>(array: T[], size: number): T[][] {
+  private chunkArray<T>(array: T[], size: number): T[][] {
     const chunks: T[][] = [];
     for (let i = 0; i < array.length; i += size) {
       chunks.push(array.slice(i, i + size));
@@ -427,45 +528,40 @@ export class NodeService {
     return chunks;
   }
 }
-
-// Custom error class
-export class NodeServiceError extends Error {
-  constructor(
-    public code: string,
-    message: string,
-    public nodeId?: string
-  ) {
-    super(message);
-    this.name = 'NodeServiceError';
-  }
-}
 ```
 
-### RelationshipService.ts
-
 ```typescript
-// core/services/RelationshipService.ts
-import { 
-  collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
-  query, where, orderBy, limit, startAfter, writeBatch,
-  DocumentSnapshot, QueryConstraint
+// api/firebase/relationship-api.ts
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+  writeBatch,
+  onSnapshot,
+  DocumentSnapshot,
+  QueryConstraint,
 } from 'firebase/firestore';
-import { db } from '@/firebase';
+import { db } from '@/boot/firebase';
 import { Relationship, RelationshipHelpers } from '@/core/models/Relationship';
-import { QueryOptions, QueryResult, BatchResult } from './NodeService';
+import { IRelationshipApi, QueryOptions, QueryResult, BatchResult, UnsubscribeFn } from '../types';
 
-export class RelationshipService {
-  private static readonly COLLECTION = 'relationships';
-  private static readonly DEFAULT_PAGE_SIZE = 50;
-  private static readonly MAX_BATCH_SIZE = 500;
+export class FirebaseRelationshipApi implements IRelationshipApi {
+  private readonly COLLECTION = 'relationships';
+  private readonly DEFAULT_PAGE_SIZE = 50;
+  private readonly MAX_BATCH_SIZE = 500;
 
-  // === CRUD ===
+  async create(data: Partial<Relationship>): Promise<Relationship> {
+    // FIXED: Use random ID by default
+    const relId = data.id || RelationshipHelpers.generateId();
 
-  static async create(data: Partial<Relationship>): Promise<Relationship> {
-    const relId = data.id || RelationshipHelpers.generateId(
-      data.sourceId!, data.targetId!, data.type!
-    );
-    
     const rel: Relationship = {
       id: relId,
       sourceId: data.sourceId!,
@@ -475,94 +571,30 @@ export class RelationshipService {
       createdAt: new Date(),
       attributes: data.attributes || {},
       validFrom: data.validFrom,
-      validUntil: data.validUntil
+      validUntil: data.validUntil,
     };
 
-    try {
-      await setDoc(doc(db, this.COLLECTION, relId), this.toFirestore(rel));
-      return rel;
-    } catch (error) {
-      throw new RelationshipServiceError('CREATE_FAILED', `Failed to create relationship: ${error}`, relId);
-    }
+    await setDoc(doc(db, this.COLLECTION, relId), this.toFirestore(rel));
+    return rel;
   }
 
-  static async get(id: string): Promise<Relationship | null> {
-    try {
-      const docSnap = await getDoc(doc(db, this.COLLECTION, id));
-      if (!docSnap.exists()) return null;
-      return this.fromFirestore(docSnap);
-    } catch (error) {
-      throw new RelationshipServiceError('GET_FAILED', `Failed to get relationship: ${error}`, id);
-    }
+  async get(id: string): Promise<Relationship | null> {
+    const docSnap = await getDoc(doc(db, this.COLLECTION, id));
+    if (!docSnap.exists()) return null;
+    return this.fromFirestore(docSnap);
   }
 
-  static async delete(id: string): Promise<void> {
-    try {
-      await deleteDoc(doc(db, this.COLLECTION, id));
-    } catch (error) {
-      throw new RelationshipServiceError('DELETE_FAILED', `Failed to delete relationship: ${error}`, id);
-    }
+  async delete(id: string): Promise<void> {
+    await deleteDoc(doc(db, this.COLLECTION, id));
   }
 
-  // === Queries with Pagination ===
-
-  static async getBySource(
+  async getBySource(
     sourceId: string,
     types?: string[],
-    options: QueryOptions = {}
+    options: QueryOptions = {},
   ): Promise<QueryResult<Relationship>> {
     const pageSize = options.pageSize || this.DEFAULT_PAGE_SIZE;
-    const constraints: QueryConstraint[] = [
-      where('sourceId', '==', sourceId)
-    ];
-
-    if (types?.length) {
-      // Firestore 'in' limited to 10
-      if (types.length <= 10) {
-        constraints.push(where('type', 'in', types));
-      }
-    }
-
-    constraints.push(orderBy('createdAt', 'desc'));
-    constraints.push(limit(pageSize + 1));
-
-    if (options.cursor) {
-      constraints.push(startAfter(options.cursor));
-    }
-
-    try {
-      const q = query(collection(db, this.COLLECTION), ...constraints);
-      const snapshot = await getDocs(q);
-      
-      const hasMore = snapshot.docs.length > pageSize;
-      const docs = hasMore ? snapshot.docs.slice(0, -1) : snapshot.docs;
-      
-      let items = docs.map(d => this.fromFirestore(d));
-      
-      // Client-side filter if types > 10
-      if (types?.length && types.length > 10) {
-        items = items.filter(r => types.includes(r.type));
-      }
-
-      return {
-        items,
-        cursor: docs.length > 0 ? docs[docs.length - 1] : null,
-        hasMore
-      };
-    } catch (error) {
-      throw new RelationshipServiceError('QUERY_FAILED', `Failed to query relationships: ${error}`);
-    }
-  }
-
-  static async getByTarget(
-    targetId: string,
-    types?: string[],
-    options: QueryOptions = {}
-  ): Promise<QueryResult<Relationship>> {
-    const pageSize = options.pageSize || this.DEFAULT_PAGE_SIZE;
-    const constraints: QueryConstraint[] = [
-      where('targetId', '==', targetId)
-    ];
+    const constraints: QueryConstraint[] = [where('sourceId', '==', sourceId)];
 
     if (types?.length && types.length <= 10) {
       constraints.push(where('type', 'in', types));
@@ -572,91 +604,106 @@ export class RelationshipService {
     constraints.push(limit(pageSize + 1));
 
     if (options.cursor) {
-      constraints.push(startAfter(options.cursor));
+      constraints.push(startAfter(options.cursor as DocumentSnapshot));
     }
 
-    try {
-      const q = query(collection(db, this.COLLECTION), ...constraints);
-      const snapshot = await getDocs(q);
-      
-      const hasMore = snapshot.docs.length > pageSize;
-      const docs = hasMore ? snapshot.docs.slice(0, -1) : snapshot.docs;
+    const q = query(collection(db, this.COLLECTION), ...constraints);
+    const snapshot = await getDocs(q);
 
-      return {
-        items: docs.map(d => this.fromFirestore(d)),
-        cursor: docs.length > 0 ? docs[docs.length - 1] : null,
-        hasMore
-      };
-    } catch (error) {
-      throw new RelationshipServiceError('QUERY_FAILED', `Failed to query relationships: ${error}`);
+    const hasMore = snapshot.docs.length > pageSize;
+    const docs = hasMore ? snapshot.docs.slice(0, -1) : snapshot.docs;
+
+    let items = docs.map((d) => this.fromFirestore(d));
+
+    // Client-side filter if types > 10
+    if (types?.length && types.length > 10) {
+      items = items.filter((r) => types.includes(r.type));
     }
+
+    return { items, cursor: docs.length > 0 ? docs[docs.length - 1] : null, hasMore };
   }
 
-  // === Batch Operations ===
+  async getByTarget(
+    targetId: string,
+    types?: string[],
+    options: QueryOptions = {},
+  ): Promise<QueryResult<Relationship>> {
+    const pageSize = options.pageSize || this.DEFAULT_PAGE_SIZE;
+    const constraints: QueryConstraint[] = [where('targetId', '==', targetId)];
 
-  static async getBySourceBatch(
+    if (types?.length && types.length <= 10) {
+      constraints.push(where('type', 'in', types));
+    }
+
+    constraints.push(orderBy('createdAt', 'desc'));
+    constraints.push(limit(pageSize + 1));
+
+    if (options.cursor) {
+      constraints.push(startAfter(options.cursor as DocumentSnapshot));
+    }
+
+    const q = query(collection(db, this.COLLECTION), ...constraints);
+    const snapshot = await getDocs(q);
+
+    const hasMore = snapshot.docs.length > pageSize;
+    const docs = hasMore ? snapshot.docs.slice(0, -1) : snapshot.docs;
+
+    return {
+      items: docs.map((d) => this.fromFirestore(d)),
+      cursor: docs.length > 0 ? docs[docs.length - 1] : null,
+      hasMore,
+    };
+  }
+
+  async getBySourceBatch(
     sourceIds: string[],
-    types?: string[]
+    types?: string[],
   ): Promise<Map<string, Relationship[]>> {
     const results = new Map<string, Relationship[]>();
-    
-    // Initialize empty arrays
-    sourceIds.forEach(id => results.set(id, []));
-    
-    // Chunk sourceIds for 'in' operator
+    sourceIds.forEach((id) => results.set(id, []));
+
     const chunks = this.chunkArray(sourceIds, 10);
 
     for (const chunk of chunks) {
-      try {
-        let q = query(
-          collection(db, this.COLLECTION),
-          where('sourceId', 'in', chunk)
-        );
+      let q = query(collection(db, this.COLLECTION), where('sourceId', 'in', chunk));
 
-        if (types?.length && types.length <= 10) {
-          q = query(q, where('type', 'in', types));
-        }
+      if (types?.length && types.length <= 10) {
+        q = query(q, where('type', 'in', types));
+      }
 
-        const snapshot = await getDocs(q);
-        
-        for (const docSnap of snapshot.docs) {
-          const rel = this.fromFirestore(docSnap);
-          
-          // Client-side type filter if needed
-          if (types?.length && types.length > 10 && !types.includes(rel.type)) {
-            continue;
-          }
-          
-          const existing = results.get(rel.sourceId) || [];
-          existing.push(rel);
-          results.set(rel.sourceId, existing);
-        }
-      } catch (error) {
-        console.error(`Batch relationship fetch failed: ${error}`);
+      const snapshot = await getDocs(q);
+
+      for (const docSnap of snapshot.docs) {
+        const rel = this.fromFirestore(docSnap);
+        if (types?.length && types.length > 10 && !types.includes(rel.type)) continue;
+
+        const existing = results.get(rel.sourceId) || [];
+        existing.push(rel);
+        results.set(rel.sourceId, existing);
       }
     }
 
     return results;
   }
 
-  static async createBatch(relationships: Partial<Relationship>[]): Promise<BatchResult> {
+  async createBatch(relationships: Partial<Relationship>[]): Promise<BatchResult> {
     const results: BatchResult = {
       success: true,
       successCount: 0,
       failedIds: [],
-      errors: []
+      errors: [],
     };
 
     const chunks = this.chunkArray(relationships, this.MAX_BATCH_SIZE);
 
     for (const chunk of chunks) {
       const batch = writeBatch(db);
+      const chunkIds: string[] = [];
 
       for (const data of chunk) {
-        const relId = data.id || RelationshipHelpers.generateId(
-          data.sourceId!, data.targetId!, data.type!
-        );
-        
+        const relId = data.id || RelationshipHelpers.generateId();
+        chunkIds.push(relId);
+
         const rel: Relationship = {
           id: relId,
           sourceId: data.sourceId!,
@@ -666,7 +713,7 @@ export class RelationshipService {
           createdAt: new Date(),
           attributes: data.attributes || {},
           validFrom: data.validFrom,
-          validUntil: data.validUntil
+          validUntil: data.validUntil,
         };
 
         batch.set(doc(db, this.COLLECTION, relId), this.toFirestore(rel));
@@ -677,40 +724,65 @@ export class RelationshipService {
         results.successCount += chunk.length;
       } catch (error) {
         results.success = false;
-        for (const data of chunk) {
-          const id = data.id || 'unknown';
+        chunkIds.forEach((id) => {
           results.failedIds.push(id);
           results.errors.push({ id, error: String(error) });
-        }
+        });
       }
     }
 
     return results;
   }
 
-  // === Converters ===
+  // === REALTIME ===
 
-  private static toFirestore(rel: Relationship): Record<string, any> {
+  subscribeBySource(
+    sourceId: string,
+    types: string[] | undefined,
+    callback: (relationships: Relationship[]) => void,
+  ): UnsubscribeFn {
+    const constraints: QueryConstraint[] = [where('sourceId', '==', sourceId)];
+
+    if (types?.length && types.length <= 10) {
+      constraints.push(where('type', 'in', types));
+    }
+
+    constraints.push(orderBy('createdAt', 'desc'));
+
+    const q = query(collection(db, this.COLLECTION), ...constraints);
+
+    return onSnapshot(q, (snapshot) => {
+      let items = snapshot.docs.map((d) => this.fromFirestore(d));
+      if (types?.length && types.length > 10) {
+        items = items.filter((r) => types.includes(r.type));
+      }
+      callback(items);
+    });
+  }
+
+  // === Private ===
+
+  private toFirestore(rel: Relationship): Record<string, any> {
     return {
       ...rel,
       createdAt: rel.createdAt,
       validFrom: rel.validFrom || null,
-      validUntil: rel.validUntil || null
+      validUntil: rel.validUntil || null,
     };
   }
 
-  private static fromFirestore(docSnap: DocumentSnapshot): Relationship {
+  private fromFirestore(docSnap: DocumentSnapshot): Relationship {
     const data = docSnap.data()!;
     return {
       ...data,
       id: docSnap.id,
       createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
       validFrom: data.validFrom?.toDate?.() || undefined,
-      validUntil: data.validUntil?.toDate?.() || undefined
+      validUntil: data.validUntil?.toDate?.() || undefined,
     } as Relationship;
   }
 
-  private static chunkArray<T>(array: T[], size: number): T[][] {
+  private chunkArray<T>(array: T[], size: number): T[][] {
     const chunks: T[][] = [];
     for (let i = 0; i < array.length; i += size) {
       chunks.push(array.slice(i, i + size));
@@ -718,490 +790,182 @@ export class RelationshipService {
     return chunks;
   }
 }
-
-export class RelationshipServiceError extends Error {
-  constructor(
-    public code: string,
-    message: string,
-    public relationshipId?: string
-  ) {
-    super(message);
-    this.name = 'RelationshipServiceError';
-  }
-}
 ```
 
 ---
 
-## Validation Layer
+## Simplified Matching (Accept Limitations)
 
 ```typescript
-// core/validation/validators.ts
-export type ValidationResult = {
-  valid: boolean;
-  errors: string[];
-};
-
-export type Validator<T> = (value: T) => ValidationResult;
-
-// Compose validators
-export function compose<T>(...validators: Validator<T>[]): Validator<T> {
-  return (value: T) => {
-    const errors: string[] = [];
-    for (const validator of validators) {
-      const result = validator(value);
-      if (!result.valid) {
-        errors.push(...result.errors);
-      }
-    }
-    return { valid: errors.length === 0, errors };
-  };
-}
-
-// Common validators
-export const required = (fieldName: string): Validator<any> => (value) => ({
-  valid: value !== undefined && value !== null && value !== '',
-  errors: value === undefined || value === null || value === '' 
-    ? [`${fieldName} is required`] : []
-});
-
-export const minLength = (fieldName: string, min: number): Validator<string> => (value) => ({
-  valid: !value || value.length >= min,
-  errors: value && value.length < min 
-    ? [`${fieldName} must be at least ${min} characters`] : []
-});
-
-export const maxLength = (fieldName: string, max: number): Validator<string> => (value) => ({
-  valid: !value || value.length <= max,
-  errors: value && value.length > max 
-    ? [`${fieldName} must be at most ${max} characters`] : []
-});
-
-export const isOneOf = <T>(fieldName: string, allowedValues: T[]): Validator<T> => (value) => ({
-  valid: allowedValues.includes(value),
-  errors: !allowedValues.includes(value) 
-    ? [`${fieldName} must be one of: ${allowedValues.join(', ')}`] : []
-});
-
-export const isValidDate = (fieldName: string): Validator<string> => (value) => {
-  if (!value) return { valid: true, errors: [] };
-  const date = new Date(value);
-  return {
-    valid: !isNaN(date.getTime()),
-    errors: isNaN(date.getTime()) ? [`${fieldName} must be a valid date`] : []
-  };
-};
-
-export const isFutureDate = (fieldName: string): Validator<string> => (value) => {
-  if (!value) return { valid: true, errors: [] };
-  const date = new Date(value);
-  return {
-    valid: date > new Date(),
-    errors: date <= new Date() ? [`${fieldName} must be in the future`] : []
-  };
-};
-```
-
-```typescript
-// core/validation/node-validators.ts
-import { BaseNode } from '@/core/models/BaseNode';
-import { compose, required, isOneOf, ValidationResult, Validator } from './validators';
-
-export const validateBaseNode: Validator<Partial<BaseNode>> = (node) => {
-  const errors: string[] = [];
-
-  // Required fields
-  if (!node.type) errors.push('type is required');
-  if (!node.context) errors.push('context is required');
-  if (!node.createdBy) errors.push('createdBy is required');
-
-  // Visibility enum
-  if (node.visibility && !['public', 'private', 'group', 'selected'].includes(node.visibility)) {
-    errors.push('visibility must be one of: public, private, group, selected');
-  }
-
-  // Context format: 'domain:scope'
-  if (node.context && !node.context.includes(':')) {
-    errors.push('context must be in format "domain:scope" (e.g., "gaming:club-123")');
-  }
-
-  return { valid: errors.length === 0, errors };
-};
-
-// Activity-specific validation
-export const validateActivity: Validator<Partial<BaseNode>> = (node) => {
-  const baseResult = validateBaseNode(node);
-  const errors = [...baseResult.errors];
-
-  const attrs = node.attributes || {};
-  
-  if (!attrs.title) errors.push('title attribute is required for activities');
-  if (!attrs.date) errors.push('date attribute is required for activities');
-  if (!attrs.time) errors.push('time attribute is required for activities');
-  
-  if (attrs.date) {
-    const date = new Date(attrs.date);
-    if (isNaN(date.getTime())) errors.push('date must be a valid date');
-  }
-
-  return { valid: errors.length === 0, errors };
-};
-
-// Resource-specific validation
-export const validateResource: Validator<Partial<BaseNode>> = (node) => {
-  const baseResult = validateBaseNode(node);
-  const errors = [...baseResult.errors];
-
-  const attrs = node.attributes || {};
-  
-  if (!attrs.name) errors.push('name attribute is required for resources');
-  if (!attrs.resourceType) errors.push('resourceType attribute is required for resources');
-
-  return { valid: errors.length === 0, errors };
-};
-```
-
----
-
-## GraphService with Eventual Consistency
-
-```typescript
-// core/services/GraphService.ts
-import { NodeService, QueryOptions, QueryResult } from './NodeService';
-import { RelationshipService } from './RelationshipService';
-import { BaseNode } from '@/core/models/BaseNode';
+// core/services/MatchingService.ts
+import { nodeApi, relationshipApi } from '@/api';
+import { BaseNode, NodeHelpers } from '@/core/models/BaseNode';
 import { Relationship, RelationshipHelpers } from '@/core/models/Relationship';
 
-export interface GraphNode {
-  node: BaseNode;
-  relationships: {
-    outgoing: Relationship[];
-    incoming: Relationship[];
-  };
-}
-
-export interface MatchResult {
+export interface NeedMatch {
   need: Relationship;
-  resources: BaseNode[];
+  availableResources: BaseNode[];
 }
 
-export class GraphService {
-  
-  // === Node with Relationships ===
+/**
+ * SIMPLE matching that accepts limitations:
+ * - Client-side filtering (not infinitely scalable)
+ * - Eventual consistency on availability
+ * - No complex scoring
+ */
+export class MatchingService {
+  /**
+   * Find resources that can fulfill an activity's needs.
+   * Uses client-side filtering - works for <1000 resources per context.
+   */
+  static async matchResourcesForActivity(
+    activityId: string,
+    context: string,
+  ): Promise<NeedMatch[]> {
+    // 1. Get activity's needs (usually 1-5)
+    const needsResult = await relationshipApi.getBySource(activityId, ['needs']);
+    const needs = needsResult.items;
 
-  static async getNodeWithRelationships(
-    nodeId: string,
-    options?: {
-      outgoingTypes?: string[];
-      incomingTypes?: string[];
-    }
-  ): Promise<GraphNode | null> {
-    const node = await NodeService.get(nodeId);
-    if (!node) return null;
+    if (needs.length === 0) return [];
 
-    const [outgoing, incoming] = await Promise.all([
-      RelationshipService.getBySource(nodeId, options?.outgoingTypes),
-      RelationshipService.getByTarget(nodeId, options?.incomingTypes)
+    // 2. Get ALL resources in context (accept limitation: <1000)
+    const resourcesResult = await nodeApi.query({ context, type: 'resource' }, { pageSize: 500 });
+    const allResources = resourcesResult.items;
+
+    // 3. Get ALL commitments for these resources (batch query)
+    const resourceIds = allResources.map((r) => r.id);
+    const commitmentsMap = await relationshipApi.getBySourceBatch(resourceIds, [
+      'committed_to',
+      'reserved',
     ]);
 
-    return {
-      node,
-      relationships: {
-        outgoing: outgoing.items,
-        incoming: incoming.items
-      }
-    };
-  }
+    // 4. Filter available resources (client-side)
+    const availableResources = allResources.filter((resource) => {
+      const commitments = commitmentsMap.get(resource.id) || [];
+      const activeCommitments = commitments.filter((c) => RelationshipHelpers.isValid(c));
+      return activeCommitments.length === 0;
+    });
 
-  // === Needs/Resources Matching (no denormalization) ===
-
-  static async getNeeds(activityId: string): Promise<Relationship[]> {
-    const result = await RelationshipService.getBySource(activityId, ['needs']);
-    return result.items;
-  }
-
-  static async findResourcesForNeed(
-    needType: string,
-    context: string,
-    options: QueryOptions = {}
-  ): Promise<QueryResult<BaseNode>> {
-    // Query resources that can fulfill this need type
-    // Resources store their capabilities in attributes
-    return NodeService.query({
-      type: 'resource',
-      context
-    }, options);
-    // Then filter client-side by capabilities
-    // (Firestore can't query array contains on nested attributes efficiently)
-  }
-
-  static async matchNeedsWithResources(
-    activityId: string,
-    context: string
-  ): Promise<MatchResult[]> {
-    const needs = await this.getNeeds(activityId);
-    const results: MatchResult[] = [];
+    // 5. Match needs to available resources (client-side)
+    const matches: NeedMatch[] = [];
 
     for (const need of needs) {
-      const needType = need.attributes.needType;
-      
-      // Get potential resources
-      const resourcesResult = await this.findResourcesForNeed(needType, context);
-      
-      // Filter by capabilities and availability
-      const availableResources: BaseNode[] = [];
-      
-      for (const resource of resourcesResult.items) {
-        const capabilities = resource.attributes.capabilities || [];
-        
-        if (capabilities.includes(needType)) {
-          // Check if resource is not already committed elsewhere
-          // Accept eventual consistency here - Cloud Functions will update
-          const commitments = await RelationshipService.getBySource(
-            resource.id, 
-            ['committed_to']
-          );
-          
-          const activeCommitments = commitments.items.filter(r => 
-            RelationshipHelpers.isValid(r)
-          );
-          
-          if (activeCommitments.length === 0) {
-            availableResources.push(resource);
-          }
-        }
-      }
-      
-      results.push({ need, resources: availableResources });
+      const needType = need.attributes.needType as string;
+
+      const matchingResources = availableResources.filter((resource) => {
+        const capabilities = (resource.attributes.capabilities || []) as string[];
+        return capabilities.includes(needType);
+      });
+
+      matches.push({
+        need,
+        availableResources: matchingResources,
+      });
     }
 
-    return results;
+    return matches;
   }
 
-  // === Traverse Relationships ===
+  /**
+   * Check if a specific resource can fulfill a need.
+   * Use this for "volunteer" actions.
+   */
+  static async canResourceFulfillNeed(
+    resourceId: string,
+    needId: string,
+  ): Promise<{ canFulfill: boolean; reason?: string }> {
+    const [resource, need] = await Promise.all([
+      nodeApi.get(resourceId),
+      relationshipApi.get(needId),
+    ]);
 
-  static async traverse(
-    startNodeId: string,
-    relationshipTypes: string[],
-    depth: number = 1,
-    direction: 'outgoing' | 'incoming' | 'both' = 'outgoing'
-  ): Promise<Map<string, BaseNode>> {
-    const visited = new Map<string, BaseNode>();
-    const toVisit = [startNodeId];
-    let currentDepth = 0;
+    if (!resource) return { canFulfill: false, reason: 'Resource not found' };
+    if (!need) return { canFulfill: false, reason: 'Need not found' };
 
-    while (toVisit.length > 0 && currentDepth < depth) {
-      const currentBatch = [...toVisit];
-      toVisit.length = 0;
+    // Check capability
+    const capabilities = (resource.attributes.capabilities || []) as string[];
+    const needType = need.attributes.needType as string;
 
-      // Batch fetch relationships
-      const relationshipMap = await RelationshipService.getBySourceBatch(
-        currentBatch, 
-        relationshipTypes
-      );
-
-      // Collect next nodes to visit
-      const nextNodeIds: string[] = [];
-      
-      for (const [sourceId, relationships] of relationshipMap) {
-        for (const rel of relationships) {
-          const targetId = direction === 'incoming' ? rel.sourceId : rel.targetId;
-          
-          if (!visited.has(targetId) && !nextNodeIds.includes(targetId)) {
-            nextNodeIds.push(targetId);
-          }
-        }
-      }
-
-      // Batch fetch nodes
-      if (nextNodeIds.length > 0) {
-        const nodes = await NodeService.getBatch(nextNodeIds);
-        
-        for (const [id, node] of nodes) {
-          visited.set(id, node);
-          toVisit.push(id);
-        }
-      }
-
-      currentDepth++;
+    if (!capabilities.includes(needType)) {
+      return { canFulfill: false, reason: `Resource cannot fulfill ${needType}` };
     }
 
-    return visited;
+    // Check availability (current commitments)
+    const commitmentsResult = await relationshipApi.getBySource(resourceId, [
+      'committed_to',
+      'reserved',
+    ]);
+    const activeCommitments = commitmentsResult.items.filter((c) => RelationshipHelpers.isValid(c));
+
+    if (activeCommitments.length > 0) {
+      return { canFulfill: false, reason: 'Resource is already committed' };
+    }
+
+    return { canFulfill: true };
   }
-}
-```
 
----
+  /**
+   * Commit a resource to a need.
+   */
+  static async commitResourceToNeed(
+    resourceId: string,
+    needId: string,
+    activityId: string,
+    userId: string,
+  ): Promise<Relationship> {
+    // Verify first
+    const check = await this.canResourceFulfillNeed(resourceId, needId);
+    if (!check.canFulfill) {
+      throw new Error(check.reason);
+    }
 
-## Cloud Function for Meta Updates (Eventual Consistency)
-
-```typescript
-// functions/src/meta-updates.ts
-// Deploy as Firebase Cloud Function
-
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-
-admin.initializeApp();
-const db = admin.firestore();
-
-// Update meta when relationships change
-export const onRelationshipCreate = functions.firestore
-  .document('relationships/{relId}')
-  .onCreate(async (snap, context) => {
-    const rel = snap.data();
-    
-    // Update source node meta
-    await updateNodeMeta(rel.sourceId, 'outgoingCount', 1);
-    
-    // Update target node meta
-    await updateNodeMeta(rel.targetId, 'incomingCount', 1);
-  });
-
-export const onRelationshipDelete = functions.firestore
-  .document('relationships/{relId}')
-  .onDelete(async (snap, context) => {
-    const rel = snap.data();
-    
-    await updateNodeMeta(rel.sourceId, 'outgoingCount', -1);
-    await updateNodeMeta(rel.targetId, 'incomingCount', -1);
-  });
-
-async function updateNodeMeta(
-  nodeId: string, 
-  metaKey: string, 
-  delta: number
-): Promise<void> {
-  const nodeRef = db.collection('nodes').doc(nodeId);
-  
-  await db.runTransaction(async (transaction) => {
-    const nodeDoc = await transaction.get(nodeRef);
-    if (!nodeDoc.exists) return;
-    
-    const current = nodeDoc.data()?.attributes?.[`_meta:${metaKey}`] || 0;
-    
-    transaction.update(nodeRef, {
-      [`attributes._meta:${metaKey}`]: current + delta,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    // Create commitment relationship
+    return relationshipApi.create({
+      sourceId: resourceId,
+      targetId: activityId,
+      type: 'committed_to',
+      createdBy: userId,
+      attributes: {
+        needId,
+        committedAt: new Date().toISOString(),
+      },
     });
-  });
+  }
 }
-
-// Update last activity timestamp
-export const onNodeUpdate = functions.firestore
-  .document('nodes/{nodeId}')
-  .onUpdate(async (change, context) => {
-    const before = change.before.data();
-    const after = change.after.data();
-    
-    // Skip if only meta changed
-    const beforeAttrs = Object.keys(before.attributes || {})
-      .filter(k => !k.startsWith('_meta:'));
-    const afterAttrs = Object.keys(after.attributes || {})
-      .filter(k => !k.startsWith('_meta:'));
-    
-    if (JSON.stringify(beforeAttrs) === JSON.stringify(afterAttrs)) {
-      return;
-    }
-    
-    // Update context-level activity tracker (for feeds)
-    const context = after.context;
-    if (context) {
-      await db.collection('contextActivity').doc(context.replace(':', '_')).set({
-        lastActivityAt: admin.firestore.FieldValue.serverTimestamp(),
-        lastNodeId: context.params.nodeId,
-        lastNodeType: after.type
-      }, { merge: true });
-    }
-  });
 ```
 
 ---
 
-## Offline Support (Pinia Store)
+## Pinia Store with Realtime (Simplified Offline)
 
 ```typescript
 // stores/nodes.ts
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import { 
-  enableIndexedDbPersistence, 
-  disableNetwork, 
-  enableNetwork 
-} from 'firebase/firestore';
-import { db } from '@/firebase';
-import { NodeService, QueryResult } from '@/core/services/NodeService';
+import { ref, computed, shallowRef } from 'vue';
+import { nodeApi, relationshipApi } from '@/api';
 import { BaseNode } from '@/core/models/BaseNode';
+import { Relationship } from '@/core/models/Relationship';
+import { UnsubscribeFn, QueryResult } from '@/api/types';
 
 export const useNodesStore = defineStore('nodes', () => {
   // State
   const nodes = ref<Map<string, BaseNode>>(new Map());
+  const relationships = ref<Map<string, Relationship[]>>(new Map()); // sourceId -> relationships
   const loading = ref(false);
   const error = ref<string | null>(null);
-  const isOffline = ref(false);
-  const pendingWrites = ref<Array<{ type: 'create' | 'update' | 'delete'; data: any }>>([]); 
 
-  // Initialize offline persistence
-  async function initOfflineSupport(): Promise<void> {
-    try {
-      await enableIndexedDbPersistence(db);
-      console.log('Offline persistence enabled');
-    } catch (err: any) {
-      if (err.code === 'failed-precondition') {
-        console.warn('Multiple tabs open, offline persistence only available in one tab');
-      } else if (err.code === 'unimplemented') {
-        console.warn('Browser does not support offline persistence');
-      }
-    }
-  }
+  // Active subscriptions
+  const subscriptions = shallowRef<Map<string, UnsubscribeFn>>(new Map());
 
-  // Network status
-  async function goOffline(): Promise<void> {
-    await disableNetwork(db);
-    isOffline.value = true;
-  }
+  // === Actions ===
 
-  async function goOnline(): Promise<void> {
-    await enableNetwork(db);
-    isOffline.value = false;
-    await syncPendingWrites();
-  }
-
-  // Sync pending writes when back online
-  async function syncPendingWrites(): Promise<void> {
-    const pending = [...pendingWrites.value];
-    pendingWrites.value = [];
-
-    for (const write of pending) {
-      try {
-        switch (write.type) {
-          case 'create':
-            await NodeService.create(write.data);
-            break;
-          case 'update':
-            await NodeService.update(write.data.id, write.data);
-            break;
-          case 'delete':
-            await NodeService.delete(write.data.id);
-            break;
-        }
-      } catch (err) {
-        console.error('Failed to sync pending write:', err);
-        pendingWrites.value.push(write);
-      }
-    }
-  }
-
-  // Actions
   async function fetchNode(id: string): Promise<BaseNode | null> {
     loading.value = true;
     error.value = null;
-    
+
     try {
-      const node = await NodeService.get(id);
-      if (node) {
-        nodes.value.set(id, node);
-      }
+      const node = await nodeApi.get(id);
+      if (node) nodes.value.set(id, node);
       return node;
     } catch (err: any) {
       error.value = err.message;
@@ -1213,14 +977,14 @@ export const useNodesStore = defineStore('nodes', () => {
 
   async function queryNodes(
     filters: { context?: string; type?: string; createdBy?: string },
-    options?: { pageSize?: number }
+    options?: { pageSize?: number },
   ): Promise<QueryResult<BaseNode>> {
     loading.value = true;
     error.value = null;
-    
+
     try {
-      const result = await NodeService.query(filters, options);
-      result.items.forEach(node => nodes.value.set(node.id, node));
+      const result = await nodeApi.query(filters, options);
+      result.items.forEach((node) => nodes.value.set(node.id, node));
       return result;
     } catch (err: any) {
       error.value = err.message;
@@ -1233,28 +997,12 @@ export const useNodesStore = defineStore('nodes', () => {
   async function createNode(data: Partial<BaseNode>): Promise<BaseNode | null> {
     loading.value = true;
     error.value = null;
-    
+
     try {
-      const node = await NodeService.create(data);
+      const node = await nodeApi.create(data);
       nodes.value.set(node.id, node);
       return node;
     } catch (err: any) {
-      if (isOffline.value) {
-        // Queue for later
-        const tempNode: BaseNode = {
-          id: data.id || `temp_${Date.now()}`,
-          type: data.type || 'unknown',
-          context: data.context || 'global',
-          createdBy: data.createdBy || 'system',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          attributes: data.attributes || {},
-          visibility: data.visibility || 'public'
-        };
-        nodes.value.set(tempNode.id, tempNode);
-        pendingWrites.value.push({ type: 'create', data });
-        return tempNode;
-      }
       error.value = err.message;
       return null;
     } finally {
@@ -1262,179 +1010,297 @@ export const useNodesStore = defineStore('nodes', () => {
     }
   }
 
-  async function updateNodeAttribute(
-    nodeId: string, 
-    key: string, 
-    value: any
-  ): Promise<void> {
-    const node = nodes.value.get(nodeId);
-    if (!node) return;
+  async function updateNode(id: string, updates: Partial<BaseNode>): Promise<BaseNode | null> {
+    loading.value = true;
+    error.value = null;
 
     // Optimistic update
-    const updatedNode = {
-      ...node,
-      attributes: { ...node.attributes, [key]: value },
-      updatedAt: new Date()
-    };
-    nodes.value.set(nodeId, updatedNode);
+    const original = nodes.value.get(id);
+    if (original) {
+      nodes.value.set(id, { ...original, ...updates, updatedAt: new Date() });
+    }
 
     try {
-      await NodeService.update(nodeId, {
-        attributes: updatedNode.attributes
-      });
+      const updated = await nodeApi.update(id, updates);
+      nodes.value.set(id, updated);
+      return updated;
     } catch (err: any) {
-      if (isOffline.value) {
-        pendingWrites.value.push({ type: 'update', data: updatedNode });
-      } else {
-        // Rollback
-        nodes.value.set(nodeId, node);
-        error.value = err.message;
-      }
+      // Rollback
+      if (original) nodes.value.set(id, original);
+      error.value = err.message;
+      return null;
+    } finally {
+      loading.value = false;
     }
   }
 
-  // Getters
+  async function deleteNode(id: string): Promise<boolean> {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      await nodeApi.delete(id);
+      nodes.value.delete(id);
+      return true;
+    } catch (err: any) {
+      error.value = err.message;
+      return false;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  // === Relationships ===
+
+  async function fetchRelationships(sourceId: string, types?: string[]): Promise<Relationship[]> {
+    try {
+      const result = await relationshipApi.getBySource(sourceId, types);
+      relationships.value.set(sourceId, result.items);
+      return result.items;
+    } catch (err: any) {
+      error.value = err.message;
+      return [];
+    }
+  }
+
+  async function createRelationship(data: Partial<Relationship>): Promise<Relationship | null> {
+    try {
+      const rel = await relationshipApi.create(data);
+
+      // Update local cache
+      const existing = relationships.value.get(rel.sourceId) || [];
+      relationships.value.set(rel.sourceId, [...existing, rel]);
+
+      return rel;
+    } catch (err: any) {
+      error.value = err.message;
+      return null;
+    }
+  }
+
+  // === REALTIME SUBSCRIPTIONS ===
+
+  function subscribeToNode(nodeId: string): void {
+    const key = `node:${nodeId}`;
+
+    // Don't duplicate subscriptions
+    if (subscriptions.value.has(key)) return;
+
+    const unsubscribe = nodeApi.subscribe(nodeId, (node) => {
+      if (node) {
+        nodes.value.set(nodeId, node);
+      } else {
+        nodes.value.delete(nodeId);
+      }
+    });
+
+    subscriptions.value.set(key, unsubscribe);
+  }
+
+  function subscribeToQuery(key: string, filters: { context?: string; type?: string }): void {
+    if (subscriptions.value.has(key)) return;
+
+    const unsubscribe = nodeApi.subscribeQuery(filters, (updatedNodes) => {
+      updatedNodes.forEach((node) => nodes.value.set(node.id, node));
+    });
+
+    subscriptions.value.set(key, unsubscribe);
+  }
+
+  function subscribeToRelationships(sourceId: string, types?: string[]): void {
+    const key = `rel:${sourceId}:${types?.join(',') || 'all'}`;
+
+    if (subscriptions.value.has(key)) return;
+
+    const unsubscribe = relationshipApi.subscribeBySource(sourceId, types, (rels) => {
+      relationships.value.set(sourceId, rels);
+    });
+
+    subscriptions.value.set(key, unsubscribe);
+  }
+
+  function unsubscribe(key: string): void {
+    const unsub = subscriptions.value.get(key);
+    if (unsub) {
+      unsub();
+      subscriptions.value.delete(key);
+    }
+  }
+
+  function unsubscribeAll(): void {
+    subscriptions.value.forEach((unsub) => unsub());
+    subscriptions.value.clear();
+  }
+
+  // === Getters ===
+
   const getNode = computed(() => (id: string) => nodes.value.get(id));
-  
+
   const getNodesByType = computed(() => (context: string, type: string) => {
     return Array.from(nodes.value.values()).filter(
-      node => node.context === context && node.type === type
+      (node) => node.context === context && node.type === type,
     );
   });
 
-  const hasPendingWrites = computed(() => pendingWrites.value.length > 0);
+  const getRelationships = computed(
+    () => (sourceId: string) => relationships.value.get(sourceId) || [],
+  );
 
   return {
     // State
     nodes,
+    relationships,
     loading,
     error,
-    isOffline,
-    pendingWrites,
-    
+
     // Actions
-    initOfflineSupport,
-    goOffline,
-    goOnline,
     fetchNode,
     queryNodes,
     createNode,
-    updateNodeAttribute,
-    
+    updateNode,
+    deleteNode,
+    fetchRelationships,
+    createRelationship,
+
+    // Subscriptions
+    subscribeToNode,
+    subscribeToQuery,
+    subscribeToRelationships,
+    unsubscribe,
+    unsubscribeAll,
+
     // Getters
     getNode,
     getNodesByType,
-    hasPendingWrites
+    getRelationships,
   };
 });
 ```
 
 ---
 
-## Firestore Indexes
+## Async Validators
 
-```json
-{
-  "indexes": [
-    {
-      "collectionGroup": "nodes",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "context", "order": "ASCENDING" },
-        { "fieldPath": "type", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "nodes",
-      "queryScope": "COLLECTION", 
-      "fields": [
-        { "fieldPath": "context", "order": "ASCENDING" },
-        { "fieldPath": "visibility", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "nodes",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "type", "order": "ASCENDING" },
-        { "fieldPath": "createdBy", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "relationships",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "sourceId", "order": "ASCENDING" },
-        { "fieldPath": "type", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "relationships",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "targetId", "order": "ASCENDING" },
-        { "fieldPath": "type", "order": "ASCENDING" },
-        { "fieldPath": "createdAt", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "relationships",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "sourceId", "order": "ASCENDING" },
-        { "fieldPath": "validUntil", "order": "ASCENDING" }
-      ]
+```typescript
+// core/validation/async-validators.ts
+import { nodeApi } from '@/api';
+
+export type AsyncValidationResult = {
+  valid: boolean;
+  errors: string[];
+};
+
+export type AsyncValidator<T> = (value: T) => Promise<AsyncValidationResult>;
+
+// Check if context exists
+export const contextExists: AsyncValidator<string> = async (context) => {
+  const [domain, scope] = context.split(':');
+  if (!scope) {
+    return { valid: false, errors: ['Context must be in format "domain:scope"'] };
+  }
+
+  // Check if group exists
+  const result = await nodeApi.query({ type: 'group', context });
+  if (result.items.length === 0) {
+    return { valid: false, errors: [`Context "${context}" does not exist`] };
+  }
+
+  return { valid: true, errors: [] };
+};
+
+// Check if resource is available
+export const resourceAvailable: AsyncValidator<string> = async (resourceId) => {
+  const { relationshipApi } = await import('@/api');
+
+  const commitments = await relationshipApi.getBySource(resourceId, ['committed_to', 'reserved']);
+  const activeCommitments = commitments.items.filter((c) => {
+    if (c.validUntil && new Date() > c.validUntil) return false;
+    return true;
+  });
+
+  if (activeCommitments.length > 0) {
+    return { valid: false, errors: ['Resource is not available'] };
+  }
+
+  return { valid: true, errors: [] };
+};
+
+// Compose async validators
+export async function validateAsync<T>(
+  value: T,
+  validators: AsyncValidator<T>[],
+): Promise<AsyncValidationResult> {
+  const errors: string[] = [];
+
+  for (const validator of validators) {
+    const result = await validator(value);
+    if (!result.valid) {
+      errors.push(...result.errors);
     }
-  ],
-  "fieldOverrides": []
+  }
+
+  return { valid: errors.length === 0, errors };
 }
 ```
 
 ---
 
-## Revised Timeline (4-5 weeks)
+## Revised Timeline (Realistic)
 
-### Week 1: Core foundation
-- Day 1-2: BaseNode, Relationship models + helpers + validators
-- Day 3-4: NodeService, RelationshipService with error handling + pagination
-- Day 5: Firebase indexes + security rules + basic tests
+### Phase 1: Core (Week 1-2)
 
-### Week 2: Graph layer + stores
-- Day 1-2: GraphService with batch queries
-- Day 3: Pinia stores with offline support
-- Day 4-5: Cloud Functions for meta updates
+- **Day 1-2:** BaseNode, Relationship models
+- **Day 3-4:** API abstraction layer + Firebase implementation
+- **Day 5-6:** NodeApi with realtime subscriptions
+- **Day 7-8:** RelationshipApi with realtime subscriptions
+- **Day 9-10:** Pinia store with subscriptions
 
-### Week 3: Activity/Resource context + UI
-- Day 1: ActivityResourceContext helpers
-- Day 2-3: NodeCard, ActivityCard, ResourceCard components
-- Day 4-5: Activity creation flow with needs
+### Phase 2: Validation + Services (Week 3)
 
-### Week 4: Features + integration
-- Day 1-2: Resource matching/recommendations
-- Day 3: Notification/trigger system basics
-- Day 4-5: Group management
+- **Day 1-2:** Sync + async validators
+- **Day 3-4:** MatchingService (simplified)
+- **Day 5:** Firebase indexes + security rules
 
-### Week 5: Polish + buffer
-- Day 1-2: Testing, bug fixes
-- Day 3: Performance optimization
-- Day 4-5: Documentation, buffer for unexpected issues
+### Phase 3: Context + UI (Week 4-5)
+
+- **Day 1-2:** Activity/Resource context helpers
+- **Day 3-4:** NodeCard, ActivityCard components
+- **Day 5-7:** Activity creation flow
+- **Day 8-10:** Resource management flow
+
+### Phase 4: Integration (Week 6)
+
+- **Day 1-2:** Notification basics (Cloud Function stubs)
+- **Day 3-4:** Group management
+- **Day 5:** Integration testing
+
+### Phase 5: Polish (Week 7-8)
+
+- **Day 1-3:** Bug fixes, edge cases
+- **Day 4-5:** Performance testing
+- **Day 6-7:** Documentation
+- **Day 8-10:** Buffer for unknowns
 
 ---
 
-This refined proposal addresses:
+## Summary of Fixes Applied
 
-✅ Batch queries with chunking  
-✅ Composite indexes  
-✅ `_meta:*` prefixed attributes (no separate field)  
-✅ No denormalization in writes (Cloud Functions for aggregates)  
-✅ Error handling for batch operations  
-✅ Pagination for graph queries  
-✅ Offline support  
-✅ Data validation layer  
-✅ Realistic 4-5 week timeline  
+| Issue                | Original                         | Fixed                               |
+| -------------------- | -------------------------------- | ----------------------------------- |
+| Relationship ID      | Deterministic (breaks multi-rel) | Random by default                   |
+| N+1 queries          | Loop with awaits                 | Batch queries, client-side filter   |
+| No realtime          | getDocs only                     | onSnapshot subscriptions            |
+| No API abstraction   | Services in components           | INodeApi/IRelationshipApi interface |
+| Sync-only validation | Validators.ts                    | Added async-validators.ts           |
+| Optimistic timeline  | 3 weeks                          | 7-8 weeks realistic                 |
 
-Ready to proceed with implementation. Switch to **agent mode** when you want to start creating the files.
+**Deferred to v2:**
+
+- Offline conflict resolution
+- Complex scoring/recommendations
+- Redis caching layer
+- Load testing infrastructure
+
+---
+
+Ready to proceed? Switch to **agent mode** and I'll create the files in order.
