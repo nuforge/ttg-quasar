@@ -214,6 +214,53 @@ Then visit `http://localhost:3000/ttg-quasar/` (or whatever port serve uses) to 
 
 All Firebase configuration is stored as GitHub Secrets (see Step 3 above). The workflow automatically injects these during the build process.
 
+### Firestore Rules Are Deployed Separately
+
+The GitHub Pages workflow deploys only the frontend. It does not publish
+[Firestore rules](../firebase/firestore.rules). Rebuilding the site cannot fix
+missing collection permissions in the published rules.
+
+The Firebase project `ttgaming-dd3c0` is shared with another application. The
+rules file includes both TTG collections and the existing `nodes`,
+`relationships`, `notifications`, `contextActivity`, and shared `userRoles`
+rules. Preserve both applications' rules when publishing from either repository.
+The shared application's admin helper is named `isSharedProjectAdmin` locally
+to avoid colliding with TTG's existing `isAdmin(userId)` helper.
+
+Before publishing any rules:
+
+1. Confirm the deployed site's `VITE_FIREBASE_PROJECT_ID` is `ttgaming-dd3c0`.
+2. Open that project's **Firestore Database > Rules** in Firebase Console.
+   Save a dated copy of the currently published rules outside the repository
+   for rollback, and compare them with the combined local file. Reconcile any
+   newer production changes before proceeding.
+3. Validate the combined rules in a local Firestore emulator and use the
+   console's Rules Playground to check expected allow/deny decisions before
+   publishing. Check public reads of `games` and `players`, signed-in access to
+   the user's own preferences and notifications, denial of another user's
+   private data, and the shared application's existing access patterns.
+4. Obtain explicit deployment approval. For manual publication, replace the
+   console editor contents with the entire combined rules file, then publish.
+   Alternatively, after confirming the Firebase CLI is installed, authenticated,
+   and authorized for this project, verify the command with
+   `firebase deploy --help`, then run:
+
+   ```powershell
+   firebase deploy --only firestore:rules --project ttgaming-dd3c0
+   ```
+
+5. Reload the production site. Verify public browsing while signed out, then
+   sign in and verify profile loading, preferences, and game notifications.
+   Check the shared application still works. If only rules changed, no
+   GitHub Pages rebuild is needed.
+
+If games and players both report `Missing or insufficient permissions`, check
+the published rules first: TTG's rules allow public reads of both collections,
+so signing in again alone cannot resolve missing collection rules. If the
+correct combined rules are already published, verify the build's Firebase
+project and inspect **Firebase Console > App Check > APIs > Cloud Firestore**
+for enforcement and rejected requests. Do not disable App Check as a shortcut.
+
 ### Authorized Domains
 
 **Important:** Ensure your Firebase configuration allows requests from your GitHub Pages domain:
