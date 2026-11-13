@@ -14,6 +14,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "dev": "quasar dev",
+    "prebuild": "node check-public-assets.mjs",
     "build": "quasar build",
     "postinstall": "quasar prepare"
   },
@@ -57,7 +58,7 @@
     "vue-tsc": "^2.0.29"
   },
   "engines": {
-    "node": "^28 || ^26 || ^24 || ^22 || ^20 || ^18",
+    "node": "^28 || ^26 || ^24 || ^22.22.0",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   }

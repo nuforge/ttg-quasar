@@ -29,10 +29,13 @@ The TTG (Tabletop Gaming) Quasar Application is a comprehensive, enterprise-grad
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 24 LTS (recommended), or a supported even-numbered release starting at 22.22.0
 - npm or yarn
 - Firebase CLI
 - Git
+
+GitHub Actions tests Node.js 22.22+ and 24, builds and deploys with Node.js 24,
+and uses Ubuntu 24.04 runners.
 
 ### Installation
 
@@ -64,6 +67,11 @@ npm run build
 # Deploy to Firebase
 firebase deploy
 ```
+
+`npm run build` first checks public assets and refuses to publish private keys.
+Firebase Admin service-account files must stay outside `public/`; use environment
+credentials for server-side tooling. If a key has been uploaded or deployed,
+revoke it in Google Cloud IAM before deploying again.
 
 ## 🔒 **Security Status**
 
