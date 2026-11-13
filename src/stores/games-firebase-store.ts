@@ -123,7 +123,7 @@ export const useGamesFirebaseStore = defineStore('gamesFirebase', () => {
         createdBy: authService.currentUserId.value,
         approved: false, // Submissions need approval
         status: 'pending', // Pending approval
-      } as FirebaseGame;
+      };
 
       await addDoc(collection(db, 'games'), newGameData);
     } catch (err) {

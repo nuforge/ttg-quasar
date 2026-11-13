@@ -134,7 +134,7 @@ export function useLanguage() {
       await userPreferencesStore.loadPreferences();
       const userLanguage = userPreferencesStore.preferences?.preferredLanguage;
       if (userLanguage && userLanguage in SUPPORTED_LANGUAGES) {
-        locale.value = userLanguage as SupportedLanguage;
+        locale.value = userLanguage;
       } else if (userLanguage) {
         // Normalize invalid user language preference
         console.warn(`Invalid user language preference "${userLanguage}" normalized to "en-US"`);

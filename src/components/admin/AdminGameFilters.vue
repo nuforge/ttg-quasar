@@ -30,18 +30,18 @@ const emit = defineEmits<{
 
 // Status options
 const statusOptions = computed(() => [
-  { label: t('allGames'), value: 'all' as GameStatusFilter, icon: 'mdi-gamepad-variant', color: 'grey-7' },
-  { label: t('pending'), value: 'pending' as GameStatusFilter, icon: 'mdi-clock-outline', color: 'warning' },
-  { label: t('approved'), value: 'approved' as GameStatusFilter, icon: 'mdi-check-circle', color: 'positive' },
-  { label: t('rejected'), value: 'rejected' as GameStatusFilter, icon: 'mdi-close-circle', color: 'negative' },
+  { label: t('allGames'), value: 'all', icon: 'mdi-gamepad-variant', color: 'grey-7' },
+  { label: t('pending'), value: 'pending', icon: 'mdi-clock-outline', color: 'warning' },
+  { label: t('approved'), value: 'approved', icon: 'mdi-check-circle', color: 'positive' },
+  { label: t('rejected'), value: 'rejected', icon: 'mdi-close-circle', color: 'negative' },
 ]);
 
 // Sort options
 const sortOptions = computed(() => [
-  { label: t('title'), value: 'title' as GameSortField },
-  { label: t('dateAdded'), value: 'createdAt' as GameSortField },
-  { label: t('genre'), value: 'genre' as GameSortField },
-  { label: t('status'), value: 'status' as GameSortField },
+  { label: t('title'), value: 'title' },
+  { label: t('dateAdded'), value: 'createdAt' },
+  { label: t('genre'), value: 'genre' },
+  { label: t('status'), value: 'status' },
 ]);
 
 // Genre options with "All" option
@@ -199,4 +199,3 @@ const toggleSortOrder = () => {
   background: var(--q-dark);
 }
 </style>
-

@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import { useEventsFirebaseStore } from 'src/stores/events-firebase-store';
-import type { Event, EventStatus } from 'src/models/Event';
+import type { Event } from 'src/models/Event';
 
 export type EventStatusFilter = 'all' | 'upcoming' | 'completed' | 'cancelled';
 export type EventSortField = 'title' | 'date' | 'status' | 'createdAt';
@@ -151,7 +151,7 @@ export function useEventAdmin(options: EventAdminOptions = {}) {
     try {
       for (const id of ids) {
         try {
-          await eventsStore.updateEvent(id, { status: 'cancelled' as EventStatus });
+          await eventsStore.updateEvent(id, { status: 'cancelled' });
         } catch (err) {
           errors.push(id);
           console.error(`Failed to cancel event ${id}:`, err);
@@ -245,7 +245,7 @@ export function useEventAdmin(options: EventAdminOptions = {}) {
           void (async () => {
             try {
               const docId = event.firebaseDocId ?? event.id.toString();
-              await eventsStore.updateEvent(docId, { status: 'cancelled' as EventStatus });
+              await eventsStore.updateEvent(docId, { status: 'cancelled' });
               $q.notify({
                 type: 'positive',
                 message: `"${event.title}" cancelled`,
@@ -353,4 +353,3 @@ export function useEventAdmin(options: EventAdminOptions = {}) {
     resetFilters,
   };
 }
-

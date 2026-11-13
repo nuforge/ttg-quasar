@@ -66,7 +66,8 @@ const filters = ref({
   playTime: null as string | null,
 });
 
-const sortBy = ref('title');
+type GameSortKey = 'title' | 'genre' | 'numberOfPlayers' | 'playTime' | 'recommendedAge';
+const sortBy = ref<GameSortKey>('title');
 
 // Memoized filter options - only recalculate when games array changes
 const genreOptions = computed(() => {
@@ -167,8 +168,8 @@ const displayedGames = computed(() => {
   const sorted = [...games];
   
   sorted.sort((a, b) => {
-    const aValue = a[sortKey as keyof Game];
-    const bValue = b[sortKey as keyof Game];
+    const aValue = a[sortKey];
+    const bValue = b[sortKey];
 
     // Handle null/undefined
     if (aValue == null && bValue == null) return 0;

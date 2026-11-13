@@ -35,18 +35,18 @@ const emit = defineEmits<{
 
 // Status options
 const statusOptions = computed(() => [
-  { label: t('adminEvents.allEvents'), value: 'all' as EventStatusFilter, icon: 'mdi-calendar-multiple', color: 'grey-7' },
-  { label: t('upcoming'), value: 'upcoming' as EventStatusFilter, icon: 'mdi-calendar-clock', color: 'positive' },
-  { label: t('completed'), value: 'completed' as EventStatusFilter, icon: 'mdi-calendar-check', color: 'info' },
-  { label: t('cancelled'), value: 'cancelled' as EventStatusFilter, icon: 'mdi-calendar-remove', color: 'negative' },
+  { label: t('adminEvents.allEvents'), value: 'all', icon: 'mdi-calendar-multiple', color: 'grey-7' },
+  { label: t('upcoming'), value: 'upcoming', icon: 'mdi-calendar-clock', color: 'positive' },
+  { label: t('completed'), value: 'completed', icon: 'mdi-calendar-check', color: 'info' },
+  { label: t('cancelled'), value: 'cancelled', icon: 'mdi-calendar-remove', color: 'negative' },
 ]);
 
 // Sort options
 const sortOptions = computed(() => [
-  { label: t('date'), value: 'date' as EventSortField },
-  { label: t('title'), value: 'title' as EventSortField },
-  { label: t('status'), value: 'status' as EventSortField },
-  { label: t('dateAdded'), value: 'createdAt' as EventSortField },
+  { label: t('date'), value: 'date' },
+  { label: t('title'), value: 'title' },
+  { label: t('status'), value: 'status' },
+  { label: t('dateAdded'), value: 'createdAt' },
 ]);
 
 // Game options with "All" option
@@ -204,4 +204,3 @@ const toggleSortOrder = () => {
   background: var(--q-dark);
 }
 </style>
-

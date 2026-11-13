@@ -44,7 +44,7 @@ class EventSubmissionService {
         ...(currentUser.displayName && { displayName: currentUser.displayName }),
       },
       submittedAt: Timestamp.now(),
-      status: 'pending' as EventSubmissionStatus,
+      status: 'pending',
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
